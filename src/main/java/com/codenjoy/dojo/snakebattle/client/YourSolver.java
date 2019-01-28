@@ -23,7 +23,6 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 
-import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.client.WebSocketRunner;
 import com.codenjoy.dojo.services.Dice;
@@ -35,7 +34,7 @@ import com.codenjoy.dojo.services.RandomDice;
  * Обрати внимание на {@see YourSolverTest} - там приготовлен тестовый
  * фреймворк для тебя.
  */
-public class YourSolver implements Solver<Board> {
+public class YourSolver implements Solver<MyBoard> {
 
     private Dice dice;
     private Board board;
@@ -45,19 +44,15 @@ public class YourSolver implements Solver<Board> {
     }
 
     @Override
-    public String get(Board board) {
-        this.board = board;
-        if (board.isGameOver()) return "";
-
-        return Direction.RIGHT.toString();
+    public String get(MyBoard board) {
+        return board.getNextStep();
     }
 
     public static void main(String[] args) {
-        WebSocketRunner.runClient(
-                // paste here board page url from browser after registration
-                "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
+        WebSocketRunner.runClient("https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
+        // WebSocketRunner.runClient("https://192.168.1.1:8080/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
                 new YourSolver(new RandomDice()),
-                new Board());
+                new MyBoard());
     }
 
 }
