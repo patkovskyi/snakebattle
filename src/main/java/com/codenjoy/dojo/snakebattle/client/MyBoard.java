@@ -36,7 +36,7 @@ public class MyBoard extends Board {
             int[][][] dir = getDirectionalDistances();
             int[][] nondir = getNonDirectionalDistances(dir);
             Point closestPowerUp = getClosestPowerUp(nondir);
-            Direction newDirection = getFirstStepTo(closestPowerUp, dir);
+            Direction newDirection = getFirstStepNonDirectional(closestPowerUp, nondir);
             if (newDirection.value() < 4) {
                 headDirection = newDirection;
             }
@@ -58,7 +58,7 @@ public class MyBoard extends Board {
     }
 
     public Direction getFirstStepTo(Point p, int[][][] dir) {
-        System.out.printf("Searching path to %d %d\n", p.getX(), p.getY());
+        System.out.printf("getFirstStepTo starts search for %d %d\n", p.getX(), p.getY());
 
         Direction lastDirection = Direction.LEFT;
         Point currentHead = getMe();
@@ -75,7 +75,33 @@ public class MyBoard extends Board {
             currentP.change(lastDirection.inverted());
         }
 
+        System.out.println("getFirstStepTo finished\n");
         return lastDirection;
+    }
+
+    public Direction getFirstStepNonDirectional(Point p, int[][] nondir) {
+        System.out.printf("getFirstStepNonDirectional search for %d %d\n", p.getX(), p.getY());
+        if (nondir[p.getX()][p.getY()] == Integer.MAX_VALUE) {
+            System.out.println("getFirstStepNonDirectional: path is BLOCKED");
+            return Direction.STOP;
+        }
+
+        Point newP = p;
+        do {
+            p = newP;
+            for (Direction d : Direction.onlyDirections()) {
+                newP = p.copy();
+                newP.change(d);
+                if (nondir[newP.getX()][newP.getY()] == 0) {
+                    System.out.println("getFirstStepNonDirectional: SUCCESS");
+                    return d.inverted();
+                } else if (nondir[newP.getX()][newP.getY()] == nondir[p.getX()][p.getY()] - 1) {
+                    break;
+                }
+            }
+        } while (nondir[newP.getX()][newP.getY()] == nondir[p.getX()][p.getY()] - 1);
+
+        throw new IllegalStateException("getFirstStepNonDirectional should never reach this line");
     }
 
     public int[][] getNonDirectionalDistances(int[][][] dir) {
@@ -102,6 +128,8 @@ public class MyBoard extends Board {
     }
 
     public int[][][] getDirectionalDistances() {
+        System.out.println("getDirectionalDistances started");
+
         int[][][] dir = new int[size][size][size];
 
         for (int x = 0; x < size; x++) {
@@ -148,6 +176,7 @@ public class MyBoard extends Board {
             }
         }
 
+        System.out.println("getDirectionalDistances finished");
         return dir;
     }
 }

@@ -49,7 +49,7 @@ public class SolverTest {
     private Solver ai;
 
     @Rule
-    public Timeout globalTimeout = Timeout.millis(300);
+    public Timeout globalTimeout = Timeout.millis(700);
 
     @Before
     public void setup() {
@@ -204,7 +204,7 @@ public class SolverTest {
                 "☼#            ○    ×>        ☼" +
                 "☼☼           ○   ○           ☼" +
                 "☼☼                           ☼" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
     }
 
     @Test
@@ -272,7 +272,7 @@ public class SolverTest {
                 "☼#                           ☼" +
                 "☼☼                           ☼" +
                 "☼☼                           ☼" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.RIGHT);
     }
 
     @Test
@@ -306,7 +306,7 @@ public class SolverTest {
                 "☼#                       ║   ☼" +
                 "☼☼   ©                ◄╗ ║   ☼" +
                 "☼☼                     ╚═╝   ☼" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
     }
 
     private Board board(String board) {
