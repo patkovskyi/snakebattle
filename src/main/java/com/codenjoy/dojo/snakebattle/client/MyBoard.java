@@ -89,7 +89,7 @@ public class MyBoard extends Board {
                 }
 
                 if (nondir[x][y] < Integer.MAX_VALUE) {
-                    System.out.printf("%d", nondir[x][y]);
+                    System.out.printf("%d", nondir[x][y] / 10);
                 } else {
                     System.out.print("☼");
                 }

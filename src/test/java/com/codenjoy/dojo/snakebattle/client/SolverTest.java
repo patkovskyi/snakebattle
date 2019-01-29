@@ -16,7 +16,7 @@ package com.codenjoy.dojo.snakebattle.client;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public
+ * You trivialCases have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
@@ -27,9 +27,10 @@ import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.services.Dice;
 import com.codenjoy.dojo.services.Direction;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
-import static com.codenjoy.dojo.services.Direction.RIGHT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -47,19 +48,18 @@ public class SolverTest {
     private Dice dice;
     private Solver ai;
 
+    @Rule
+    public Timeout globalTimeout = Timeout.millis(300);
+
     @Before
     public void setup() {
         dice = mock(Dice.class);
         ai = new YourSolver(dice);
     }
 
-    private Board board(String board) {
-        return (Board) new MyBoard().forString(board);
-    }
-
     @Test
-    public void should() {
-        asertAI("☼☼☼☼☼☼☼☼" +
+    public void trivialCases() {
+        assertAI("☼☼☼☼☼☼☼☼" +
                 "☼☼     ☼" +
                 "╘►     ☼" +
                 "☼☼     ☼" +
@@ -68,7 +68,7 @@ public class SolverTest {
                 "☼☼     ☼" +
                 "☼☼☼☼☼☼☼☼", Direction.RIGHT);
 
-        asertAI("☼☼☼☼☼☼☼☼" +
+        assertAI("☼☼☼☼☼☼☼☼" +
                 "☼☼     ☼" +
                 "☼#╘►  ○☼" +
                 "☼☼     ☼" +
@@ -77,7 +77,7 @@ public class SolverTest {
                 "☼☼     ☼" +
                 "☼☼☼☼☼☼☼☼", Direction.RIGHT);
 
-        asertAI("☼☼☼☼☼☼☼☼" +
+        assertAI("☼☼☼☼☼☼☼☼" +
                 "☼☼     ☼" +
                 "☼☼ ╘►  ☼" +
                 "☼☼     ☼" +
@@ -86,7 +86,7 @@ public class SolverTest {
                 "☼☼     ☼" +
                 "☼☼☼☼☼☼☼☼", Direction.DOWN);
 
-        asertAI("☼☼☼☼☼☼☼☼" +
+        assertAI("☼☼☼☼☼☼☼☼" +
                 "☼☼  ○  ☼" +
                 "☼☼ ╘►  ☼" +
                 "☼☼     ☼" +
@@ -95,7 +95,7 @@ public class SolverTest {
                 "☼☼     ☼" +
                 "☼☼☼☼☼☼☼☼", Direction.UP);
 
-        asertAI("☼☼☼☼☼☼☼☼" +
+        assertAI("☼☼☼☼☼☼☼☼" +
                 "☼☼    ○☼" +
                 "☼☼     ☼" +
                 "☼☼  ▲  ☼" +
@@ -103,10 +103,217 @@ public class SolverTest {
                 "☼☼     ☼" +
                 "☼☼     ☼" +
                 "☼☼☼☼☼☼☼☼", Direction.LEFT);
-
     }
 
-    private void asertAI(String board, Direction expected) {
+    @Test
+    public void bigButNoException() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+                "☼☼         ○                 ☼" +
+                "☼#                           ☼" +
+                "☼☼  ○    ●         ◄══╕      ☼" +
+                "☼☼                           ☼" +
+                "☼☼ ○         ●    ○          ☼" +
+                "☼☼     ☼☼☼☼☼                 ☼" +
+                "☼☼     ☼                     ☼" +
+                "☼#     ☼☼☼     ○  ☼☼☼*ø      ☼" +
+                "☼☼     ☼          ☼   ☼      ☼" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼" +
+                "☼☼                ☼          ☼" +
+                "☼☼                ☼         $☼" +
+                "☼☼       ○                   ☼" +
+                "*ø             ○      ○      ☼" +
+                "☼☼           ○               ☼" +
+                "☼☼        ☼☼☼  ®             ☼" +
+                "☼☼       ☼  ☼                ☼" +
+                "☼☼      ☼☼☼*ø     ☼☼   ☼#    ☼" +
+                "☼☼      ☼   ☼   ● ☼ ☼ ☼ ☼ ○  ☼" +
+                "☼#   æ  ☼   ☼     ☼ $☼  ☼    ☼" +
+                "☼☼   └>   ®       ☼     ☼    ☼" +
+                "☼☼                ☼     ☼    ☼" +
+                "☼☼                           ☼" +
+                "☼☼                   ●       ☼" +
+                "☼☼             ●         ○   ☼" +
+                "☼#  ○                        ☼" +
+                "☼☼                           ☼" +
+                "☼☼                           ☼" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
+    }
+
+    @Test
+    public void exception1() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+                "☼☼®           ®  ® ▲         ☼" +
+                "☼#                 ║ ©       ☼" +
+                "☼☼×>     ●        ╔╝    ○  ○ ☼" +
+                "☼☼       ╘══╗     ║     ○    ☼" +
+                "☼☼  ●       ║●  ╔═╝          ☼" +
+                "☼☼     ☼☼☼☼☼║   ║            ☼" +
+                "☼☼     ☼    ╚══╗║©   ●       ☼" +
+                "*ø    ●☼☼☼     ╚╝ ☼☼☼☼#      ☼" +
+                "☼☼     ☼          ☼   ☼  ●   ☼" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼" +
+                "☼☼                ☼          ☼" +
+                "☼☼       ©        ☼         $☼" +
+                "☼☼    ● ○                    ☼" +
+                "*ø                           ☼" +
+                "☼☼             ●             ☼" +
+                "☼☼        ☼☼☼                ☼" +
+                "☼☼       ☼  ☼                ☼" +
+                "☼☼      ☼☼☼☼#     ☼☼   *ø    ☼" +
+                "☼☼      ☼   ☼ $ ● ☼ ☼ ☼ ☼    ☼" +
+                "☼#      ☼   ☼     ☼  ☼  ☼   ○☼" +
+                "☼☼                ☼     ☼    ☼" +
+                "☼☼     ●          ☼     ☼    ☼" +
+                "☼☼                           ☼" +
+                "☼☼                           ☼" +
+                "☼☼             ●             ☼" +
+                "☼#          ○                ☼" +
+                "☼☼                           ☼" +
+                "☼☼        ○                  ☼" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.RIGHT);
+    }
+
+    @Test
+    public void exception2() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+                "☼☼         ○                 ☼" +
+                "☼#                           ☼" +
+                "☼☼  ○    ●                   ☼" +
+                "☼☼      $                    ☼" +
+                "☼☼ ○         ●    æ          ☼" +
+                "☼☼  ®  ☼☼☼☼☼      └──> ○     ☼" +
+                "☼☼     ☼  ◄════╕             ☼" +
+                "☼#     ☼☼☼        ☼☼☼☼#      ☼" +
+                "☼☼     ☼          ☼   ☼  ●   ☼" +
+                "☼☼     ☼☼☼☼#      ☼☼☼*ø      ☼" +
+                "☼☼                ☼          ☼" +
+                "☼☼ ×──>           ☼         $☼" +
+                "☼☼    ●  ○                   ☼" +
+                "☼#                    ○      ☼" +
+                "☼☼                           ☼" +
+                "☼☼        ☼☼☼                ☼" +
+                "☼☼       ☼  ☼●               ☼" +
+                "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼" +
+                "☼☼      ☼   ☼   ● ☼ ☼ ☼ ☼ ○  ☼" +
+                "☼#      ☼   ☼     ☼  ☼  ☼    ☼" +
+                "☼☼                ☼     ☼    ☼" +
+                "☼☼     ●          ☼     ☼    ☼" +
+                "☼☼                           ☼" +
+                "☼☼                  ○        ☼" +
+                "☼☼ ○    ○      ●         ○   ☼" +
+                "☼#            ○    ×>        ☼" +
+                "☼☼           ○   ○           ☼" +
+                "☼☼                           ☼" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
+    }
+
+    @Test
+    public void exception3() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+                "☼☼         ○                 ☼" +
+                "☼#                        ×> ☼" +
+                "☼☼  ○    ●         ○       ○ ☼" +
+                "☼☼                     $○    ☼" +
+                "☼☼ ○         ●    ○          ☼" +
+                "☼☼     ☼☼☼☼☼                 ☼" +
+                "☼☼     ☼ ○                   ☼" +
+                "☼#     ☼☼☼     ○  ☼☼☼☼#      ☼" +
+                "☼☼     ☼    ○     ☼   ☼  ●   ☼" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼" +
+                "☼☼                ☼          ☼" +
+                "☼☼○               ☼         $☼" +
+                "☼☼    ●  ◄═══╗               ☼" +
+                "*ø           ╙           ×─> ☼" +
+                "☼☼        ©                  ☼" +
+                "☼☼        ☼☼☼                ☼" +
+                "☼☼   ○   ☼  ☼                ☼" +
+                "☼☼      ☼☼☼☼#     ☼☼   *ø    ☼" +
+                "☼☼      ☼   ☼   ● ☼ ☼ ☼ ☼ ○  ☼" +
+                "☼#      ☼   ☼     ☼  ☼  ☼   ©☼" +
+                "☼☼                ☼     ☼    ☼" +
+                "☼☼     ●          ☼     ☼    ☼" +
+                "☼☼                           ☼" +
+                "☼☼                  ○        ☼" +
+                "☼☼ ○    ○      ●         ○   ☼" +
+                "☼#              $            ☼" +
+                "☼☼               ○           ☼" +
+                "☼☼                           ☼" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
+    }
+
+    @Test
+    public void exception4() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+                "☼☼               ●           ☼" +
+                "*ø                           ☼" +
+                "☼☼      ○●                   ☼" +
+                "☼☼           ●               ☼" +
+                "☼☼           ●               ☼" +
+                "☼☼     ☼☼☼☼☼     ● ○         ☼" +
+                "☼☼  ®  ☼                     ☼" +
+                "☼#     ☼☼☼        ☼☼☼☼#      ☼" +
+                "☼☼  ©  ☼          ☼   ☼○     ☼" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼" +
+                "☼☼                ☼          ☼" +
+                "☼☼®               ☼          ☼" +
+                "☼☼    ●    ®                 ☼" +
+                "☼#                           ☼" +
+                "☼☼                           ☼" +
+                "☼☼        ☼☼☼   ●            ☼" +
+                "☼☼       ☼  ☼                ☼" +
+                "☼☼      ☼☼☼*ø     ☼☼   ☼#    ☼" +
+                "☼☼      ☼   ☼     ☼●☼ ☼ ☼    ☼" +
+                "☼#      ☼   ☼     ☼  ☼ ○☼    ☼" +
+                "☼☼                ☼    ●☼    ☼" +
+                "☼☼   ˄ ●          ☼   ˄ ☼    ☼" +
+                "☼☼   ¤              ┌─┘▲     ☼" +
+                "☼☼                ╘═──═╝     ☼" +
+                "☼☼                           ☼" +
+                "☼#                           ☼" +
+                "☼☼                           ☼" +
+                "☼☼                           ☼" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
+    }
+
+    @Test
+    public void exception5() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+                "☼☼┌>                         ☼" +
+                "*ø│         ®                ☼" +
+                "☼☼└──ö   ●         ○         ☼" +
+                "☼☼                      ○    ☼" +
+                "☼☼           ●    ○          ☼" +
+                "☼☼     ☼☼☼☼☼                 ☼" +
+                "☼☼     ☼                     ☼" +
+                "☼#     ☼☼☼     ○  ☼☼☼☼#      ☼" +
+                "☼☼     ☼          ☼   ☼  ●   ☼" +
+                "☼☼  ○  ☼☼☼*ø    ○ ☼☼☼☼# ○    ☼" +
+                "☼☼                ☼ ○        ☼" +
+                "☼☼                ☼        ®$☼" +
+                "☼☼    ●  $                   ☼" +
+                "*ø             ○ ○    ○      ☼" +
+                "☼☼    ○                    ® ☼" +
+                "☼☼        ☼☼☼    $           ☼" +
+                "☼☼       ☼  ☼                ☼" +
+                "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼" +
+                "☼☼      ☼   ☼   ● ☼●☼ ☼ ☼ ○  ☼" +
+                "☼#      ☼   ☼     ☼  ☼  ☼    ☼" +
+                "☼☼   ○          © ☼     ☼    ☼" +
+                "☼☼     ●          ☼   ╓ ☼    ☼" +
+                "☼☼                    ║      ☼" +
+                "☼☼                    ║      ☼" +
+                "☼☼             ●      ╚══╗   ☼" +
+                "☼#                       ║   ☼" +
+                "☼☼   ©                ◄╗ ║   ☼" +
+                "☼☼                     ╚═╝   ☼" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
+    }
+
+    private Board board(String board) {
+        return (Board) new MyBoard().forString(board);
+    }
+
+    private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         assertEquals(expected.toString(), actual);
     }
