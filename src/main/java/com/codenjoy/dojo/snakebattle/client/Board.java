@@ -73,12 +73,16 @@ public class Board extends AbstractBoard<Elements> {
                 ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
     }
 
+    public boolean isWithinBoard(int x, int y) {
+        return x >= 0 && y >= 0 && x < size && y < size;
+    }
+
     public boolean isProblematic(Point p) {
         return isProblematic(p.getX(), p.getY());
     }
 
     public boolean isProblematic(int x, int y) {
-        return isBarrierAt(x, y) || isStoneAt(x, y) ||
+        return !isWithinBoard(x, y) || isBarrierAt(x, y) || isStoneAt(x, y) ||
                 // heuristic for dangerous dynamic barriers
                 (isDynamicBarrier(x, y) && getManhattanDistance(getMe(), new PointImpl(x, y)) < DYNAMIC_DANGER_DISTANCE);
     }

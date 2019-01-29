@@ -54,7 +54,7 @@ public class SolverTest {
     }
 
     private Board board(String board) {
-        return (Board) new Board().forString(board);
+        return (Board) new MyBoard().forString(board);
     }
 
     @Test
@@ -70,16 +70,7 @@ public class SolverTest {
 
         asertAI("☼☼☼☼☼☼☼☼" +
                 "☼☼     ☼" +
-                "☼╘►    ☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼☼☼☼☼☼☼", Direction.RIGHT);
-
-        asertAI("☼☼☼☼☼☼☼☼" +
-                "☼☼     ☼" +
-                "☼#╘►   ☼" +
+                "☼#╘►  ○☼" +
                 "☼☼     ☼" +
                 "☼☼     ☼" +
                 "☼☼     ☼" +
@@ -90,10 +81,29 @@ public class SolverTest {
                 "☼☼     ☼" +
                 "☼☼ ╘►  ☼" +
                 "☼☼     ☼" +
+                "☼☼$    ☼" +
                 "☼☼     ☼" +
                 "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.DOWN);
+
+        asertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼  ○  ☼" +
+                "☼☼ ╘►  ☼" +
                 "☼☼     ☼" +
-                "☼☼☼☼☼☼☼☼", Direction.RIGHT);
+                "☼☼$    ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.UP);
+
+        asertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼    ○☼" +
+                "☼☼     ☼" +
+                "☼☼  ▲  ☼" +
+                "☼☼$ ╙  ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.LEFT);
+
     }
 
     private void asertAI(String board, Direction expected) {

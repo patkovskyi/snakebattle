@@ -12,16 +12,27 @@ import java.util.List;
 public class MyBoard extends Board {
     Direction headDirection = Direction.RIGHT;
 
+    protected void refreshDirection() {
+        if (!get(Elements.HEAD_SLEEP, Elements.HEAD_RIGHT).isEmpty()) {
+            // in case of a new round also reset to right
+            headDirection = Direction.RIGHT;
+        } else if (!get(Elements.HEAD_DOWN).isEmpty()) {
+            headDirection = Direction.DOWN;
+        } else if (!get(Elements.HEAD_RIGHT).isEmpty()) {
+            headDirection = Direction.RIGHT;
+        } else if (!get(Elements.HEAD_LEFT).isEmpty()) {
+            headDirection = Direction.LEFT;
+        } else if (!get(Elements.HEAD_UP).isEmpty()) {
+            headDirection = Direction.UP;
+        }
+    }
+
     public String getNextStep() {
         if (isGameOver()) {
             System.out.println("GAME OVER");
             return "";
         } else {
-            if (!get(Elements.HEAD_SLEEP).isEmpty()) {
-                // reset on new round
-                headDirection = Direction.RIGHT;
-            }
-
+            refreshDirection();
             int[][][] dir = getDirectionalDistances();
             int[][] nondir = getNonDirectionalDistances(dir);
             Point closestPowerUp = getClosestPowerUp(nondir);
@@ -78,7 +89,7 @@ public class MyBoard extends Board {
                 }
 
                 if (nondir[x][y] < Integer.MAX_VALUE) {
-                    System.out.printf("%d", nondir[x][y] / 10);
+                    System.out.printf("%d", nondir[x][y]);
                 } else {
                     System.out.print("☼");
                 }
@@ -102,6 +113,7 @@ public class MyBoard extends Board {
         }
 
         Point head = getMe();
+
         System.out.printf("Me: %d %d\n", head.getX(), head.getY());
 
         ArrayDeque<HeadPosition> q = new ArrayDeque<>();
