@@ -26,13 +26,17 @@ package com.codenjoy.dojo.snakebattle.client;
 import com.codenjoy.dojo.services.Direction;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.DisableOnDebug;
+import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
 public class SnakeTest {
     @Rule()
-    public Timeout globalTimeout = Timeout.millis(400);
+    public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
 
     private Board board(String board) {
         return (Board) new MyBoard().forString(board);

@@ -9,6 +9,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MyBoard extends Board {
     Direction headDirection = Direction.RIGHT;
@@ -33,6 +34,7 @@ public class MyBoard extends Board {
             System.out.println("GAME OVER");
             return "";
         } else {
+            refreshMyHead();
             refreshDirection();
             int[][][] dir = getDirectionalDistances();
             int[][] nondir = getNonDirectionalDistances(dir);
@@ -47,14 +49,20 @@ public class MyBoard extends Board {
     }
 
     public Point getClosestPowerUp(int[][] nondir) {
-        List<Point> points = getMySnakeLength() >= 5 ? this.get(Elements.STONE) : new ArrayList<>();
+        List<Point> points = getMySnakeLength() - STONE_LENGTH_COST >= MIN_SNAKE_LENGTH ? this.get(Elements.STONE) : new ArrayList<>();
+        if (points.isEmpty() && areWeFurious()) {
+            points = this.get(Elements.STONE).stream().filter(p -> distanceFromMe(p) < FURY_LENGTH).collect(Collectors.toList());
+        }
 
         if (points.isEmpty()) {
             points = this.get(Elements.GOLD, Elements.APPLE);
             if (points.isEmpty()) {
-                points = this.get(Elements.FLYING_PILL, Elements.FURY_PILL);
+                points = this.get(Elements.FURY_PILL);
                 if (points.isEmpty()) {
-                    points = this.get(Elements.NONE);
+                    points = this.get(Elements.FLYING_PILL);
+                    if (points.isEmpty()) {
+                        points = this.get(Elements.NONE);
+                    }
                 }
             }
         }
@@ -88,7 +96,7 @@ public class MyBoard extends Board {
         System.out.printf("getFirstStepNonDirectional search for %d %d\n", p.getX(), p.getY());
         if (nondir[p.getX()][p.getY()] == Integer.MAX_VALUE) {
             System.out.println("getFirstStepNonDirectional: path is BLOCKED");
-            return Direction.STOP;
+            return Direction.ACT;
         }
 
         Point newP = p;
@@ -168,7 +176,7 @@ public class MyBoard extends Board {
                     if (newDir.inverted().value() != p.d) {
                         Point newPoint = new PointImpl(p.x, p.y);
                         newPoint.change(newDir);
-                        if (!isProblematic(newPoint)) {
+                        if (!isNotPassableOrRisky(newPoint)) {
                             HeadPosition np = new HeadPosition(newPoint.getX(), newPoint.getY(), newDir.value());
                             if (queued[np.getX()][np.getY()][np.getDirection()] == false) {
                                 queued[np.getX()][np.getY()][np.getDirection()] = true;

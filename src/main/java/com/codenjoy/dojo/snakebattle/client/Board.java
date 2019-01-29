@@ -24,10 +24,12 @@ package com.codenjoy.dojo.snakebattle.client;
 
 
 import com.codenjoy.dojo.client.AbstractBoard;
+import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -39,11 +41,34 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  * но ты можешь добавить сюда любые свои методы на их основе.
  */
 public class Board extends AbstractBoard<Elements> {
+    protected final int STONE_LENGTH_COST = 3;
+    protected final int MIN_SNAKE_LENGTH = 2;
+    protected final int FURY_LENGTH = 10;
+    protected Point myHead;
 
-    protected final int DYNAMIC_DANGER_DISTANCE = 3;
+    public List<Point> getNeighborPoints(Point p) {
+        List<Point> l = new ArrayList<>();
+        for (Direction d : Direction.onlyDirections()) {
+            Point np = p.copy();
+            np.change(d);
+            if (isWithinBoard(np)) {
+                l.add(np);
+            }
+        }
+
+        return l;
+    }
+
+    public List<Point> getNeighborPoints(int x, int y) {
+        return getNeighborPoints(new PointImpl(x, y));
+    }
 
     public int getMySnakeLength() {
         return get(MY_SNAKE.toArray(new Elements[0])).size();
+    }
+
+    public boolean areWeFurious() {
+        return getAt(getMe()) == HEAD_EVIL;
     }
 
     @Override
@@ -86,24 +111,60 @@ public class Board extends AbstractBoard<Elements> {
         return x >= 0 && y >= 0 && x < size && y < size;
     }
 
-    public boolean isProblematic(Point p) {
-        return isProblematic(p.getX(), p.getY());
+    public boolean isNotPassableOrRisky(Point p) {
+        return isNotPassableOrRisky(p.getX(), p.getY());
+    }
+
+    public int distanceFromMe(Point p) {
+        return getManhattanDistance(getMe(), p);
+    }
+
+    public int distanceFromMe(int x, int y) {
+        return getManhattanDistance(getMe(), new PointImpl(x, y));
     }
 
     protected boolean isNextStepCollisionPossible(int x, int y) {
-        HashSet<Elements> neighbors = new HashSet<>(getNear(x, y));
-        neighbors.remove(ENEMY_HEAD_FLY);
-        neighbors.remove(HEAD_FLY);
+        if (distanceFromMe(x, y) == 1) {
+            if (isBarrierAt(x, y)) return true;
+            boolean weAreFurious = areWeFurious();
+            if (!weAreFurious && isStoneAt(x, y) && (getMySnakeLength() - STONE_LENGTH_COST < MIN_SNAKE_LENGTH)) return true;
 
-        // add length comparison ?
-        return neighbors.stream().anyMatch(ENEMY_HEAD::contains) && neighbors.stream().anyMatch(MY_HEAD::contains);
+            Elements e = getAt(x, y);
+            if (MY_BODY.contains(e)) return true; // actually we can cut a piece of ourselves and survive, but we'll implement it later
+            if (!weAreFurious) {
+                if (ENEMY_BODY.contains(e) || ENEMY_HEAD.contains(e)) return true;
+            }
+
+            // check head-to-head collision danger
+            HashSet<Elements> neighbors = new HashSet<>(getNear(x, y));
+            neighbors.remove(ENEMY_HEAD_FLY);
+            neighbors.remove(HEAD_FLY);
+
+            if (neighbors.stream().anyMatch(MY_HEAD::contains)) {
+                for (Point p : getNeighborPoints(x, y)) {
+                    Elements enemyHeadPoint = getAt(p);
+                    if (ENEMY_HEAD.contains(enemyHeadPoint)) {
+                        Snake enemySnake = Snake.identify(p.getX(), p.getY(), this);
+
+                        if (!weAreFurious && enemySnake.isFurious) return true;
+                        if (weAreFurious == enemySnake.isFurious && getMySnakeLength() - enemySnake.length < MIN_SNAKE_LENGTH) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // no immediate danger
+        return false;
     }
 
-    public boolean isProblematic(int x, int y) {
-        return !isWithinBoard(x, y) || isBarrierAt(x, y) || isStoneAt(x, y) && getMySnakeLength() < 5 ||
-                // heuristic for dangerous dynamic barriers
-                (isDynamicBarrier(x, y) && getManhattanDistance(getMe(), new PointImpl(x, y)) < DYNAMIC_DANGER_DISTANCE)
-                || isNextStepCollisionPossible(x, y);
+    public boolean isNotPassableOrRisky(int x, int y) {
+        return !isWithinBoard(x, y) ||
+                isBarrierAt(x, y) ||
+                // TODO: should check for how long we stay furious here
+                isStoneAt(x, y) && getMySnakeLength() < 5 && !(areWeFurious() && distanceFromMe(x, y) < FURY_LENGTH) ||
+                isNextStepCollisionPossible(x, y);
     }
 
     public boolean isPowerUp(Point p) {
@@ -123,8 +184,12 @@ public class Board extends AbstractBoard<Elements> {
         return size - 1 - y;
     }
 
+    protected void refreshMyHead() {
+        myHead = get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY).get(0);
+    }
+
     public Point getMe() {
-        return get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY).get(0);
+        return myHead.copy();
     }
 
     public boolean isNewRound() {

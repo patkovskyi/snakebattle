@@ -27,6 +27,7 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.printer.CharElements;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -129,7 +130,7 @@ public enum Elements implements CharElements {
 
     Elements(char ch) {
         this.ch = ch;
-        this.compatibleDirections = null;
+        this.compatibleDirections = new ArrayList<>();
     }
 
     Elements(char ch, Direction... compatibleDirections) {

@@ -29,7 +29,11 @@ import com.codenjoy.dojo.services.Direction;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.DisableOnDebug;
+import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
@@ -49,7 +53,7 @@ public class SolverTest {
     private Solver ai;
 
     @Rule
-    public Timeout globalTimeout = Timeout.millis(700);
+    public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
 
     @Before
     public void setup() {
@@ -276,7 +280,6 @@ public class SolverTest {
     }
 
     @Test
-    // this needs to be changed actually, going up is bad
     public void exception4() {
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
                 "☼☼               ●           ☼" +
@@ -307,7 +310,7 @@ public class SolverTest {
                 "☼#                           ☼" +
                 "☼☼                           ☼" +
                 "☼☼                           ☼" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.RIGHT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
     }
 
     @Test
@@ -345,15 +348,88 @@ public class SolverTest {
     }
 
     @Test
-    public void avoidCollision() {
+    public void avoidCollisionEqualLengthNonFury() {
         assertAI("☼☼☼☼☼☼☼☼" +
                 "☼☼     ☼" +
                 "☼#╘►  ○☼" +
-                "☼☼ ┌>  ☼" +
+                "☼☼ ×>  ☼" +
                 "☼☼     ☼" +
                 "☼☼     ☼" +
                 "☼☼     ☼" +
                 "☼☼☼☼☼☼☼☼", Direction.UP);
+    }
+
+    @Test
+    public void avoidCollisionEqualLengthFury() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼     ☼" +
+                "☼#╘♥  ○☼" +
+                "☼☼ ×♣  ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.UP);
+    }
+
+    @Test
+    public void avoidCollisionSmallerLengthNonFury() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼×─>  ☼" +
+                "☼#╘►  ○☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.DOWN);
+    }
+
+    @Test
+    public void avoidCollisionBiggerLengthEnemyFury() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼  ×♣ ☼" +
+                "☼#╘═► ○☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.DOWN);
+    }
+
+    @Test
+    public void avoidCollisionBiggerBy1LengthNonFury() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼  ×> ☼" +
+                "☼#╘═► ○☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.DOWN);
+    }
+
+    @Test
+    public void takeCollisionBiggerBy2LengthNonFury() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼   ×>☼" +
+                "☼#╘══►○☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.RIGHT);
+    }
+
+    @Test
+    public void takeCollisionSmallerButFury() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼     ☼" +
+                "☼# ╘♥ ○☼" +
+                "☼☼ ×─> ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.RIGHT);
+
     }
 
     private Board board(String board) {
