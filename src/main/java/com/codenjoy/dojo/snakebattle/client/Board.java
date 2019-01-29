@@ -30,8 +30,6 @@ import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 
@@ -44,20 +42,8 @@ public class Board extends AbstractBoard<Elements> {
 
     protected final int DYNAMIC_DANGER_DISTANCE = 3;
 
-    protected Elements[] MY_SNAKE = {
-            HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_DEAD, HEAD_EVIL, HEAD_FLY, HEAD_SLEEP,
-            TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT, TAIL_INACTIVE,
-            BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP
-    };
-
-    protected HashSet<Elements> MY_HEAD = Stream.of(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_DEAD, HEAD_EVIL, HEAD_FLY, HEAD_SLEEP)
-            .collect(Collectors.toCollection(HashSet::new));
-
-    protected HashSet<Elements> ENEMY_HEAD = Stream.of(ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP, ENEMY_HEAD_EVIL, ENEMY_HEAD_FLY)
-            .collect(Collectors.toCollection(HashSet::new));
-
     public int getMySnakeLength() {
-        return get(MY_SNAKE).size();
+        return get(MY_SNAKE.toArray(new Elements[0])).size();
     }
 
     @Override
@@ -90,6 +76,10 @@ public class Board extends AbstractBoard<Elements> {
                 ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP, ENEMY_HEAD_EVIL,
                 ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT, ENEMY_TAIL_INACTIVE,
                 ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
+    }
+
+    public boolean isWithinBoard(Point p) {
+        return isWithinBoard(p.getX(), p.getY());
     }
 
     public boolean isWithinBoard(int x, int y) {
