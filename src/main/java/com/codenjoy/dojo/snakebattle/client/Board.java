@@ -41,6 +41,16 @@ public class Board extends AbstractBoard<Elements> {
 
     protected final int DYNAMIC_DANGER_DISTANCE = 4;
 
+    private Elements[] mySnake = {
+            HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_DEAD, HEAD_EVIL, HEAD_FLY, HEAD_SLEEP,
+            TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT, TAIL_INACTIVE,
+            BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP
+    };
+
+    public int getMySnakeLength() {
+        return get(mySnake).size();
+    }
+
     @Override
     public Elements valueOf(char ch) {
         return Elements.valueOf(ch);
@@ -82,7 +92,7 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     public boolean isProblematic(int x, int y) {
-        return !isWithinBoard(x, y) || isBarrierAt(x, y) || isStoneAt(x, y) ||
+        return !isWithinBoard(x, y) || isBarrierAt(x, y) || isStoneAt(x, y) && getMySnakeLength() < 5 ||
                 // heuristic for dangerous dynamic barriers
                 (isDynamicBarrier(x, y) && getManhattanDistance(getMe(), new PointImpl(x, y)) < DYNAMIC_DANGER_DISTANCE);
     }

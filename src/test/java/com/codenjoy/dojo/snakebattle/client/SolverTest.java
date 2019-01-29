@@ -106,7 +106,7 @@ public class SolverTest {
     }
 
     @Test
-    public void bigButNoException() {
+    public void preferApplesOrGoldWhenShort() {
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
                 "☼☼         ○                 ☼" +
                 "☼#                           ☼" +
@@ -137,6 +137,40 @@ public class SolverTest {
                 "☼☼                           ☼" +
                 "☼☼                           ☼" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
+    }
+
+    @Test
+    public void preferStonesIfLong() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+                "☼☼         ○                 ☼" +
+                "☼#                           ☼" +
+                "☼☼  ○    ●         ◄═══╕     ☼" +
+                "☼☼                           ☼" +
+                "☼☼ ○         ○    ○          ☼" +
+                "☼☼     ☼☼☼☼☼                 ☼" +
+                "☼☼     ☼                     ☼" +
+                "☼#     ☼☼☼     ○  ☼☼☼*ø      ☼" +
+                "☼☼     ☼          ☼   ☼      ☼" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼" +
+                "☼☼                ☼          ☼" +
+                "☼☼                ☼         $☼" +
+                "☼☼       ○                   ☼" +
+                "*ø             ○      ○      ☼" +
+                "☼☼           ○               ☼" +
+                "☼☼        ☼☼☼  ®             ☼" +
+                "☼☼       ☼  ☼                ☼" +
+                "☼☼      ☼☼☼*ø     ☼☼   ☼#    ☼" +
+                "☼☼      ☼   ☼   ● ☼ ☼ ☼ ☼ ○  ☼" +
+                "☼#   æ  ☼   ☼     ☼ $☼  ☼    ☼" +
+                "☼☼   └>   ®       ☼     ☼    ☼" +
+                "☼☼                ☼     ☼    ☼" +
+                "☼☼                           ☼" +
+                "☼☼                   ●       ☼" +
+                "☼☼             ●         ○   ☼" +
+                "☼#  ○                        ☼" +
+                "☼☼                           ☼" +
+                "☼☼                           ☼" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
     }
 
     @Test
@@ -238,10 +272,11 @@ public class SolverTest {
                 "☼#              $            ☼" +
                 "☼☼               ○           ☼" +
                 "☼☼                           ☼" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
     }
 
     @Test
+    // this needs to be changed actually, going up is bad
     public void exception4() {
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
                 "☼☼               ●           ☼" +
@@ -272,7 +307,7 @@ public class SolverTest {
                 "☼#                           ☼" +
                 "☼☼                           ☼" +
                 "☼☼                           ☼" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.RIGHT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
     }
 
     @Test

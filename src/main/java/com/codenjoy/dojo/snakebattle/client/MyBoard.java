@@ -6,6 +6,7 @@ import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -46,11 +47,15 @@ public class MyBoard extends Board {
     }
 
     public Point getClosestPowerUp(int[][] nondir) {
-        List<Point> points = this.get(Elements.GOLD, Elements.APPLE);
+        List<Point> points = getMySnakeLength() >= 5 ? this.get(Elements.STONE) : new ArrayList<>();
+
         if (points.isEmpty()) {
-            points = this.get(Elements.FLYING_PILL, Elements.FURY_PILL);
+            points = this.get(Elements.GOLD, Elements.APPLE);
             if (points.isEmpty()) {
-                points = this.get(Elements.NONE);
+                points = this.get(Elements.FLYING_PILL, Elements.FURY_PILL);
+                if (points.isEmpty()) {
+                    points = this.get(Elements.NONE);
+                }
             }
         }
 
