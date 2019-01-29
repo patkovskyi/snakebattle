@@ -307,7 +307,7 @@ public class SolverTest {
                 "☼#                           ☼" +
                 "☼☼                           ☼" +
                 "☼☼                           ☼" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.RIGHT);
     }
 
     @Test
@@ -342,6 +342,18 @@ public class SolverTest {
                 "☼☼   ©                ◄╗ ║   ☼" +
                 "☼☼                     ╚═╝   ☼" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
+    }
+
+    @Test
+    public void avoidCollision() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼     ☼" +
+                "☼#╘►  ○☼" +
+                "☼☼ ┌>  ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.UP);
     }
 
     private Board board(String board) {
