@@ -39,7 +39,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class Board extends AbstractBoard<Elements> {
 
-    protected final int DYNAMIC_DANGER_DISTANCE = 3;
+    protected final int DYNAMIC_DANGER_DISTANCE = 4;
 
     @Override
     public Elements valueOf(char ch) {
@@ -102,6 +102,10 @@ public class Board extends AbstractBoard<Elements> {
 
     public Point getMe() {
         return get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY).get(0);
+    }
+
+    public boolean isNewRound() {
+        return !get(Elements.HEAD_SLEEP).isEmpty();
     }
 
     public boolean isGameOver() {

@@ -17,6 +17,11 @@ public class MyBoard extends Board {
             System.out.println("GAME OVER");
             return "";
         } else {
+            if (!get(Elements.HEAD_SLEEP).isEmpty()) {
+                // reset on new round
+                headDirection = Direction.RIGHT;
+            }
+
             int[][][] dir = getDirectionalDistances();
             int[][] nondir = getNonDirectionalDistances(dir);
             Point closestPowerUp = getClosestPowerUp(nondir);
