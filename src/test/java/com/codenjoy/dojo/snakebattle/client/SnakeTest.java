@@ -37,7 +37,7 @@ public class SnakeTest {
   public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
 
   private Board board(String board) {
-    return (Board) new MyBoard().forString(board);
+    return (Board) new Board().forString(board);
   }
 
   @Test

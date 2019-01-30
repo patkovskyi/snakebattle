@@ -599,7 +599,7 @@ public class SolverTest {
   }
 
   private Board board(String board) {
-    return (Board) new MyBoard().forString(board);
+    return (Board) new Board().forString(board);
   }
 
   private void assertAI(String board, Direction expected) {
