@@ -24,9 +24,12 @@ package com.codenjoy.dojo.snakebattle.client;
 
 
 import com.codenjoy.dojo.client.Solver;
+import com.codenjoy.dojo.client.UrlParser;
 import com.codenjoy.dojo.client.WebSocketRunner;
 import com.codenjoy.dojo.services.Dice;
 import com.codenjoy.dojo.services.RandomDice;
+
+import java.net.URI;
 
 /**
  * User: your name
@@ -49,10 +52,13 @@ public class YourSolver implements Solver<MyBoard> {
     }
 
     public static void main(String[] args) {
-        WebSocketRunner.runClient("https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
-        // WebSocketRunner.runClient("https://192.168.1.1:8080/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
-                new YourSolver(new RandomDice()),
-                new MyBoard());
+//        WebSocketRunner.runClient("https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
+//        // WebSocketRunner.runClient("https://192.168.1.1:8080/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
+//                new YourSolver(new RandomDice()),
+//                new MyBoard());
+
+        WebSocketRunner.run(URI.create("wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
+                new YourSolver(new RandomDice()), new MyBoard(), 1000);
     }
 
 }
