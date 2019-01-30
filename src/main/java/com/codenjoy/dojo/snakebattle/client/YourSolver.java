@@ -38,13 +38,7 @@ import java.net.URI;
  * фреймворк для тебя.
  */
 public class YourSolver implements Solver<MyBoard> {
-
-    private Dice dice;
     private Board board;
-
-    YourSolver(Dice dice) {
-        this.dice = dice;
-    }
 
     @Override
     public String get(MyBoard board) {
@@ -58,7 +52,7 @@ public class YourSolver implements Solver<MyBoard> {
 //                new MyBoard());
 
         WebSocketRunner.run(URI.create("wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
-                new YourSolver(new RandomDice()), new MyBoard(), 1000);
+                new YourSolver(), new MyBoard(), 1000);
     }
 
 }

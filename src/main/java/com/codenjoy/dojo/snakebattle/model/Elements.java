@@ -128,6 +128,9 @@ public enum Elements implements CharElements {
     public static Set<Elements> PASSABLE = Stream.of(NONE, APPLE, GOLD, STONE, FLYING_PILL, FURY_PILL)
             .collect(Collectors.toUnmodifiableSet());
 
+    public static Set<Elements> POWER_UPS = Stream.of(APPLE, GOLD, FLYING_PILL, FURY_PILL)
+            .collect(Collectors.toUnmodifiableSet());
+
     final char ch;
     final List<Direction> compatibleDirections;
 

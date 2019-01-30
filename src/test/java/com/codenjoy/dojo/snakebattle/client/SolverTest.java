@@ -48,8 +48,6 @@ import static org.mockito.Mockito.when;
  */
 
 public class SolverTest {
-
-    private Dice dice;
     private Solver ai;
 
     @Rule
@@ -57,8 +55,7 @@ public class SolverTest {
 
     @Before
     public void setup() {
-        dice = mock(Dice.class);
-        ai = new YourSolver(dice);
+        ai = new YourSolver();
     }
 
     @Test
@@ -429,7 +426,6 @@ public class SolverTest {
                 "☼☼     ☼" +
                 "☼☼     ☼" +
                 "☼☼☼☼☼☼☼☼", Direction.RIGHT);
-
     }
 
     @Test
@@ -536,6 +532,30 @@ public class SolverTest {
                 "☼☼☼☼☼☼☼☼", Direction.DOWN);
     }
 
+    @Test
+    public void lucrativityTest1() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼     ☼" +
+                "☼#╘►   ☼" +
+                "☼☼     ☼" +
+                "☼☼ ® ○ ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.DOWN);
+    }
+
+    @Test
+    public void lucrativityTest2() {
+        assertAI("☼☼☼☼☼☼☼☼" +
+                "☼☼     ☼" +
+                "☼#╘► ® ☼" +
+                "☼☼     ☼" +
+                "☼☼   ○ ☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼☼☼☼☼☼☼", Direction.RIGHT);
+    }
+
     private Board board(String board) {
         return (Board) new MyBoard().forString(board);
     }
@@ -543,9 +563,5 @@ public class SolverTest {
     private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         assertEquals(expected.toString(), actual);
-    }
-
-    private void dice(Direction direction) {
-        when(dice.next(anyInt())).thenReturn(direction.value());
     }
 }

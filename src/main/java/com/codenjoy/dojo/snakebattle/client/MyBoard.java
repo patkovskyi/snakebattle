@@ -5,13 +5,13 @@ import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MyBoard extends Board {
+    int[][] lucrativity;
+    Direction headDirection = Direction.RIGHT;
+
     protected void refreshDirection() {
         if (!get(Elements.HEAD_SLEEP, Elements.HEAD_RIGHT).isEmpty()) {
             // in case of a new round also reset to right
@@ -81,10 +81,9 @@ public class MyBoard extends Board {
                 return "ACT, " + headDirection.toString();
             }
 
-            int[][][] dir = getDirectionalDistances();
-            int[][] nondir = getNonDirectionalDistances(dir);
-            Point closestPowerUp = getClosestPowerUp(nondir);
-            Direction newDirection = getFirstStepNonDirectional(closestPowerUp, nondir);
+            int[][] distances = getDistances();
+            Point closestPowerUp = getBestPowerUp(distances);
+            Direction newDirection = getFirstStepNonDirectional(closestPowerUp, distances);
             if (newDirection.value() < 4) {
                 headDirection = newDirection;
                 refreshWhatsEaten(newDirection);
@@ -119,7 +118,7 @@ public class MyBoard extends Board {
         }
     }
 
-    public Point getClosestPowerUp(int[][] nondir) {
+    public Point getBestPowerUp(int[][] nondir) {
         List<Point> points = getMySnakeLength() - STONE_LENGTH_COST >= MIN_SNAKE_LENGTH ? this.get(Elements.STONE) : new ArrayList<>();
         if (points.isEmpty() && areWeFurious()) {
             points = this.get(Elements.STONE).stream().filter(p -> distanceFromMe(p) < FURY_LENGTH).collect(Collectors.toList());
@@ -141,28 +140,6 @@ public class MyBoard extends Board {
         return points.stream().min(Comparator.comparingInt(p -> nondir[p.getX()][p.getY()])).get();
     }
 
-    public Direction getFirstStepTo(Point p, int[][][] dir) {
-        System.out.printf("getFirstStepTo starts search for %d %d\n", p.getX(), p.getY());
-
-        Direction lastDirection = Direction.LEFT;
-        Point currentHead = getMe();
-        Point currentP = p.copy();
-        while (!currentP.itsMe(currentHead)) {
-            for (Direction d : Direction.onlyDirections()) {
-                if (d.inverted() != lastDirection || currentP.itsMe(p)) {
-                    if (dir[currentP.getX()][currentP.getY()][d.value()] < dir[currentP.getX()][currentP.getY()][lastDirection.value()]) {
-                        lastDirection = d;
-                    }
-                }
-            }
-
-            currentP.change(lastDirection.inverted());
-        }
-
-        System.out.println("getFirstStepTo finished\n");
-        return lastDirection;
-    }
-
     public Direction getFirstStepNonDirectional(Point p, int[][] nondir) {
         System.out.printf("getFirstStepNonDirectional search for %d %d\n", p.getX(), p.getY());
         if (nondir[p.getX()][p.getY()] == Integer.MAX_VALUE) {
@@ -170,11 +147,12 @@ public class MyBoard extends Board {
             return Direction.ACT;
         }
 
-        Point newP = p;
+        Point bestP = p;
         do {
-            p = newP;
+            p = bestP;
+            bestP = null;
             for (Direction d : Direction.onlyDirections()) {
-                newP = p.copy();
+                Point newP = p.copy();
                 newP.change(d);
 
                 if (nondir[newP.getX()][newP.getY()] == nondir[p.getX()][p.getY()] - 1) {
@@ -183,87 +161,87 @@ public class MyBoard extends Board {
                         return d.inverted();
                     }
 
-                    break;
+                    if (bestP == null || lucrativity[newP.getX()][newP.getY()] > lucrativity[bestP.getX()][bestP.getY()]) {
+                        bestP = newP;
+                    }
                 }
             }
-        } while (nondir[newP.getX()][newP.getY()] == nondir[p.getX()][p.getY()] - 1);
+        } while (nondir[bestP.getX()][bestP.getY()] == nondir[p.getX()][p.getY()] - 1);
 
         throw new IllegalStateException("getFirstStepNonDirectional should never reach this line");
     }
 
-    public int[][] getNonDirectionalDistances(int[][][] dir) {
-        int[][] nondir = new int[size][size];
-        for (int y = size; y --> 0; ) {
-            for (int x = 0; x < size; x++) {
-                nondir[x][y] = Integer.MAX_VALUE;
-
-                for (int k = 0; k < 4; k++) {
-                    nondir[x][y] = Math.min(nondir[x][y], dir[x][y][k]);
-                }
-
-                if (nondir[x][y] < Integer.MAX_VALUE) {
-                    System.out.printf("%d", nondir[x][y] / 10);
-                } else {
-                    System.out.print("☼");
-                }
-            }
-
-            System.out.println();
-        }
-
-        return nondir;
-    }
-
-    public int[][][] getDirectionalDistances() {
-        System.out.println("getDirectionalDistances started");
-
-        int[][][] dir = new int[size][size][size];
+    public int[][] getDistances() {
+        System.out.println("getDistances started");
+        int[][] dist = new int[size][size];
+        lucrativity  = new int[size][size];
 
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                for (int d = 0; d < 4; d++) {
-                    dir[x][y][d] = Integer.MAX_VALUE;
-                }
+                dist[x][y] = Integer.MAX_VALUE;
             }
         }
 
         Point head = getMe();
-
         System.out.printf("Me: %d %d\n", head.getX(), head.getY());
 
-        ArrayDeque<HeadPosition> q = new ArrayDeque<>();
-        q.add(new HeadPosition(head.getX(), head.getY(), headDirection.value()));
-        ArrayDeque<Integer> d = new ArrayDeque<>();
-        d.add(0);
+        int step = 0;
+        PriorityQueue<Point> openSet = new PriorityQueue<>((p1, p2) -> Integer.compare(lucrativity[p2.getX()][p2.getY()], lucrativity[p1.getX()][p1.getY()]));
+        openSet.add(head);
+        boolean[][] visited = new boolean[size][size];
 
-        boolean[][][] queued = new boolean[size][size][4];
-        queued[head.getX()][head.getY()][headDirection.value()] = true;
+        while (!openSet.isEmpty()) {
+            PriorityQueue<Point> closedSet = openSet;
+            openSet = new PriorityQueue<>((p1, p2) -> Integer.compare(lucrativity[p2.getX()][p2.getY()], lucrativity[p1.getX()][p1.getY()]));
 
-        while (!q.isEmpty()) {
-            HeadPosition p = q.remove();
-            int dist = d.remove();
-            if (dist < dir[p.x][p.y][p.d]) {
-                dir[p.x][p.y][p.d] = dist;
+            while (!closedSet.isEmpty()) {
+                Point p = closedSet.remove();
+                if (!visited[p.getX()][p.getY()]) {
+                    visited[p.getX()][p.getY()] = true;
+                    dist[p.getX()][p.getY()] = step;
 
-                for (Direction newDir : Direction.onlyDirections()) {
-                    // snake cannot turn back
-                    if (newDir.inverted().value() != p.d) {
-                        Point newPoint = new PointImpl(p.x, p.y);
-                        newPoint.change(newDir);
-                        if (!isNotPassableOrRisky(newPoint)) {
-                            HeadPosition np = new HeadPosition(newPoint.getX(), newPoint.getY(), newDir.value());
-                            if (queued[np.getX()][np.getY()][np.getDirection()] == false) {
-                                queued[np.getX()][np.getY()][np.getDirection()] = true;
-                                q.add(np);
-                                d.add(dist + 1);
+                    for (Direction ndir : Direction.onlyDirections()) {
+                        if (step > 0 || ndir != headDirection.inverted()) {
+                            Point np = p.copy();
+                            np.change(ndir);
+
+                            if (!isNotPassableOrRisky(np) && step + 1 < dist[np.getX()][np.getY()]) {
+                                lucrativity[np.getX()][np.getY()] = Math.max(lucrativity[p.getX()][p.getY()] + getPointLucrativity(np), lucrativity[np.getX()][np.getY()]);
+                                openSet.add(np);
                             }
                         }
                     }
                 }
             }
+
+            ++step;
         }
 
-        System.out.println("getDirectionalDistances finished");
-        return dir;
+        System.out.println("Distances: ");
+        for (int y = size; y --> 0; ) {
+            for (int x = 0; x < size; x++) {
+                if (dist[x][y] < Integer.MAX_VALUE) {
+                    System.out.printf("%d", dist[x][y]);
+                } else {
+                    System.out.printf("*");
+                }
+            }
+            System.out.println();
+        }
+
+        System.out.println("Lucrativity: ");
+        for (int y = size; y --> 0; ) {
+            for (int x = 0; x < size; x++) {
+                System.out.printf("%d", lucrativity[x][y]);
+            }
+            System.out.println();
+        }
+
+        System.out.println("getDistances finished");
+        return dist;
+    }
+
+    protected int getPointLucrativity(Point p) {
+        return Elements.POWER_UPS.contains(getAt(p)) ? 1 : 0;
     }
 }
