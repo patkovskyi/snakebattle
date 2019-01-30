@@ -34,11 +34,6 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 
-/**
- * @author K.ilya Это пример для реализации unit-тестов твоего бота Необходимо раскомментировать
- *     существующие тесты, добиться их выполнения ботом. Затем создавай свои тесты, улучшай бота и
- *     проверяй что не испортил предыдущие достижения.
- */
 public class SolverTest {
   @Rule public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
   private Solver<Board> ai;
