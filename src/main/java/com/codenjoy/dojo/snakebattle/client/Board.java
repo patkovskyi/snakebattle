@@ -318,7 +318,7 @@ public class Board extends AbstractBoard<Elements> {
     for (int y = size; y-- > 0; ) {
       for (int x = 0; x < size; x++) {
         if (dist[x][y] < Integer.MAX_VALUE) {
-          System.out.printf("%d", dist[x][y]);
+          System.out.printf("%d", dist[x][y] / 10);
         } else {
           System.out.printf("*");
         }

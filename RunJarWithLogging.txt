@@ -1,0 +1,1 @@
+java -Xmx1024m -jar snakebattle.jar | tee >(rotatelogs -l Snake_%Y-%m-%d-%H.log 3600)
