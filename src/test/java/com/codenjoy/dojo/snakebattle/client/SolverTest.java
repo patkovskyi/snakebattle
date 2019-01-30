@@ -41,7 +41,7 @@ import org.junit.rules.Timeout;
  */
 public class SolverTest {
   @Rule public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
-  private Solver ai;
+  private Solver<Board> ai;
 
   @Before
   public void setup() {

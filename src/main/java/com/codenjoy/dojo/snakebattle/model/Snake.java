@@ -1,4 +1,4 @@
-package com.codenjoy.dojo.snakebattle.client;
+package com.codenjoy.dojo.snakebattle.model;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD;
@@ -14,23 +14,17 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.MY_TAIL;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
-import com.codenjoy.dojo.snakebattle.model.Elements;
-import java.util.Objects;
+import com.codenjoy.dojo.snakebattle.client.Board;
 import java.util.Set;
 import java.util.Stack;
+import lombok.Data;
 
+@Data
 public class Snake {
-  protected boolean isMe;
-  protected int length;
-  protected Direction direction;
-  protected boolean isFurious;
-
-  public Snake(boolean isMe, int length, Direction direction, boolean isFurious) {
-    this.isMe = isMe;
-    this.length = length;
-    this.direction = direction;
-    this.isFurious = isFurious;
-  }
+  private final boolean isMe;
+  private final int length;
+  private final Direction direction;
+  private final boolean isFurious;
 
   // any part of the body should work
   public static Snake identify(int x, int y, Board board) {
@@ -116,35 +110,5 @@ public class Snake {
     }
 
     return new Snake(isMe, length, direction, isFurious);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Snake snake = (Snake) o;
-    return isMe == snake.isMe
-        && length == snake.length
-        && isFurious == snake.isFurious
-        && direction == snake.direction;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(isMe, length, direction, isFurious);
-  }
-
-  @Override
-  public String toString() {
-    return "Snake{"
-        + "isMe="
-        + isMe
-        + ", length="
-        + length
-        + ", direction="
-        + direction
-        + ", isFurious="
-        + isFurious
-        + '}';
   }
 }

@@ -71,6 +71,7 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
+import com.codenjoy.dojo.snakebattle.model.Snake;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -474,9 +475,9 @@ public class Board extends AbstractBoard<Elements> {
           if (ENEMY_HEAD.contains(enemyHeadPoint)) {
             Snake enemySnake = Snake.identify(p.getX(), p.getY(), this);
 
-            if (!weAreFurious && enemySnake.isFurious) return true;
-            if (weAreFurious == enemySnake.isFurious
-                && getMySnakeLength() - enemySnake.length < MIN_SNAKE_LENGTH) {
+            if (!weAreFurious && enemySnake.isFurious()) return true;
+            if (weAreFurious == enemySnake.isFurious()
+                && getMySnakeLength() - enemySnake.getLength() < MIN_SNAKE_LENGTH) {
               return true;
             }
           }
