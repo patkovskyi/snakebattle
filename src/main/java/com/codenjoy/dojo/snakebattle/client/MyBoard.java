@@ -29,6 +29,45 @@ public class MyBoard extends Board {
         }
     }
 
+    protected void markDeadEnds() {
+        // TODO: implement dynamic deadend prediction (probably should predict where enemy snake is moving)
+        boolean[][] nonPassable = new boolean[size][size];
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                nonPassable[x][y] = isBarrierAt(x, y) || isStoneAt(x, y) && !areWeFurious() && getMySnakeLength() - STONE_LENGTH_COST < MIN_SNAKE_LENGTH;
+            }
+        }
+
+        boolean updated;
+        Direction[] directions = Direction.onlyDirections().toArray(new Direction[0]);
+
+        do {
+            updated = false;
+            for (int x = 0; x < size; x++) {
+                for (int y = 0; y < size; y++) {
+                    if (!nonPassable[x][y]) {
+                        int passableNeighbors = 0;
+                        for (int d = 0; d < 4; d++) {
+                            int nx = directions[d].changeX(x);
+                            int ny = directions[d].changeY(y);
+                            if (isWithinBoard(nx, ny) && !nonPassable[nx][ny])
+                                ++passableNeighbors;
+                        }
+
+                        if (passableNeighbors <= 1) {
+                            nonPassable[x][y] = true;
+                            updated = true;
+
+                            if (Elements.PASSABLE.contains(getAt(x, y))) {
+                                set(x, y, Elements.WALL.ch());
+                            }
+                        }
+                    }
+                }
+            }
+        } while (updated);
+    }
+
     public String getNextStep() {
         if (isGameOver()) {
             System.out.println("GAME OVER");
@@ -36,6 +75,7 @@ public class MyBoard extends Board {
         } else {
             refreshMyHead();
             refreshDirection();
+            markDeadEnds();
             int[][][] dir = getDirectionalDistances();
             int[][] nondir = getNonDirectionalDistances(dir);
             Point closestPowerUp = getClosestPowerUp(nondir);
@@ -105,10 +145,13 @@ public class MyBoard extends Board {
             for (Direction d : Direction.onlyDirections()) {
                 newP = p.copy();
                 newP.change(d);
-                if (nondir[newP.getX()][newP.getY()] == 0) {
-                    System.out.println("getFirstStepNonDirectional: SUCCESS");
-                    return d.inverted();
-                } else if (nondir[newP.getX()][newP.getY()] == nondir[p.getX()][p.getY()] - 1) {
+
+                if (nondir[newP.getX()][newP.getY()] == nondir[p.getX()][p.getY()] - 1) {
+                    if (nondir[newP.getX()][newP.getY()] == 0) {
+                        System.out.println("getFirstStepNonDirectional: SUCCESS");
+                        return d.inverted();
+                    }
+
                     break;
                 }
             }
@@ -128,7 +171,7 @@ public class MyBoard extends Board {
                 }
 
                 if (nondir[x][y] < Integer.MAX_VALUE) {
-                    System.out.printf("%d", nondir[x][y] / 10);
+                    System.out.printf("%d", nondir[x][y]);
                 } else {
                     System.out.print("☼");
                 }

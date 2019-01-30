@@ -125,6 +125,9 @@ public enum Elements implements CharElements {
     public static Set<Elements> ENEMY_SNAKE = Stream.concat(ENEMY_HEAD.stream(), Stream.concat(ENEMY_BODY.stream(), ENEMY_TAIL.stream()))
             .collect(Collectors.toUnmodifiableSet());
 
+    public static Set<Elements> PASSABLE = Stream.of(NONE, APPLE, GOLD, STONE, FLYING_PILL, FURY_PILL)
+            .collect(Collectors.toUnmodifiableSet());
+
     final char ch;
     final List<Direction> compatibleDirections;
 
