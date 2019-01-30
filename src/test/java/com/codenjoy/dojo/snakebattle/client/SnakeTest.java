@@ -114,6 +114,19 @@ public class SnakeTest {
                 "☼☼☼☼☼☼☼☼", 6, 3, new Snake(false, 5, Direction.RIGHT, false));
     }
 
+    @Test
+    // TODO: remove this test, it's for a hack to avoid snakes without tails
+    public void enemySnakeJustHead() {
+        assertSnake("☼☼☼☼☼☼☼☼" +
+                "☼☼     ☼" +
+                "☼☼     ☼" +
+                "☼☼    ●☼" +
+                "☼☼    >☼" +
+                "☼☼    ▲☼" +
+                "☼☼╘═══╝☼" +
+                "☼☼☼☼☼☼☼☼", 6, 3, new Snake(false, 1, Direction.RIGHT, false));
+    }
+
     private void assertSnake(String board, int x, int y, Snake expected) {
         Snake actual = Snake.identify(x, y, board(board));
         assertEquals(expected, actual);

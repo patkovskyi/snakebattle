@@ -61,6 +61,11 @@ public class Snake {
                 isFurious = true;
             }
 
+            // TODO: fix this hack for identifying direction
+            if (headElements.contains(e)) {
+                direction = e.compatible().get(0).inverted();
+            }
+
             int compatibleCounter = 0;
             for (Direction d : Direction.onlyDirections()) {
                 Point n = p.copy();

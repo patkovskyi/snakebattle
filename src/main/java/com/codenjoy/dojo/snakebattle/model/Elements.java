@@ -146,6 +146,10 @@ public enum Elements implements CharElements {
         return ch;
     }
 
+    public List<Direction> compatible() {
+        return compatibleDirections;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(ch);
