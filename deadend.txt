@@ -1,3 +1,0 @@
-Snake reaches a dead end sometimes and then path-retracing method throws an exception.
-1) Should not go into a dead end
-2) Should not throw

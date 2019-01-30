@@ -22,113 +22,139 @@ package com.codenjoy.dojo.snakebattle.client;
  * #L%
  */
 
+import static org.junit.Assert.assertEquals;
 
 import com.codenjoy.dojo.services.Direction;
+import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-
 public class SnakeTest {
-    @Rule()
-    public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
+  @Rule()
+  public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
 
-    private Board board(String board) {
-        return (Board) new MyBoard().forString(board);
-    }
+  private Board board(String board) {
+    return (Board) new MyBoard().forString(board);
+  }
 
-    @Test
-    public void mySnakeTail() {
-        assertSnake("☼☼☼☼☼☼☼☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼    ●☼" +
-                "☼☼   ˄ ☼" +
-                "☼☼ ×─┘▲☼" +
-                "☼☼╘═══╝☼" +
-                "☼☼☼☼☼☼☼☼", 2, 1, new Snake(true, 6, Direction.UP, false));
-    }
+  @Test
+  public void mySnakeTail() {
+    assertSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ˄ ☼"
+            + "☼☼ ×─┘▲☼"
+            + "☼☼╘═══╝☼"
+            + "☼☼☼☼☼☼☼☼",
+        2,
+        1,
+        new Snake(true, 6, Direction.UP, false));
+  }
 
-    @Test
-    public void mySnakeBody() {
-        assertSnake("☼☼☼☼☼☼☼☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼    ●☼" +
-                "☼☼   ˄ ☼" +
-                "☼☼ ×─┘▲☼" +
-                "☼☼╘═══╝☼" +
-                "☼☼☼☼☼☼☼☼", 5, 1, new Snake(true, 6, Direction.UP, false));
-    }
+  @Test
+  public void mySnakeBody() {
+    assertSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ˄ ☼"
+            + "☼☼ ×─┘▲☼"
+            + "☼☼╘═══╝☼"
+            + "☼☼☼☼☼☼☼☼",
+        5,
+        1,
+        new Snake(true, 6, Direction.UP, false));
+  }
 
-    @Test
-    public void mySnakeHead() {
-        assertSnake("☼☼☼☼☼☼☼☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼    ●☼" +
-                "☼☼   ˄ ☼" +
-                "☼☼ ×─┘▲☼" +
-                "☼☼╘═══╝☼" +
-                "☼☼☼☼☼☼☼☼", 6, 2, new Snake(true, 6, Direction.UP, false));
-    }
+  @Test
+  public void mySnakeHead() {
+    assertSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ˄ ☼"
+            + "☼☼ ×─┘▲☼"
+            + "☼☼╘═══╝☼"
+            + "☼☼☼☼☼☼☼☼",
+        6,
+        2,
+        new Snake(true, 6, Direction.UP, false));
+  }
 
-    @Test
-    public void enemySnakeTail() {
-        assertSnake("☼☼☼☼☼☼☼☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼    ●☼" +
-                "☼☼   ┌>☼" +
-                "☼☼ ×─┘▲☼" +
-                "☼☼╘═══╝☼" +
-                "☼☼☼☼☼☼☼☼", 3, 2, new Snake(false, 5, Direction.RIGHT, false));
-    }
+  @Test
+  public void enemySnakeTail() {
+    assertSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ┌>☼"
+            + "☼☼ ×─┘▲☼"
+            + "☼☼╘═══╝☼"
+            + "☼☼☼☼☼☼☼☼",
+        3,
+        2,
+        new Snake(false, 5, Direction.RIGHT, false));
+  }
 
-    @Test
-    public void enemySnakeBody() {
-        assertSnake("☼☼☼☼☼☼☼☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼    ●☼" +
-                "☼☼   ┌>☼" +
-                "☼☼ ×─┘▲☼" +
-                "☼☼╘═══╝☼" +
-                "☼☼☼☼☼☼☼☼", 4, 2, new Snake(false, 5, Direction.RIGHT, false));
-    }
+  @Test
+  public void enemySnakeBody() {
+    assertSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ┌>☼"
+            + "☼☼ ×─┘▲☼"
+            + "☼☼╘═══╝☼"
+            + "☼☼☼☼☼☼☼☼",
+        4,
+        2,
+        new Snake(false, 5, Direction.RIGHT, false));
+  }
 
-    @Test
-    public void enemySnakeHead() {
-        assertSnake("☼☼☼☼☼☼☼☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼    ●☼" +
-                "☼☼   ┌>☼" +
-                "☼☼ ×─┘▲☼" +
-                "☼☼╘═══╝☼" +
-                "☼☼☼☼☼☼☼☼", 6, 3, new Snake(false, 5, Direction.RIGHT, false));
-    }
+  @Test
+  public void enemySnakeHead() {
+    assertSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ┌>☼"
+            + "☼☼ ×─┘▲☼"
+            + "☼☼╘═══╝☼"
+            + "☼☼☼☼☼☼☼☼",
+        6,
+        3,
+        new Snake(false, 5, Direction.RIGHT, false));
+  }
 
-    @Test
-    // TODO: remove this test, it's for a hack to avoid snakes without tails
-    public void enemySnakeJustHead() {
-        assertSnake("☼☼☼☼☼☼☼☼" +
-                "☼☼     ☼" +
-                "☼☼     ☼" +
-                "☼☼    ●☼" +
-                "☼☼    >☼" +
-                "☼☼    ▲☼" +
-                "☼☼╘═══╝☼" +
-                "☼☼☼☼☼☼☼☼", 6, 3, new Snake(false, 1, Direction.RIGHT, false));
-    }
+  @Test
+  // TODO: remove this test, it's for a hack to avoid snakes without tails
+  public void enemySnakeJustHead() {
+    assertSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼    >☼"
+            + "☼☼    ▲☼"
+            + "☼☼╘═══╝☼"
+            + "☼☼☼☼☼☼☼☼",
+        6,
+        3,
+        new Snake(false, 1, Direction.RIGHT, false));
+  }
 
-    private void assertSnake(String board, int x, int y, Snake expected) {
-        Snake actual = Snake.identify(x, y, board(board));
-        assertEquals(expected, actual);
-    }
+  private void assertSnake(String board, int x, int y, Snake expected) {
+    Snake actual = Snake.identify(x, y, board(board));
+    assertEquals(expected, actual);
+  }
 }

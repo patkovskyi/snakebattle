@@ -10,7 +10,7 @@
         <version>1.0.27</version>
     </parent>
 
-    <artifactId>${module.name}-engine</artifactId>
+    <artifactId>${module.name}</artifactId>
 
     <properties>
         <module.name>snakebattle</module.name>
@@ -55,6 +55,12 @@
             <groupId>org.easytesting</groupId>
             <artifactId>fest-reflect</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.4</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -134,5 +140,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.0.0</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>
