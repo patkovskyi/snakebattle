@@ -46,6 +46,8 @@ public class Board extends AbstractBoard<Elements> {
     protected final int FURY_LENGTH = 10;
     protected Point myHead;
     protected boolean stoneEatenLastRound;
+    protected int stoneCount = 0;
+    Direction headDirection = Direction.RIGHT;
 
     public List<Point> getNeighborPoints(Point p) {
         List<Point> l = new ArrayList<>();
@@ -188,14 +190,17 @@ public class Board extends AbstractBoard<Elements> {
 
     protected void refreshMyHead() {
         myHead = get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY).get(0);
+
+        // refresh counters
+        if (!get(HEAD_SLEEP).isEmpty()) {
+            stoneEatenLastRound = false;
+            stoneCount = 0;
+            headDirection = Direction.RIGHT;
+        }
     }
 
     public Point getMe() {
         return myHead.copy();
-    }
-
-    public boolean isNewRound() {
-        return !get(Elements.HEAD_SLEEP).isEmpty();
     }
 
     public boolean isGameOver() {

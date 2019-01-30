@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MyBoard extends Board {
-    Direction headDirection = Direction.RIGHT;
-    int stoneCount = 0;
-
     protected void refreshDirection() {
         if (!get(Elements.HEAD_SLEEP, Elements.HEAD_RIGHT).isEmpty()) {
             // in case of a new round also reset to right
@@ -80,7 +77,8 @@ public class MyBoard extends Board {
 
             if (shitABrick()) {
                 --stoneCount;
-                return "ACT";
+                headDirection = headDirection.clockwise();
+                return "ACT, " + headDirection.toString();
             }
 
             int[][][] dir = getDirectionalDistances();
@@ -98,7 +96,7 @@ public class MyBoard extends Board {
 
     private boolean shitABrick() {
         Point np = getMe();
-        np.change(headDirection);
+        np.change(headDirection.clockwise());
         if (stoneCount > 0 && !stoneEatenLastRound && canEatStone() && !isNotPassableOrRisky(np)) {
             return true;
         } else {
