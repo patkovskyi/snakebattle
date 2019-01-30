@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class MyBoard extends Board {
     Direction headDirection = Direction.RIGHT;
+    int stoneCount = 0;
 
     protected void refreshDirection() {
         if (!get(Elements.HEAD_SLEEP, Elements.HEAD_RIGHT).isEmpty()) {
@@ -76,15 +77,47 @@ public class MyBoard extends Board {
             refreshMyHead();
             refreshDirection();
             markDeadEnds();
+
+            if (shitABrick()) {
+                --stoneCount;
+                return "ACT";
+            }
+
             int[][][] dir = getDirectionalDistances();
             int[][] nondir = getNonDirectionalDistances(dir);
             Point closestPowerUp = getClosestPowerUp(nondir);
             Direction newDirection = getFirstStepNonDirectional(closestPowerUp, nondir);
             if (newDirection.value() < 4) {
                 headDirection = newDirection;
+                refreshWhatsEaten(newDirection);
             }
 
             return headDirection.toString();
+        }
+    }
+
+    private boolean shitABrick() {
+        Point np = getMe();
+        np.change(headDirection);
+        if (stoneCount > 0 && !stoneEatenLastRound && canEatStone() && !isNotPassableOrRisky(np)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean canEatStone() {
+        return areWeFurious() || (getMySnakeLength() - STONE_LENGTH_COST >= MIN_SNAKE_LENGTH);
+    }
+
+    private void refreshWhatsEaten(Direction newDirection) {
+        Point np = getMe();
+        np.change(newDirection);
+        if (getAt(np) == Elements.STONE) {
+            stoneEatenLastRound = true;
+            ++stoneCount;
+        } else {
+            stoneEatenLastRound = false;
         }
     }
 

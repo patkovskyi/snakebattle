@@ -45,6 +45,7 @@ public class Board extends AbstractBoard<Elements> {
     protected final int MIN_SNAKE_LENGTH = 2;
     protected final int FURY_LENGTH = 10;
     protected Point myHead;
+    protected boolean stoneEatenLastRound;
 
     public List<Point> getNeighborPoints(Point p) {
         List<Point> l = new ArrayList<>();
@@ -64,7 +65,8 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     public int getMySnakeLength() {
-        return get(MY_SNAKE.toArray(new Elements[0])).size();
+        int displayedLength = get(MY_SNAKE.toArray(new Elements[0])).size();
+        return stoneEatenLastRound ? displayedLength - 3 : displayedLength;
     }
 
     public boolean areWeFurious() {
