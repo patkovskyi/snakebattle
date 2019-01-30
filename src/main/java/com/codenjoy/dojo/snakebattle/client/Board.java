@@ -80,9 +80,10 @@ import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 public class Board extends AbstractBoard<Elements> {
-  private final int STONE_LENGTH_COST = 3;
-  private final int MIN_SNAKE_LENGTH = 2;
-  private final int FURY_LENGTH = 10;
+  private static final int STONE_LENGTH_COST = 3;
+  private static final int MIN_SNAKE_LENGTH = 2;
+  private static final int FURY_LENGTH = 10;
+
   private int[][] lucrativeness;
   private Point myHead;
   private boolean stoneEatenLastRound;
@@ -457,11 +458,13 @@ public class Board extends AbstractBoard<Elements> {
           && (getMySnakeLength() - STONE_LENGTH_COST < MIN_SNAKE_LENGTH)) return true;
 
       Elements e = getAt(x, y);
-      if (MY_BODY.contains(e))
-        return true; // actually we can cut a piece of ourselves and survive, but we'll implement it
-      // later
-      if (!weAreFurious) {
-        if (ENEMY_BODY.contains(e) || ENEMY_HEAD.contains(e)) return true;
+      if (MY_BODY.contains(e)) {
+        // actually we can cut a piece of ourselves and survive, but we'll implement it later
+        return true;
+      }
+
+      if (!weAreFurious && (ENEMY_BODY.contains(e) || ENEMY_HEAD.contains(e))) {
+        return true;
       }
 
       // check head-to-head collision danger
