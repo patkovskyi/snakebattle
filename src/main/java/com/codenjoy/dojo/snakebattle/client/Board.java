@@ -45,6 +45,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_LEFT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_RIGHT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_SLEEP;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_UP;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_DOWN;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_LEFT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_RIGHT;
@@ -378,15 +379,14 @@ public class Board extends AbstractBoard<Elements> {
   }
 
   public boolean isBarrierAt(int x, int y) {
+    // ENEMY_HEAD_DEAD is not a barrier, but ENEMY_HEAD_SLEEP and ENEMY_TAIL_INACTIVE are
     return isAt(
         x,
         y,
         WALL,
         START_FLOOR,
         ENEMY_HEAD_SLEEP,
-        ENEMY_TAIL_INACTIVE,
-        ENEMY_HEAD_DEAD,
-        TAIL_INACTIVE);
+        ENEMY_TAIL_INACTIVE);
   }
 
   public boolean isStoneAt(Point p) {

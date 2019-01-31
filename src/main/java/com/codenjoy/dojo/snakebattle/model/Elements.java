@@ -142,14 +142,14 @@ public enum Elements implements CharElements {
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> ENEMY_HEAD =
+      // don't count ENEMY_HEAD_SLEEP and ENEMY_HEAD_DEAD because they don't matter
       Stream.of(
               ENEMY_HEAD_DOWN,
               ENEMY_HEAD_LEFT,
               ENEMY_HEAD_RIGHT,
               ENEMY_HEAD_UP,
               ENEMY_HEAD_EVIL,
-              ENEMY_HEAD_FLY,
-              ENEMY_HEAD_SLEEP)
+              ENEMY_HEAD_FLY)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> ENEMY_BODY =
