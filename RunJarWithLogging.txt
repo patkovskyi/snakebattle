@@ -1,1 +1,5 @@
-java -Xmx1024m -jar snakebattle.jar | tee >(rotatelogs -l Snake_%Y-%m-%d-%H.txt 3600)
+Run with logs
+java -Xmx1024m -jar snakebattle.jar 2>&1 | tee >(rotatelogs -l Snake_%Y-%m-%d-%H.txt 3600)
+
+Find all snakebattle.jar processes
+ps -eo pid,lstart,args | grep snakebattle.jar | grep -v grep
