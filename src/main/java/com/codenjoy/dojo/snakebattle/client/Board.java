@@ -37,7 +37,6 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_RIGHT_DOWN
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_RIGHT_UP;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_VERTICAL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD;
-import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_DEAD;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_DOWN;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_EVIL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_FLY;
@@ -45,7 +44,6 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_LEFT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_RIGHT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_SLEEP;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_UP;
-import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_DOWN;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_LEFT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_RIGHT;
@@ -64,7 +62,6 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.MY_HEAD;
 import static com.codenjoy.dojo.snakebattle.model.Elements.MY_SNAKE;
 import static com.codenjoy.dojo.snakebattle.model.Elements.START_FLOOR;
 import static com.codenjoy.dojo.snakebattle.model.Elements.STONE;
-import static com.codenjoy.dojo.snakebattle.model.Elements.TAIL_INACTIVE;
 import static com.codenjoy.dojo.snakebattle.model.Elements.WALL;
 
 import com.codenjoy.dojo.client.AbstractBoard;

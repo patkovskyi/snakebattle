@@ -174,7 +174,7 @@ public class SolverTest {
   }
 
   @Test
-  public void exception1() {
+  public void investigation1() {
     assertAI(
         "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
             + "☼☼®           ®  ® ▲         ☼"
@@ -210,7 +210,7 @@ public class SolverTest {
   }
 
   @Test
-  public void exception2() {
+  public void investigation2() {
     assertAI(
         "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
             + "☼☼         ○                 ☼"
@@ -246,7 +246,7 @@ public class SolverTest {
   }
 
   @Test
-  public void exception3() {
+  public void investigation3() {
     assertAI(
         "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
             + "☼☼         ○                 ☼"
@@ -282,7 +282,7 @@ public class SolverTest {
   }
 
   @Test
-  public void exception4() {
+  public void investigation4() {
     assertAI(
         "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
             + "☼☼               ●           ☼"
@@ -318,7 +318,7 @@ public class SolverTest {
   }
 
   @Test
-  public void exception5() {
+  public void investigation5() {
     assertAI(
         "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
             + "☼☼┌>                         ☼"

@@ -1,4 +1,4 @@
-Run with logs
+Run jar with logging
 java -Xmx1024m -jar snakebattle.jar 2>&1 | tee >(rotatelogs -l Snake_%Y-%m-%d-%H.txt 3600)
 
 Find all snakebattle.jar processes
