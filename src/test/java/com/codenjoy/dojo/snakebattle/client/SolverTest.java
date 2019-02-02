@@ -40,7 +40,7 @@ public class SolverTest {
 
   @Before
   public void setup() {
-    ai = new YourSolver();
+    ai = new ClosestBestSolver();
   }
 
   @Test
