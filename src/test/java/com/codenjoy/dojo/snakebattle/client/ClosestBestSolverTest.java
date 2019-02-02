@@ -36,7 +36,7 @@ import org.junit.rules.Timeout;
 
 public class ClosestBestSolverTest {
   @Rule public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
-  private Solver<Board> ai;
+  private Solver<ClosestBestBoard> ai;
 
   @Before
   public void setup() {
@@ -629,8 +629,8 @@ public class ClosestBestSolverTest {
         Direction.RIGHT);
   }
 
-  private Board board(String board) {
-    return (Board) new Board().forString(board);
+  private ClosestBestBoard board(String board) {
+    return (ClosestBestBoard) new ClosestBestBoard().forString(board);
   }
 
   private void assertAI(String board, Direction expected) {

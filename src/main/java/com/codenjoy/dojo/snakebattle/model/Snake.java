@@ -14,7 +14,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.MY_TAIL;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
-import com.codenjoy.dojo.snakebattle.client.Board;
+import com.codenjoy.dojo.snakebattle.client.ClosestBestBoard;
 import java.util.Set;
 import java.util.Stack;
 import lombok.Data;
@@ -27,7 +27,7 @@ public class Snake {
   private final boolean isFurious;
 
   // any part of the body should work
-  public static Snake identify(int x, int y, Board board) {
+  public static Snake identify(int x, int y, ClosestBestBoard board) {
     Elements element = board.getAt(x, y);
 
     boolean isMe;

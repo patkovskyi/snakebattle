@@ -119,8 +119,9 @@ public enum Elements implements CharElements {
   ENEMY_BODY_RIGHT_UP('└', Direction.UP, Direction.RIGHT);
 
   public static Set<Elements> MY_HEAD =
+      // don't count HEAD_SLEEP and HEAD_DEAD because they don't matter
       Stream.of(
-              HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_DEAD, HEAD_EVIL, HEAD_FLY, HEAD_SLEEP)
+              HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_EVIL, HEAD_FLY)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> MY_BODY =

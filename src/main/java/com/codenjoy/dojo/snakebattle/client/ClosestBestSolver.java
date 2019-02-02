@@ -24,9 +24,9 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.client.Solver;
 
-public class ClosestBestSolver implements Solver<Board> {
+public class ClosestBestSolver implements Solver<ClosestBestBoard> {
   @Override
-  public String get(Board board) {
+  public String get(ClosestBestBoard board) {
     return board.getNextStep();
   }
 }
