@@ -34,7 +34,7 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 
-public class SolverTest {
+public class ClosestBestSolverTest {
   @Rule public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
   private Solver<Board> ai;
 

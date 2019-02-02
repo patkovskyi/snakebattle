@@ -13,8 +13,8 @@ public class Main {
     WebSocketRunner.run(
         URI.create(
             "wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
-        new ClosestBestSolver(),
-        new Board(),
+        new GainPerTurnSolver(),
+        new LightBoard(),
         1000);
   }
 }
