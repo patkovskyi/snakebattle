@@ -121,21 +121,21 @@ public enum Elements implements CharElements {
   public static Set<Elements> MY_HEAD =
       // don't count HEAD_SLEEP and HEAD_DEAD because they don't matter
       Stream.of(
-              HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_EVIL, HEAD_FLY)
+          HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_EVIL, HEAD_FLY)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> MY_BODY =
       Stream.of(
-              BODY_HORIZONTAL,
-              BODY_VERTICAL,
-              BODY_LEFT_DOWN,
-              BODY_LEFT_UP,
-              BODY_RIGHT_DOWN,
-              BODY_RIGHT_UP)
+          BODY_HORIZONTAL,
+          BODY_VERTICAL,
+          BODY_LEFT_DOWN,
+          BODY_LEFT_UP,
+          BODY_RIGHT_DOWN,
+          BODY_RIGHT_UP)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> MY_TAIL =
-      Stream.of(TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT, TAIL_INACTIVE)
+      Stream.of(TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> MY_SNAKE =
@@ -145,31 +145,30 @@ public enum Elements implements CharElements {
   public static Set<Elements> ENEMY_HEAD =
       // don't count ENEMY_HEAD_SLEEP and ENEMY_HEAD_DEAD because they don't matter
       Stream.of(
-              ENEMY_HEAD_DOWN,
-              ENEMY_HEAD_LEFT,
-              ENEMY_HEAD_RIGHT,
-              ENEMY_HEAD_UP,
-              ENEMY_HEAD_EVIL,
-              ENEMY_HEAD_FLY)
+          ENEMY_HEAD_DOWN,
+          ENEMY_HEAD_LEFT,
+          ENEMY_HEAD_RIGHT,
+          ENEMY_HEAD_UP,
+          ENEMY_HEAD_EVIL,
+          ENEMY_HEAD_FLY)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> ENEMY_BODY =
       Stream.of(
-              ENEMY_BODY_HORIZONTAL,
-              ENEMY_BODY_VERTICAL,
-              ENEMY_BODY_LEFT_DOWN,
-              ENEMY_BODY_LEFT_UP,
-              ENEMY_BODY_RIGHT_DOWN,
-              ENEMY_BODY_RIGHT_UP)
+          ENEMY_BODY_HORIZONTAL,
+          ENEMY_BODY_VERTICAL,
+          ENEMY_BODY_LEFT_DOWN,
+          ENEMY_BODY_LEFT_UP,
+          ENEMY_BODY_RIGHT_DOWN,
+          ENEMY_BODY_RIGHT_UP)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> ENEMY_TAIL =
       Stream.of(
-              ENEMY_TAIL_END_DOWN,
-              ENEMY_TAIL_END_LEFT,
-              ENEMY_TAIL_END_UP,
-              ENEMY_TAIL_END_RIGHT,
-              ENEMY_TAIL_INACTIVE)
+          ENEMY_TAIL_END_DOWN,
+          ENEMY_TAIL_END_LEFT,
+          ENEMY_TAIL_END_UP,
+          ENEMY_TAIL_END_RIGHT)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> ENEMY_SNAKE =
@@ -183,8 +182,8 @@ public enum Elements implements CharElements {
   public static Set<Elements> POWER_UPS =
       Stream.of(APPLE, GOLD, FLYING_PILL, FURY_PILL).collect(Collectors.toUnmodifiableSet());
 
-  final char ch;
-  final List<Direction> compatibleDirections;
+  private final char ch;
+  private final List<Direction> compatibleDirections;
 
   Elements(char ch) {
     this.ch = ch;
@@ -210,8 +209,16 @@ public enum Elements implements CharElements {
     return ch;
   }
 
-  public List<Direction> compatible() {
+  public List<Direction> compatibleDirections() {
     return compatibleDirections;
+  }
+
+  public boolean isHead() {
+    return MY_HEAD.contains(this) || ENEMY_HEAD.contains(this);
+  }
+
+  public boolean isTail() {
+    return MY_TAIL.contains(this) || ENEMY_TAIL.contains(this);
   }
 
   @Override
@@ -222,13 +229,14 @@ public enum Elements implements CharElements {
   public boolean isCompatible(Direction direction, Elements anotherSnakePart) {
     if (!Direction.onlyDirections().contains(direction)) {
       throw new IllegalArgumentException(
-          "You can only call this method with directions, but you called with "
-              + direction.toString());
+          "You can only call this method with directions, but you called with " + direction);
     }
 
     return (MY_SNAKE.contains(this) && MY_SNAKE.contains(anotherSnakePart)
-            || ENEMY_SNAKE.contains(this) && ENEMY_SNAKE.contains(this))
+        || ENEMY_SNAKE.contains(this) && ENEMY_SNAKE.contains(this))
         && compatibleDirections.contains(direction)
-        && anotherSnakePart.compatibleDirections.contains(direction.inverted());
+        && anotherSnakePart.compatibleDirections.contains(direction.inverted())
+        && !(isHead() && anotherSnakePart.isHead())
+        && !(isTail() && anotherSnakePart.isTail());
   }
 }

@@ -33,7 +33,7 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 
-public class SnakeTest {
+public class OldSnakeTest {
   @Rule()
   public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
 
@@ -54,7 +54,7 @@ public class SnakeTest {
             + "☼☼☼☼☼☼☼☼",
         2,
         1,
-        new Snake(true, 6, Direction.UP, false));
+        new OldSnake(true, 6, Direction.UP, false));
   }
 
   @Test
@@ -70,7 +70,7 @@ public class SnakeTest {
             + "☼☼☼☼☼☼☼☼",
         5,
         1,
-        new Snake(true, 6, Direction.UP, false));
+        new OldSnake(true, 6, Direction.UP, false));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class SnakeTest {
             + "☼☼☼☼☼☼☼☼",
         6,
         2,
-        new Snake(true, 6, Direction.UP, false));
+        new OldSnake(true, 6, Direction.UP, false));
   }
 
   @Test
@@ -102,7 +102,7 @@ public class SnakeTest {
             + "☼☼☼☼☼☼☼☼",
         3,
         2,
-        new Snake(false, 5, Direction.RIGHT, false));
+        new OldSnake(false, 5, Direction.RIGHT, false));
   }
 
   @Test
@@ -118,7 +118,7 @@ public class SnakeTest {
             + "☼☼☼☼☼☼☼☼",
         4,
         2,
-        new Snake(false, 5, Direction.RIGHT, false));
+        new OldSnake(false, 5, Direction.RIGHT, false));
   }
 
   @Test
@@ -134,7 +134,7 @@ public class SnakeTest {
             + "☼☼☼☼☼☼☼☼",
         6,
         3,
-        new Snake(false, 5, Direction.RIGHT, false));
+        new OldSnake(false, 5, Direction.RIGHT, false));
   }
 
   @Test
@@ -151,11 +151,11 @@ public class SnakeTest {
             + "☼☼☼☼☼☼☼☼",
         6,
         3,
-        new Snake(false, 1, Direction.RIGHT, false));
+        new OldSnake(false, 1, Direction.RIGHT, false));
   }
 
-  private void assertSnake(String board, int x, int y, Snake expected) {
-    Snake actual = Snake.identify(x, y, board(board));
+  private void assertSnake(String board, int x, int y, OldSnake expected) {
+    OldSnake actual = OldSnake.identify(x, y, board(board));
     assertEquals(expected, actual);
   }
 }

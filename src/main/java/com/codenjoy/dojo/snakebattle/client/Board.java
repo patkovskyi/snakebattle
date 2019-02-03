@@ -47,4 +47,8 @@ public class Board extends AbstractBoard<Elements> {
     enemySnakeHeads = get(Elements.ENEMY_HEAD.toArray(new Elements[0]));
     return this;
   }
+
+  public boolean containsPoint(Point p) {
+    return !p.isOutOf(size);
+  }
 }

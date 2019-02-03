@@ -20,14 +20,14 @@ import java.util.Stack;
 import lombok.Data;
 
 @Data
-public class Snake {
+public class OldSnake {
   private final boolean isMe;
   private final int length;
   private final Direction direction;
   private final boolean isFurious;
 
   // any part of the body should work
-  public static Snake identify(int x, int y, ClosestBestBoard board) {
+  public static OldSnake identify(int x, int y, ClosestBestBoard board) {
     Elements element = board.getAt(x, y);
 
     boolean isMe;
@@ -65,7 +65,7 @@ public class Snake {
 
       // TODO: fix this hack for identifying direction
       if (headElements.contains(e)) {
-        direction = e.compatible().get(0).inverted();
+        direction = e.compatibleDirections().get(0).inverted();
       }
 
       int compatibleCounter = 0;
@@ -99,7 +99,7 @@ public class Snake {
 
       if (compatibleCounter > 1 && !(length == 1 && bodyElements.contains(e)))
         throw new IllegalStateException(
-            "identify: more than one compatible snake parts found for point at "
+            "identify: more than one compatibleDirections snake parts found for point at "
                 + p.getX()
                 + " "
                 + p.getY());
@@ -109,6 +109,6 @@ public class Snake {
       throw new IllegalStateException("identify: could not identify direction");
     }
 
-    return new Snake(isMe, length, direction, isFurious);
+    return new OldSnake(isMe, length, direction, isFurious);
   }
 }

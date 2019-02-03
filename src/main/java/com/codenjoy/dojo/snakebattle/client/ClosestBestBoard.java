@@ -69,7 +69,7 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
-import com.codenjoy.dojo.snakebattle.model.Snake;
+import com.codenjoy.dojo.snakebattle.model.OldSnake;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -480,7 +480,7 @@ public class ClosestBestBoard extends AbstractBoard<Elements> {
         for (Point p : getNeighborPoints(x, y)) {
           Elements enemyHeadPoint = getAt(p);
           if (ENEMY_HEAD.contains(enemyHeadPoint)) {
-            Snake enemySnake = Snake.identify(p.getX(), p.getY(), this);
+            OldSnake enemySnake = OldSnake.identify(p.getX(), p.getY(), this);
 
             if (!weAreFurious && enemySnake.isFurious()) {
               return true;
