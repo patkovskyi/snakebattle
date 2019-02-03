@@ -13,14 +13,19 @@ public class GainPerTurnSolver implements Solver<Board> {
   @Override
   public String get(Board board) {
     long startTime = System.currentTimeMillis();
-    String answer = "";
     game.updateFromBoard(board);
+    String answer = findBestAction();
+    System.out.printf("Finding answer took %d ms\n", System.currentTimeMillis() - startTime);
+    return answer;
+  }
+
+  private String findBestAction() {
+    String answer = "";
     if (game.isAlive()) {
       // find best answer
-      answer = "SOMETHING";
+      return "SOMETHING";
     }
 
-    System.out.printf("Finding solution took %d ms\n", System.currentTimeMillis() - startTime);
     return answer;
   }
 }

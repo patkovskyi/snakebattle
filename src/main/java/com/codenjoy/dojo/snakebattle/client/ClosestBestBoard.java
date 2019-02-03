@@ -78,6 +78,7 @@ import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 public class ClosestBestBoard extends AbstractBoard<Elements> {
+
   private static final int STONE_LENGTH_COST = 3;
   private static final int MIN_SNAKE_LENGTH = 2;
   private static final int FURY_LENGTH = 10;
@@ -104,7 +105,7 @@ public class ClosestBestBoard extends AbstractBoard<Elements> {
   }
 
   protected void markDeadEnds() {
-    // TODO: implement dynamic deadend prediction (probably should predict where enemy snake is
+    // TODO: implement dynamic dead end prediction (probably should predict where enemy snake is
     // moving)
     boolean[][] nonPassable = new boolean[size][size];
     for (int x = 0; x < size; x++) {
@@ -112,8 +113,8 @@ public class ClosestBestBoard extends AbstractBoard<Elements> {
         nonPassable[x][y] =
             isBarrierAt(x, y)
                 || isStoneAt(x, y)
-                    && !areWeFurious()
-                    && getMySnakeLength() - STONE_LENGTH_COST < MIN_SNAKE_LENGTH;
+                && !areWeFurious()
+                && getMySnakeLength() - STONE_LENGTH_COST < MIN_SNAKE_LENGTH;
       }
     }
 
@@ -129,7 +130,9 @@ public class ClosestBestBoard extends AbstractBoard<Elements> {
             for (int d = 0; d < 4; d++) {
               int nx = directions[d].changeX(x);
               int ny = directions[d].changeY(y);
-              if (isWithinBoard(nx, ny) && !nonPassable[nx][ny]) ++passableNeighbors;
+              if (isWithinBoard(nx, ny) && !nonPassable[nx][ny]) {
+                ++passableNeighbors;
+              }
             }
 
             if (passableNeighbors <= 1) {
@@ -245,7 +248,7 @@ public class ClosestBestBoard extends AbstractBoard<Elements> {
 
           if (bestP == null
               || lucrativeness[newP.getX()][newP.getY()]
-                  > lucrativeness[bestP.getX()][bestP.getY()]) {
+              > lucrativeness[bestP.getX()][bestP.getY()]) {
             bestP = newP;
           }
         }
@@ -448,11 +451,15 @@ public class ClosestBestBoard extends AbstractBoard<Elements> {
 
   protected boolean isNextStepCollisionPossible(int x, int y) {
     if (distanceFromMe(x, y) == 1) {
-      if (isBarrierAt(x, y)) return true;
+      if (isBarrierAt(x, y)) {
+        return true;
+      }
       boolean weAreFurious = areWeFurious();
       if (!weAreFurious
           && isStoneAt(x, y)
-          && (getMySnakeLength() - STONE_LENGTH_COST < MIN_SNAKE_LENGTH)) return true;
+          && (getMySnakeLength() - STONE_LENGTH_COST < MIN_SNAKE_LENGTH)) {
+        return true;
+      }
 
       Elements e = getAt(x, y);
       if (MY_BODY.contains(e)) {
@@ -475,7 +482,9 @@ public class ClosestBestBoard extends AbstractBoard<Elements> {
           if (ENEMY_HEAD.contains(enemyHeadPoint)) {
             Snake enemySnake = Snake.identify(p.getX(), p.getY(), this);
 
-            if (!weAreFurious && enemySnake.isFurious()) return true;
+            if (!weAreFurious && enemySnake.isFurious()) {
+              return true;
+            }
             if (weAreFurious == enemySnake.isFurious()
                 && getMySnakeLength() - enemySnake.getLength() < MIN_SNAKE_LENGTH) {
               return true;

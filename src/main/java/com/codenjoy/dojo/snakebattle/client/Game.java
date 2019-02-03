@@ -15,6 +15,12 @@ public class Game {
   private boolean alive;
 
   @Getter
+  private boolean roundLost;
+
+  @Getter
+  private int ticks;
+
+  @Getter
   private Point myHead;
 
   @Getter
@@ -52,6 +58,7 @@ public class Game {
 
   public void updateFromBoard(Board board) {
     updateMyself(board);
+    updateRoundState(board);
     updateEnemySnakes(board);
     updateMapObjects(board);
   }
@@ -60,23 +67,29 @@ public class Game {
     List<Point> myHeads = board.get(Elements.MY_HEAD.toArray(new Elements[0]));
     if (myHeads.isEmpty()) {
       alive = false;
-      cleanupGameState();
     } else {
       alive = true;
+      roundLost = false;
+      if (myFuryCount > 0) {
+        --myFuryCount;
+      }
+      if (myFlyingCount > 0) {
+        --myFlyingCount;
+      }
       myHead = myHeads.get(0);
     }
   }
 
-  private void cleanupGameState() {
-    gold.clear();
-    apples.clear();
-    stones.clear();
-    furyPills.clear();
-    flyingPills.clear();
-    enemySnakes.clear();
-    myHead = null;
-    myFuryCount = 0;
-    myFlyingCount = 0;
+  private void updateRoundState(Board board) {
+    boolean newRound = board.get(Elements.HEAD_SLEEP).size() > 0;
+    if (newRound) {
+      ticks = 0;
+      roundLost = false;
+    } else {
+      ++ticks;
+      roundLost = !alive && board.get(Elements.HEAD_SLEEP).isEmpty() &&
+          (!enemySnakes.isEmpty() || !board.get(Elements.HEAD_DEAD).isEmpty());
+    }
   }
 
   private void updateEnemySnakes(Board board) {
