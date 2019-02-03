@@ -1,22 +1,17 @@
 package com.codenjoy.dojo.snakebattle.model;
 
-import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_EVIL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_FLY;
-import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.HEAD_EVIL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.HEAD_FLY;
-import static com.codenjoy.dojo.snakebattle.model.Elements.MY_BODY;
 import static com.codenjoy.dojo.snakebattle.model.Elements.MY_HEAD;
-import static com.codenjoy.dojo.snakebattle.model.Elements.MY_TAIL;
 
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.client.Board;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import lombok.Data;
 
 /**
@@ -25,7 +20,7 @@ import lombok.Data;
 @Data
 public class BoardSnake {
 
-  private final int length;
+  private final boolean isMe;
   private final Direction direction;
   private final boolean isFurious;
   private final boolean isFlying;
@@ -35,19 +30,13 @@ public class BoardSnake {
   public static BoardSnake identifyFromHead(Point head, Board board) {
     Elements headElement = board.getAt(head.getX(), head.getY());
 
-    boolean isMe = false;
-    Set<Elements> headElements, bodyElements, tailElements;
+    boolean isMe;
     if (MY_HEAD.contains(headElement)) {
-      headElements = MY_HEAD;
-      bodyElements = MY_BODY;
-      tailElements = MY_TAIL;
       isMe = true;
     } else if (ENEMY_HEAD.contains(headElement)) {
-      headElements = ENEMY_HEAD;
-      bodyElements = ENEMY_BODY;
-      tailElements = ENEMY_TAIL;
+      isMe = false;
     } else {
-      // head point is not a snake head
+      System.out.printf("ERROR: head point is not a snake head");
       return null;
     }
 
@@ -65,7 +54,7 @@ public class BoardSnake {
       return null;
     }
 
-    return null;
+    return new BoardSnake(isMe, direction, isFurious, isFlying, parts);
   }
 
   private static void discoverSnakeParts(Point currentPoint, Direction lastDirection, Board board,
@@ -116,5 +105,18 @@ public class BoardSnake {
     System.out.printf("ERROR: failed to detect head direction at %d,%d",
         parts.get(0).getX(), parts.get(0).getY());
     return null;
+  }
+
+  public int size() {
+    return parts.size();
+  }
+
+  public int distanceFromTail(Point p) {
+    int index = parts.indexOf(p);
+    if (index < 0) {
+      return index;
+    } else {
+      return parts.size() - index - 1;
+    }
   }
 }
