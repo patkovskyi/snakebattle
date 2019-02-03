@@ -219,100 +219,173 @@ public class BoardSnakeTest {
   }
 
 
-//  @Test
-//  public void mySnakeBody() {
-//    getSnake(
-//        "☼☼☼☼☼☼☼☼"
-//            + "☼☼     ☼"
-//            + "☼☼     ☼"
-//            + "☼☼    ●☼"
-//            + "☼☼   ˄ ☼"
-//            + "☼☼ ×─┘▲☼"
-//            + "☼☼╘═══╝☼"
-//            + "☼☼☼☼☼☼☼☼",
-//        5,
-//        1,
-//        new BoardSnake(true, 6, Direction.UP, false));
-//  }
+  @Test
+  public void enemySnakeFull() {
+    BoardSnake snake = getSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ▲ ☼"
+            + "☼☼ ╘═╝˄☼"
+            + "☼☼×───┘☼"
+            + "☼☼☼☼☼☼☼☼",
+        6, 2);
 
-//  @Test
-//  public void mySnakeHead() {
-//    getSnake(
-//        "☼☼☼☼☼☼☼☼"
-//            + "☼☼     ☼"
-//            + "☼☼     ☼"
-//            + "☼☼    ●☼"
-//            + "☼☼   ˄ ☼"
-//            + "☼☼ ×─┘▲☼"
-//            + "☼☼╘═══╝☼"
-//            + "☼☼☼☼☼☼☼☼",
-//        6,
-//        2,
-//        new BoardSnake(true, 6, Direction.UP, false));
-//  }
-//
-//  @Test
-//  public void enemySnakeTail() {
-//    getSnake(
-//        "☼☼☼☼☼☼☼☼"
-//            + "☼☼     ☼"
-//            + "☼☼     ☼"
-//            + "☼☼    ●☼"
-//            + "☼☼   ┌>☼"
-//            + "☼☼ ×─┘▲☼"
-//            + "☼☼╘═══╝☼"
-//            + "☼☼☼☼☼☼☼☼",
-//        3,
-//        2,
-//        new BoardSnake(false, 5, Direction.RIGHT, false));
-//  }
-//
-//  @Test
-//  public void enemySnakeBody() {
-//    getSnake(
-//        "☼☼☼☼☼☼☼☼"
-//            + "☼☼     ☼"
-//            + "☼☼     ☼"
-//            + "☼☼    ●☼"
-//            + "☼☼   ┌>☼"
-//            + "☼☼ ×─┘▲☼"
-//            + "☼☼╘═══╝☼"
-//            + "☼☼☼☼☼☼☼☼",
-//        4,
-//        2,
-//        new BoardSnake(false, 5, Direction.RIGHT, false));
-//  }
-//
-//  @Test
-//  public void enemySnakeHead() {
-//    getSnake(
-//        "☼☼☼☼☼☼☼☼"
-//            + "☼☼     ☼"
-//            + "☼☼     ☼"
-//            + "☼☼    ●☼"
-//            + "☼☼   ┌>☼"
-//            + "☼☼ ×─┘▲☼"
-//            + "☼☼╘═══╝☼"
-//            + "☼☼☼☼☼☼☼☼",
-//        6,
-//        3,
-//        new BoardSnake(false, 5, Direction.RIGHT, false));
-//  }
-//
-//  @Test
-//  // TODO: remove this test, it's for a hack to avoid snakes without tails
-//  public void enemySnakeJustHead() {
-//    getSnake(
-//        "☼☼☼☼☼☼☼☼"
-//            + "☼☼     ☼"
-//            + "☼☼     ☼"
-//            + "☼☼    ●☼"
-//            + "☼☼    >☼"
-//            + "☼☼    ▲☼"
-//            + "☼☼╘═══╝☼"
-//            + "☼☼☼☼☼☼☼☼",
-//        6,
-//        3,
-//        new BoardSnake(false, 1, Direction.RIGHT, false));
-//  }
+    assertEquals(false, snake.isMe());
+    assertEquals(Direction.UP, snake.getDirection());
+    assertEquals(false, snake.isFurious());
+    assertEquals(false, snake.isFlying());
+    assertEquals(6, snake.size());
+    assertEquals(new PointImpl(6, 2), snake.head());
+    assertEquals(new PointImpl(2, 1), snake.tail());
+  }
+
+  @Test
+  public void enemySnakeShort() {
+    BoardSnake snake = getSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ▲ ☼"
+            + "☼☼ ╘═╝ ☼"
+            + "☼☼  <ö ☼"
+            + "☼☼☼☼☼☼☼☼",
+        4, 1);
+
+    assertEquals(false, snake.isMe());
+    assertEquals(Direction.LEFT, snake.getDirection());
+    assertEquals(false, snake.isFurious());
+    assertEquals(false, snake.isFlying());
+    assertEquals(2, snake.size());
+    assertEquals(new PointImpl(4, 1), snake.head());
+    assertEquals(new PointImpl(5, 1), snake.tail());
+  }
+
+  @Test
+  public void enemySnakeAbrupt() {
+    BoardSnake snake = getSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ▲ ☼"
+            + "☼☼ ╘═╝˄☼"
+            + "☼☼ ───┘☼"
+            + "☼☼☼☼☼☼☼☼",
+        6, 2);
+
+    assertEquals(false, snake.isMe());
+    assertEquals(Direction.UP, snake.getDirection());
+    assertEquals(false, snake.isFurious());
+    assertEquals(false, snake.isFlying());
+    assertEquals(5, snake.size());
+    assertEquals(new PointImpl(6, 2), snake.head());
+    assertEquals(new PointImpl(3, 1), snake.tail());
+  }
+
+  @Test
+  public void enemySnakeJustHead() {
+    BoardSnake snake = getSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼  ˅▲ ☼"
+            + "☼☼ ╘═╝ ☼"
+            + "☼☼     ☼"
+            + "☼☼☼☼☼☼☼☼",
+        4, 3);
+
+    assertEquals(false, snake.isMe());
+    assertEquals(Direction.DOWN, snake.getDirection());
+    assertEquals(false, snake.isFurious());
+    assertEquals(false, snake.isFlying());
+    assertEquals(1, snake.size());
+    assertEquals(new PointImpl(4, 3), snake.head());
+    assertEquals(new PointImpl(4, 3), snake.tail());
+  }
+
+  @Test
+  public void enemySnakeJustFuryJustHead() {
+    BoardSnake snake = getSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼  ♣▲ ☼"
+            + "☼☼ ╘═╝ ☼"
+            + "☼☼     ☼"
+            + "☼☼☼☼☼☼☼☼",
+        4, 3);
+
+    assertNull(snake);
+  }
+
+  @Test
+  public void enemySnakeFuryDirectionFull() {
+    BoardSnake snake = getSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼×─♣▲ ☼"
+            + "☼☼ ╘═╝ ☼"
+            + "☼☼     ☼"
+            + "☼☼☼☼☼☼☼☼",
+        4, 3);
+
+    assertEquals(false, snake.isMe());
+    assertEquals(Direction.RIGHT, snake.getDirection());
+    assertEquals(true, snake.isFurious());
+    assertEquals(false, snake.isFlying());
+    assertEquals(3, snake.size());
+    assertEquals(new PointImpl(4, 3), snake.head());
+    assertEquals(new PointImpl(2, 3), snake.tail());
+  }
+
+  @Test
+  public void enemySnakeFuryDirectionBody() {
+    BoardSnake snake = getSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼ ─♣▲ ☼"
+            + "☼☼ ╘═╝ ☼"
+            + "☼☼     ☼"
+            + "☼☼☼☼☼☼☼☼",
+        4, 3);
+
+    assertEquals(false, snake.isMe());
+    assertEquals(Direction.RIGHT, snake.getDirection());
+    assertEquals(true, snake.isFurious());
+    assertEquals(false, snake.isFlying());
+    assertEquals(2, snake.size());
+    assertEquals(new PointImpl(4, 3), snake.head());
+    assertEquals(new PointImpl(3, 3), snake.tail());
+  }
+
+  @Test
+  public void enemySnakeFuryDirectionTail() {
+    BoardSnake snake = getSnake(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼    ●☼"
+            + "☼☼ ♣ö▲ ☼"
+            + "☼☼ ╘═╝ ☼"
+            + "☼☼     ☼"
+            + "☼☼☼☼☼☼☼☼",
+        3, 3);
+
+    assertEquals(false, snake.isMe());
+    assertEquals(Direction.LEFT, snake.getDirection());
+    assertEquals(true, snake.isFurious());
+    assertEquals(false, snake.isFlying());
+    assertEquals(2, snake.size());
+    assertEquals(new PointImpl(3, 3), snake.head());
+    assertEquals(new PointImpl(4, 3), snake.tail());
+  }
 }
