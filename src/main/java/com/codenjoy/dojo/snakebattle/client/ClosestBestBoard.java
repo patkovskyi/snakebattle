@@ -139,7 +139,7 @@ public class ClosestBestBoard extends AbstractBoard<Elements> {
               nonPassable[x][y] = true;
               updated = true;
 
-              if (Elements.PASSABLE.contains(getAt(x, y))) {
+              if (Elements.IMMEDIATELY_PASSABLE.contains(getAt(x, y))) {
                 set(x, y, Elements.WALL.ch());
               }
             }

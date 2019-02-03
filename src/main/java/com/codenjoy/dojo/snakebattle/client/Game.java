@@ -95,6 +95,10 @@ public class Game {
     updateMapObjects();
   }
 
+  public int size() {
+    return board.size();
+  }
+
   private void updateMyself() {
     List<Point> myHeads = board.get(Elements.MY_HEAD.toArray(new Elements[0]));
     if (myHeads.isEmpty()) {

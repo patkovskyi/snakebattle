@@ -175,8 +175,12 @@ public enum Elements implements CharElements {
       Stream.concat(ENEMY_HEAD.stream(), Stream.concat(ENEMY_BODY.stream(), ENEMY_TAIL.stream()))
           .collect(Collectors.toUnmodifiableSet());
 
-  public static Set<Elements> PASSABLE =
+  public static Set<Elements> IMMEDIATELY_PASSABLE =
       Stream.of(NONE, APPLE, GOLD, STONE, FLYING_PILL, FURY_PILL)
+          .collect(Collectors.toUnmodifiableSet());
+
+  public static Set<Elements> STATIC_BARRIER =
+      Stream.of(WALL, START_FLOOR, HEAD_SLEEP, ENEMY_HEAD_SLEEP, TAIL_INACTIVE, ENEMY_TAIL_INACTIVE)
           .collect(Collectors.toUnmodifiableSet());
 
   public static Set<Elements> POWER_UPS =
@@ -219,6 +223,14 @@ public enum Elements implements CharElements {
 
   public boolean isTail() {
     return MY_TAIL.contains(this) || ENEMY_TAIL.contains(this);
+  }
+
+  public boolean isPassableImmediately() {
+    return IMMEDIATELY_PASSABLE.contains(this);
+  }
+
+  public boolean isStaticBarrier() {
+    return STATIC_BARRIER.contains(this);
   }
 
   @Override
