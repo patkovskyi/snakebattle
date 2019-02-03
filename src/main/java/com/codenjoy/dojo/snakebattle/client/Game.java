@@ -2,8 +2,8 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
-import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.codenjoy.dojo.snakebattle.model.BoardSnake;
+import com.codenjoy.dojo.snakebattle.model.Elements;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -88,7 +88,7 @@ public class Game {
   }
 
   public void updateFromBoard(Board board) {
-    this.board = board;
+    this.board = new Board().forString(board.boardAsString());
     updateMyself();
     updateRoundState();
     updateEnemySnakes();
@@ -110,6 +110,7 @@ public class Game {
       updateFuryCount();
       updateFlyingCount();
       updateStoneCount();
+      myBoardSnake = BoardSnake.identify(myHead, board);
     }
   }
 

@@ -22,7 +22,6 @@ package com.codenjoy.dojo.snakebattle.model;
  * #L%
  */
 
-import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.snakebattle.client.Board;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
@@ -35,10 +34,6 @@ public class BoardTest {
 
   @Rule()
   public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
-
-  private Board getBoard(String board) {
-    return new Board().forString(board);
-  }
 
   private void assertDeadEnds(String board, String expectedDeadEnds) {
     boolean[][] deadEnds = new Board().forString(board).getStaticDeadEnds();
