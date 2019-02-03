@@ -27,7 +27,7 @@ public class BoardSnake {
   // head-first order
   private final List<Point> parts;
 
-  public static BoardSnake identifyFromHead(Point head, Board board) {
+  public static BoardSnake identify(Point head, Board board) {
     Elements headElement = board.getAt(head.getX(), head.getY());
 
     boolean isMe;
@@ -45,10 +45,6 @@ public class BoardSnake {
     List<Point> parts = new ArrayList<>();
     discoverSnakeParts(head, null, board, parts);
 
-    if (parts.size() == 0) {
-      return null;
-    }
-
     Direction direction = detectDirection(parts, board);
     if (direction == null) {
       return null;
@@ -59,17 +55,18 @@ public class BoardSnake {
 
   private static void discoverSnakeParts(Point currentPoint, Direction lastDirection, Board board,
       List<Point> parts) {
+    parts.add(currentPoint);
+
     Elements currentElement = board.getAt(currentPoint);
     boolean foundCompatible = false;
     for (Direction nextDirection : currentElement.compatibleDirections()) {
-      if (lastDirection != null && !nextDirection.equals(lastDirection.inverted())) {
+      if (lastDirection == null || !nextDirection.equals(lastDirection.inverted())) {
         Point nextPoint = currentPoint.copy();
         nextPoint.change(nextDirection);
         if (board.containsPoint(nextPoint)) {
           Elements nextElement = board.getAt(nextPoint);
           if (currentElement.isCompatible(nextDirection, nextElement)) {
             if (!foundCompatible) {
-              parts.add(nextPoint);
               discoverSnakeParts(nextPoint, nextDirection, board, parts);
               foundCompatible = true;
             } else {
@@ -93,12 +90,14 @@ public class BoardSnake {
       return board.getAt(head).compatibleDirections().get(0).inverted();
     }
 
-    Point neck = parts.get(1);
-    for (Direction d : board.getAt(neck).compatibleDirections()) {
-      Point couldBeHead = neck.copy();
-      couldBeHead.change(d);
-      if (couldBeHead.equals(head)) {
-        return d;
+    if (parts.size() >= 2) {
+      Point neck = parts.get(1);
+      for (Direction d : board.getAt(neck).compatibleDirections()) {
+        Point couldBeHead = neck.copy();
+        couldBeHead.change(d);
+        if (couldBeHead.equals(head)) {
+          return d;
+        }
       }
     }
 
@@ -118,5 +117,16 @@ public class BoardSnake {
     } else {
       return parts.size() - index - 1;
     }
+  }
+
+  public Point head() {
+    return parts.get(0);
+  }
+
+  /**
+   * Won't always be of tail element type
+   */
+  public Point tail() {
+    return parts.get(parts.size() - 1);
   }
 }

@@ -36,6 +36,11 @@ public class Board extends AbstractBoard<Elements> {
   }
 
   @Override
+  protected int inversionY(int y) {
+    return size - 1 - y;
+  }
+
+  @Override
   public Board forString(String boardString) {
     super.forString(boardString);
 

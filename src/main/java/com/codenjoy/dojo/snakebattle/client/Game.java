@@ -163,7 +163,7 @@ public class Game {
 
   private void updateEnemySnakes() {
     enemyBoardSnakes = board.getEnemySnakeHeads().stream()
-        .map(head -> BoardSnake.identifyFromHead(head, board))
+        .map(head -> BoardSnake.identify(head, board))
         .collect(Collectors.toUnmodifiableSet());
   }
 
