@@ -70,5 +70,8 @@ public class GameTest {
     assertEquals(new PointImpl(2, 1), game.getMyBoardSnake().tail());
     assertEquals(1, game.getStones().size());
     assertTrue(game.getStones().contains(new PointImpl(6, 4)));
+    assertEquals(1, game.getEnemyBoardSnakes().size());
+    assertEquals(new PointImpl(5, 3), game.getEnemyBoardSnakes().stream().findFirst().get().head());
+    assertEquals(new PointImpl(3, 2), game.getEnemyBoardSnakes().stream().findFirst().get().tail());
   }
 }
