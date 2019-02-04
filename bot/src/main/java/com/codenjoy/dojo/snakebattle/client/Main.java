@@ -40,7 +40,7 @@ public class Main {
     WebSocketRunner.run(
         URI.create(
             "wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
-        new GainPerTurnSolver(),
+        new EmulatingSolver(),
         new Board(),
         1000);
   }
