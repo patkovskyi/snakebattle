@@ -16,19 +16,12 @@
     <version>0.1</version>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>codenjoy-releases</id>
-      <url>https://github.com/codenjoyme/codenjoy-repo/raw/master/snapshots</url>
-    </repository>
-  </repositories>
-
   <dependencies>
-  <dependency>
-    <groupId>com.codenjoy</groupId>
-    <artifactId>snakebattle-engine</artifactId>
-    <version>1.0.27</version>
-  </dependency>
+    <dependency>
+      <groupId>com.codenjoy</groupId>
+      <artifactId>snakebattle-engine</artifactId>
+      <version>1.0.27</version>
+    </dependency>
   </dependencies>
 
 </project>

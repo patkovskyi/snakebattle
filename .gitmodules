@@ -1,0 +1,3 @@
+[submodule "codenjoy"]
+	path = codenjoy
+	url = https://github.com/patkovskyi/codenjoy.git

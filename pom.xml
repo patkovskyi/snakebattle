@@ -17,6 +17,8 @@
   <modules>
     <module>bot</module>
     <module>testinverter</module>
+    <module>codenjoy/CodingDojo/games/snake-battle</module>
+    <module>codenjoy/CodingDojo/games/engine</module>
   </modules>
 
 </project>

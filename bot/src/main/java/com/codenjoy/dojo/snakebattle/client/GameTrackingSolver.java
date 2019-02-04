@@ -23,25 +23,17 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 import com.codenjoy.dojo.client.LocalGameRunner;
-import com.codenjoy.dojo.client.WebSocketRunner;
-import com.codenjoy.dojo.services.EventListener;
-import com.codenjoy.dojo.services.GameType;
+import com.codenjoy.dojo.client.Solver;
+import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.services.GameRunner;
-import com.codenjoy.dojo.snakebattle.services.Scores;
-import java.net.URI;
 
-public class Main {
-  public static void main(String[] args) {
-    // WebSocketRunner.runClient("https://192.168.1.1:8080/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
-    // WebSocketRunner.runClient("https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
-    //                new ClosestBestSolver(new RandomDice()),
-    //                new ClosestBestBoard());
+public class GameTrackingSolver implements Solver<Board> {
 
-    WebSocketRunner.run(
-        URI.create(
-            "wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
-        new GainPerTurnSolver(),
-        new Board(),
-        1000);
+  private final LocalGameRunner local = new LocalGameRunner();
+  private final GameRunner gr = new GameRunner();
+
+  @Override
+  public String get(Board board) {
+    return null;
   }
 }
