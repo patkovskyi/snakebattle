@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.snakebattle.patkovskyi</groupId>
   <properties>
-    <module.name>testinverter</module.name>
+    <module.name>bot</module.name>
   </properties>
-  <artifactId>testinverter</artifactId>
+  <artifactId>bot</artifactId>
   <version>0.1</version>
 
   <parent>
@@ -24,11 +24,31 @@
   </repositories>
 
   <dependencies>
-  <dependency>
-    <groupId>com.codenjoy</groupId>
-    <artifactId>snakebattle-engine</artifactId>
-    <version>1.0.27</version>
-  </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.codenjoy</groupId>
+      <artifactId>engine</artifactId>
+      <version>1.0.27</version>
+    </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

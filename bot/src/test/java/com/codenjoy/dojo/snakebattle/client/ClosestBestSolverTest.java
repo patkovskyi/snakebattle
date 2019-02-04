@@ -28,6 +28,7 @@ import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.services.Direction;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -560,6 +561,7 @@ public class ClosestBestSolverTest {
   }
 
   @Test
+  @Ignore
   public void avoidDynamicDeadend1() {
     assertAI(
         "☼☼☼☼☼☼☼☼"
@@ -574,6 +576,7 @@ public class ClosestBestSolverTest {
   }
 
   @Test
+  @Ignore
   public void avoidDynamicDeadend2() {
     assertAI(
         "☼☼☼☼☼☼☼☼"

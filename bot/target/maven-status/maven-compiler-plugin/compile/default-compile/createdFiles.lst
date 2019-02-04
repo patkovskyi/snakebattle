@@ -1,0 +1,9 @@
+com/codenjoy/dojo/snakebattle/model/OldSnake.class
+com/codenjoy/dojo/snakebattle/client/Board.class
+com/codenjoy/dojo/snakebattle/client/ClosestBestBoard.class
+com/codenjoy/dojo/snakebattle/model/BoardSnake.class
+com/codenjoy/dojo/snakebattle/client/Game.class
+com/codenjoy/dojo/snakebattle/client/GainPerTurnSolver.class
+com/codenjoy/dojo/snakebattle/model/Elements.class
+com/codenjoy/dojo/snakebattle/client/ClosestBestSolver.class
+com/codenjoy/dojo/snakebattle/client/Main.class
