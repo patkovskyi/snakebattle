@@ -48,6 +48,29 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
+        <version>1.16</version>
+        <configuration>
+          <licenseName>gpl_v3</licenseName>
+          <licenseResolver>${project.baseUri}/src/license</licenseResolver>
+          <organizationName>Codenjoy</organizationName>
+          <projectName>Codenjoy - it's a dojo-like platform from developers to developers.</projectName>
+          <inceptionYear>2018</inceptionYear>
+          <canUpdateCopyright>false</canUpdateCopyright>
+          <canUpdateDescription>false</canUpdateDescription>
+          <canUpdateLicense>false</canUpdateLicense>
+          <excludes>
+            <exclude>**/*.json</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <id>first</id>
+            <goals>
+              <goal>update-file-header</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
