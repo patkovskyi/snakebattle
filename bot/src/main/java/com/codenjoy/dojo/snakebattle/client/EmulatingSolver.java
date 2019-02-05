@@ -25,46 +25,70 @@ package com.codenjoy.dojo.snakebattle.client;
 import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.RandomDice;
+import com.codenjoy.dojo.services.printer.PrinterFactoryImpl;
 import com.codenjoy.dojo.services.settings.SimpleParameter;
+import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.codenjoy.dojo.snakebattle.model.Player;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.board.Timer;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
+import com.rits.cloning.Cloner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class EmulatingSolver implements Solver<Board> {
+  private static final int PLAYERS_IN_ROUND = 5;
   private final Random random = new Random();
-  private Hero hero;
-  private List<Hero> enemies;
+  private final Cloner cloner = new Cloner();
+  private final PrinterFactoryImpl printerFactory = new PrinterFactoryImpl();
+  private SnakeBoard game;
 
-  public EmulatingSolver() {}
+  public EmulatingSolver() {
+    cloner.registerImmutable(EmulatingEventListener.class);
+  }
 
   @Override
   public String get(Board board) {
-    SnakeBoard snakeBoardFromServer = getSnakeBoard(board.boardAsString());
-    if (hero != null) {
-      System.out.printf("Hero: %s\n", hero.toString());
+    // TODO: || needResync
+    if (game == null || isNewRound(board)) {
+      // initialize from scratch
+      System.out.println("NEW ROUND!");
+      game = initializeGame(board.boardAsString());
+      // System.out.print(printerFactory.getPrinter(game.reader(),
+      // game.getPlayers().get(0)).print());
+    } else {
+      // continue existing game
+      game = continueGame(game, board.boardAsString());
+
+      if (game == null) {
+        // re-sync :(
+        game = initializeGame(board.boardAsString());
+      }
     }
 
-    for (int i = 0; i < enemies.size(); i++) {
-      System.out.printf("Enemy %d: %s\n", i, enemies.get(i).toString());
+    for (int i = 0; i < game.getHeroes().size(); i++) {
+      System.out.printf("Hero %d: %s\n", i, game.getHeroes().get(i));
     }
 
     return getRandomDirection().toString();
   }
 
-  private SnakeBoard getSnakeBoard(String boardString) {
-    LevelImpl level = new LevelImpl(boardString);
+  private boolean isNewRound(Board board) {
+    return board.get(Elements.HEAD_SLEEP).size() == 1
+        && board.get(Elements.ENEMY_HEAD_SLEEP).size() == PLAYERS_IN_ROUND - 1;
+  }
+
+  private SnakeBoard initializeGame(String boardString) {
+    LevelImpl level = new LevelImpl(boardString.replaceAll("\n", ""));
     SnakeBoard game =
         new SnakeBoard(
             level,
             new RandomDice(),
             new Timer(new SimpleParameter<>(0)),
             new Timer(new SimpleParameter<>(300)),
-            new SimpleParameter<>(5),
+            new SimpleParameter<>(0),
             new SimpleParameter<>(10),
             new SimpleParameter<>(10),
             new SimpleParameter<>(3));
@@ -72,29 +96,76 @@ public class EmulatingSolver implements Solver<Board> {
     Hero hero = level.getHero();
     if (hero != null) {
       hero.setActive(true);
-      Player heroPlayer =
-          new Player(event -> System.out.printf("Hero event: %s\n", event.toString()));
+      Player heroPlayer = new Player(new EmulatingEventListener(0));
       game.newGame(heroPlayer);
       heroPlayer.setHero(hero);
       hero.init(game);
-      this.hero = game.getHeroes().get(0);
     }
 
     List<Hero> enemies = level.getEnemies();
-    this.enemies = new ArrayList<>();
     for (int i = 0; i < enemies.size(); i++) {
       Hero enemy = enemies.get(i);
       enemy.setActive(true);
       final int j = i + 1;
-      Player enemyPlayer =
-          new Player(event -> System.out.printf("Enemy %d event: %s\n", j, event.toString()));
+      Player enemyPlayer = new Player(new EmulatingEventListener(j));
       game.newGame(enemyPlayer);
       enemyPlayer.setHero(enemy);
       enemy.init(game);
-      this.enemies.add(game.getHeroes().get(j));
     }
 
     return game;
+  }
+
+  private SnakeBoard continueGame(SnakeBoard game, String expectedBoardString) {
+    long start = System.currentTimeMillis();
+
+    List<Integer[]> permutations = new ArrayList<>();
+    List<Hero> heroes = game.getHeroes();
+    getPermutations(new Integer[heroes.size()], permutations, 0, 6);
+    System.out.printf(
+        "Found %d permutations for %d players.\n", permutations.size(), heroes.size());
+
+    for (int i = 0; i < permutations.size(); i++) {
+      SnakeBoard clonedGame = cloner.deepClone(game);
+      Integer[] actions = permutations.get(i);
+
+      List<Hero> clonedHeroes = clonedGame.getHeroes();
+      for (int j = 0; j < actions.length; j++) {
+        clonedHeroes.get(j).setAction(actions[j]);
+      }
+
+      clonedGame.tick();
+      String clonedBoardString = gameAsString(clonedGame);
+
+      if (i == 0) {
+        System.out.println("CLONED BOARD all counter-clockwise: ");
+        System.out.print(clonedBoardString);
+      }
+
+      if (clonedBoardString.equals(expectedBoardString)) {
+        System.out.printf(
+            "SUCCESS! Found continuation in %d ms\n", System.currentTimeMillis() - start);
+        return clonedGame;
+      }
+    }
+
+    System.out.printf("FAIL! Lost continuation in %d ms\n", System.currentTimeMillis() - start);
+    return null;
+  }
+
+  private String gameAsString(SnakeBoard game) {
+    return (String) printerFactory.getPrinter(game.reader(), game.getPlayers().get(0)).print();
+  }
+
+  private void getPermutations(Integer[] current, List<Integer[]> list, int n, int directions) {
+    if (n == current.length) {
+      list.add(current.clone());
+    } else {
+      for (int i = 0; i < directions; i++) {
+        current[n] = i;
+        getPermutations(current, list, n + 1, directions);
+      }
+    }
   }
 
   private Direction getRandomDirection() {

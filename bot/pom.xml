@@ -34,6 +34,11 @@
       <artifactId>snakebattle-engine</artifactId>
       <version>1.0.27</version>
     </dependency>
+    <dependency>
+      <groupId>uk.com.robust-it</groupId>
+      <artifactId>cloning</artifactId>
+      <version>1.9.11</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -46,7 +51,8 @@
           <licenseName>gpl_v3</licenseName>
           <licenseResolver>${project.baseUri}/src/license</licenseResolver>
           <organizationName>Codenjoy</organizationName>
-          <projectName>Codenjoy - it's a dojo-like platform from developers to developers.</projectName>
+          <projectName>Codenjoy - it's a dojo-like platform from developers to developers.
+          </projectName>
           <inceptionYear>2018</inceptionYear>
           <canUpdateCopyright>false</canUpdateCopyright>
           <canUpdateDescription>false</canUpdateDescription>
