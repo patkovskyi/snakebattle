@@ -55,39 +55,45 @@ public class EmulatingSolver implements Solver<Board> {
 
   @Override
   public String get(Board board) {
-    // TODO: || needResync
-    if (game == null || isNewRound(board)) {
-      // initialize from scratch
-      System.out.println("NEW ROUND!");
-      game = initializeGame(board.boardAsString());
-      game.addWallsBehindSleepingHeroes();
-      // System.out.print(printerFactory.getPrinter(game.reader(),
-      // game.getPlayers().get(0)).print());
-    } else {
-      System.out.println(
-          "Active heroes: " + game.getHeroes().stream().filter(h -> h.isActive()).count());
-      System.out.println(
-          "Alive heroes: " + game.getHeroes().stream().filter(h -> h.isAlive()).count());
-      game = continueGame(game, board);
+    try {
+      // TODO: || needResync
+      if (game == null || isNewRound(board)) {
+        // initialize from scratch
+        System.out.println("NEW ROUND!");
+        game = initializeGame(board.boardAsString());
+        game.addWallsBehindSleepingHeroes();
+        // System.out.print(printerFactory.getPrinter(game.reader(),
+        // game.getPlayers().get(0)).print());
+      } else {
+        System.out.println(
+            "Active heroes: " + game.getHeroes().stream().filter(h -> h.isActive()).count());
+        System.out.println(
+            "Alive heroes: " + game.getHeroes().stream().filter(h -> h.isAlive()).count());
+        game = continueGame(game, board);
 
-      if (game == null) {
-        throw new IllegalStateException("Failed to continue");
+        if (game == null) {
+          throw new IllegalStateException("Failed to continue");
 
-        // re-sync :(
-        // game = initializeGame(board.boardAsString());
+          // re-sync :(
+          // game = initializeGame(board.boardAsString());
+        }
       }
+
+      System.out.println("Tracked game: ");
+      System.out.println(gameAsString(game));
+
+      List<Hero> aliveHeroes =
+          game.getHeroes().stream().filter(h -> h.isAlive()).collect(Collectors.toList());
+      for (int i = 0; i < aliveHeroes.size(); i++) {
+        System.out.printf("Hero %d: %s\n", i, aliveHeroes.get(i));
+      }
+
+      return setExpectationsAndReturn(getRandomDirection(), false);
+    } catch (Exception e) {
+      e.printStackTrace();
+      // throw e;
+      return "NO ACTION";
     }
-
-    System.out.println("Tracked game: ");
-    System.out.println(gameAsString(game));
-
-    List<Hero> aliveHeroes =
-        game.getHeroes().stream().filter(h -> h.isAlive()).collect(Collectors.toList());
-    for (int i = 0; i < aliveHeroes.size(); i++) {
-      System.out.printf("Hero %d: %s\n", i, aliveHeroes.get(i));
-    }
-
-    return setExpectationsAndReturn(getRandomDirection(), false);
   }
 
   private String setExpectationsAndReturn(Direction direction, boolean leaveStone) {
@@ -180,7 +186,9 @@ public class EmulatingSolver implements Solver<Board> {
         }
 
         Elements elementAtHead = expectedBoard.getAt(head);
-        if (elementAtHead == Elements.NONE || elementAtHead == Elements.WALL || elementAtHead == Elements.START_FLOOR) {
+        if (elementAtHead == Elements.NONE
+            || elementAtHead == Elements.WALL
+            || elementAtHead == Elements.START_FLOOR) {
           theOne = false;
           break;
         }
@@ -194,8 +202,8 @@ public class EmulatingSolver implements Solver<Board> {
       consideredPerms.add(actions);
       SnakeBoard clonedGame = cloner.deepClone(game);
 
-      List<Hero> clonedHeroes = clonedGame.getHeroes().stream().filter(h -> h.isAlive()).collect(
-          Collectors.toList());
+      List<Hero> clonedHeroes =
+          clonedGame.getHeroes().stream().filter(h -> h.isAlive()).collect(Collectors.toList());
       for (int j = 0; j < actions.length; j++) {
         clonedHeroes.get(j).setRelativeDirection(actions[j]);
       }
