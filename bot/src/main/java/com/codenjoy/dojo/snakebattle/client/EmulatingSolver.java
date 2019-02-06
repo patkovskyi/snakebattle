@@ -64,6 +64,7 @@ public class EmulatingSolver implements Solver<Board> {
       // game.getPlayers().get(0)).print());
     } else {
       System.out.println("Active heroes: " + game.getHeroes().stream().filter(h -> h.isActive()).count());
+      System.out.println("Alive heroes: " + game.getHeroes().stream().filter(h -> h.isAlive()).count());
       game = continueGame(game, board);
 
       if (game == null) {
