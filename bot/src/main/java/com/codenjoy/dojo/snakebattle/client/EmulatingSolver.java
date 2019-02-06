@@ -36,6 +36,7 @@ import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
 import com.rits.cloning.Cloner;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -63,8 +64,10 @@ public class EmulatingSolver implements Solver<Board> {
       // System.out.print(printerFactory.getPrinter(game.reader(),
       // game.getPlayers().get(0)).print());
     } else {
-      System.out.println("Active heroes: " + game.getHeroes().stream().filter(h -> h.isActive()).count());
-      System.out.println("Alive heroes: " + game.getHeroes().stream().filter(h -> h.isAlive()).count());
+      System.out.println(
+          "Active heroes: " + game.getHeroes().stream().filter(h -> h.isActive()).count());
+      System.out.println(
+          "Alive heroes: " + game.getHeroes().stream().filter(h -> h.isAlive()).count());
       game = continueGame(game, board);
 
       if (game == null) {
@@ -78,8 +81,10 @@ public class EmulatingSolver implements Solver<Board> {
     System.out.println("Tracked game: ");
     System.out.println(gameAsString(game));
 
-    for (int i = 0; i < game.getHeroes().size(); i++) {
-      System.out.printf("Hero %d: %s\n", i, game.getHeroes().get(i));
+    List<Hero> aliveHeroes =
+        game.getHeroes().stream().filter(h -> h.isAlive()).collect(Collectors.toList());
+    for (int i = 0; i < aliveHeroes.size(); i++) {
+      System.out.printf("Hero %d: %s\n", i, aliveHeroes.get(i));
     }
 
     return setExpectationsAndReturn(getRandomDirection(), false);
@@ -146,25 +151,28 @@ public class EmulatingSolver implements Solver<Board> {
         System.out.println("FAIL activating heroes");
       }
 
+      copyObjectsFromBoardToGame(game, expectedBoard);
       return game;
     }
 
     List<Integer[]> permutations = new ArrayList<>();
-    List<Hero> heroes = game.getHeroes().stream().filter(h -> h.isAlive()).collect(
-        Collectors.toList());
-    getPermutations(new Integer[heroes.size()], permutations, 0, 6);
+    List<Hero> heroes =
+        game.getHeroes().stream().filter(h -> h.isAlive()).collect(Collectors.toList());
+    getPermutations(new Integer[heroes.size()], permutations, 0, 4);
     System.out.printf(
         "Found %d permutations for %d players.\n", permutations.size(), heroes.size());
 
     int skipped = 0;
 
+    List<Integer[]> consideredPerms = new ArrayList<>();
+    String clonedBoardString = "";
     for (int i = 0; i < permutations.size(); i++) {
       Integer[] actions = permutations.get(i);
       // check if this might be The One
       boolean theOne = true;
       for (int j = 0; j < heroes.size(); j++) {
         Point head = heroes.get(j).head().copy();
-        Direction newDirection = heroes.get(j).newDirection(actions[j]);
+        Direction newDirection = heroes.get(j).getRelativeDirection(actions[j]);
         head.change(newDirection);
         if (!expectedBoard.containsPoint(head)) {
           theOne = false;
@@ -172,11 +180,7 @@ public class EmulatingSolver implements Solver<Board> {
         }
 
         Elements elementAtHead = expectedBoard.getAt(head);
-        Point tail = heroes.get(j).getTailPoint();
-        Elements elementAtTail = expectedBoard.getAt(tail);
-        if (elementAtHead == Elements.NONE
-            || elementAtHead == Elements.WALL
-            || (actions[j] >= 3 && elementAtTail == Elements.NONE)) {
+        if (elementAtHead == Elements.NONE || elementAtHead == Elements.WALL || elementAtHead == Elements.START_FLOOR) {
           theOne = false;
           break;
         }
@@ -187,15 +191,17 @@ public class EmulatingSolver implements Solver<Board> {
         continue;
       }
 
+      consideredPerms.add(actions);
       SnakeBoard clonedGame = cloner.deepClone(game);
 
-      List<Hero> clonedHeroes = clonedGame.getHeroes();
+      List<Hero> clonedHeroes = clonedGame.getHeroes().stream().filter(h -> h.isAlive()).collect(
+          Collectors.toList());
       for (int j = 0; j < actions.length; j++) {
-        clonedHeroes.get(j).setAction(actions[j]);
+        clonedHeroes.get(j).setRelativeDirection(actions[j]);
       }
 
       clonedGame.tick();
-      String clonedBoardString = gameAsString(clonedGame);
+      clonedBoardString = gameAsString(clonedGame);
 
       //      if (i == 0) {
       //        System.out.println("CLONED BOARD all counter-clockwise: ");
@@ -203,6 +209,7 @@ public class EmulatingSolver implements Solver<Board> {
       //      }
 
       if (BoardStringComparator.movesEqual(clonedBoardString, expectedBoard.boardAsString())) {
+        copyObjectsFromBoardToGame(clonedGame, expectedBoard);
         System.out.printf(
             "SUCCESS! Skipped %d, found continuation in %d ms\n",
             skipped, System.currentTimeMillis() - start);
@@ -211,8 +218,13 @@ public class EmulatingSolver implements Solver<Board> {
     }
 
     System.out.printf(
-        "FAIL! Skipped %d, failed continuation in %d ms\n",
+        "FAIL! Skipped %d, failed continuation in %d ms. Considered permutations: \n",
         skipped, System.currentTimeMillis() - start);
+
+    consideredPerms.forEach(p -> System.out.println(Arrays.toString(p)));
+
+    System.out.println("Last tried board: ");
+    System.out.println(clonedBoardString);
     return null;
   }
 
@@ -235,7 +247,7 @@ public class EmulatingSolver implements Solver<Board> {
     if (game != null) {
       Hero me = game.getHeroes().get(0);
       for (int i = 0; i < 3; i++) {
-        Direction newDirection = me.newDirection(i);
+        Direction newDirection = me.getRelativeDirection(i);
         Point newHead = me.head().copy();
         newHead.change(newDirection);
 
@@ -246,5 +258,13 @@ public class EmulatingSolver implements Solver<Board> {
     }
 
     return Direction.onlyDirections().get(random.nextInt(4));
+  }
+
+  private void copyObjectsFromBoardToGame(SnakeBoard game, Board board) {
+    board.getApples().forEach(a -> game.setApple(a));
+    board.getGold().forEach(g -> game.setGold(g));
+    board.getStones().forEach(s -> game.setStone(s));
+    board.getFuryPills().forEach(f -> game.setFuryPill(f));
+    board.getFlyingPills().forEach(f -> game.setFlyingPill(f));
   }
 }

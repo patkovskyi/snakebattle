@@ -22,20 +22,29 @@ package com.codenjoy.dojo.snakebattle.client;
  * #L%
  */
 
-import com.codenjoy.dojo.client.LocalGameRunner;
 import com.codenjoy.dojo.client.WebSocketRunner;
-import com.codenjoy.dojo.services.EventListener;
-import com.codenjoy.dojo.services.GameType;
-import com.codenjoy.dojo.snakebattle.services.GameRunner;
-import com.codenjoy.dojo.snakebattle.services.Scores;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.stream.Collectors;
 
 public class Main {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     // WebSocketRunner.runClient("https://192.168.1.1:8080/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
     // WebSocketRunner.runClient("https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
     //                new ClosestBestSolver(new RandomDice()),
     //                new ClosestBestBoard());
+
+    String urlString = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/rest/player/njmbrnksebyfo8n9q7xiwwekm3foksnw/6001978481505125210/reset";
+    URL url = new URL(urlString);
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
+    System.out.println("Content: " + bufferedReader.lines().collect(Collectors.joining("\n")));
+    bufferedReader.close();
 
     WebSocketRunner.run(
         URI.create(
