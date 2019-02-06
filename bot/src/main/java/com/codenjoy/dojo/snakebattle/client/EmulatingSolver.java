@@ -24,6 +24,7 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.services.Direction;
+import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.RandomDice;
 import com.codenjoy.dojo.services.printer.PrinterFactoryImpl;
 import com.codenjoy.dojo.services.settings.SimpleParameter;
@@ -43,6 +44,7 @@ public class EmulatingSolver implements Solver<Board> {
   private final Random random = new Random();
   private final Cloner cloner = new Cloner();
   private final PrinterFactoryImpl printerFactory = new PrinterFactoryImpl();
+  private Point myHead;
   private SnakeBoard game;
 
   public EmulatingSolver() {
@@ -60,7 +62,7 @@ public class EmulatingSolver implements Solver<Board> {
       // game.getPlayers().get(0)).print());
     } else {
       // continue existing game
-      game = continueGame(game, board.boardAsString());
+      game = continueGame(game, board);
 
       if (game == null) {
         // re-sync :(
@@ -72,12 +74,18 @@ public class EmulatingSolver implements Solver<Board> {
       System.out.printf("Hero %d: %s\n", i, game.getHeroes().get(i));
     }
 
-    return getRandomDirection().toString();
+    return setExpectationsAndReturn(getRandomDirection(), false);
+  }
+
+  private String setExpectationsAndReturn(Direction direction, boolean leaveStone) {
+    myHead = game.getHeroes().get(0).head().copy();
+    myHead.change(direction);
+    return direction.toString();
   }
 
   private boolean isNewRound(Board board) {
-    return board.get(Elements.HEAD_SLEEP).size() == 1
-        && board.get(Elements.ENEMY_HEAD_SLEEP).size() == PLAYERS_IN_ROUND - 1;
+    return board.get(Elements.HEAD_SLEEP).size() == 1;
+    // && board.get(Elements.ENEMY_HEAD_SLEEP).size() == PLAYERS_IN_ROUND - 1;
   }
 
   private SnakeBoard initializeGame(String boardString) {
@@ -116,7 +124,7 @@ public class EmulatingSolver implements Solver<Board> {
     return game;
   }
 
-  private SnakeBoard continueGame(SnakeBoard game, String expectedBoardString) {
+  private SnakeBoard continueGame(SnakeBoard game, Board expectedBoard) {
     long start = System.currentTimeMillis();
 
     List<Integer[]> permutations = new ArrayList<>();
@@ -125,9 +133,38 @@ public class EmulatingSolver implements Solver<Board> {
     System.out.printf(
         "Found %d permutations for %d players.\n", permutations.size(), heroes.size());
 
+    int skipped = 0;
+
     for (int i = 0; i < permutations.size(); i++) {
-      SnakeBoard clonedGame = cloner.deepClone(game);
       Integer[] actions = permutations.get(i);
+      // check if this might be The One
+      boolean theOne = true;
+      for (int j = 0; j < heroes.size(); j++) {
+        Point head = heroes.get(j).head().copy();
+        Direction newDirection = heroes.get(j).newDirection(actions[j]);
+        head.change(newDirection);
+        if (!expectedBoard.containsPoint(head)) {
+          theOne = false;
+          break;
+        }
+
+        Elements elementAtHead = expectedBoard.getAt(head);
+        Point tail = heroes.get(j).getTailPoint();
+        Elements elementAtTail = expectedBoard.getAt(tail);
+        if (elementAtHead == Elements.NONE
+            || elementAtHead == Elements.WALL
+            || (actions[j] >= 3 && elementAtTail == Elements.NONE)) {
+          theOne = false;
+          break;
+        }
+      }
+
+      if (!theOne) {
+        ++skipped;
+        continue;
+      }
+
+      SnakeBoard clonedGame = cloner.deepClone(game);
 
       List<Hero> clonedHeroes = clonedGame.getHeroes();
       for (int j = 0; j < actions.length; j++) {
@@ -137,19 +174,22 @@ public class EmulatingSolver implements Solver<Board> {
       clonedGame.tick();
       String clonedBoardString = gameAsString(clonedGame);
 
-      if (i == 0) {
-        System.out.println("CLONED BOARD all counter-clockwise: ");
-        System.out.print(clonedBoardString);
-      }
+      //      if (i == 0) {
+      //        System.out.println("CLONED BOARD all counter-clockwise: ");
+      //        System.out.print(clonedBoardString);
+      //      }
 
-      if (clonedBoardString.equals(expectedBoardString)) {
+      if (BoardStringComparator.movesEqual(clonedBoardString, expectedBoard.boardAsString())) {
         System.out.printf(
-            "SUCCESS! Found continuation in %d ms\n", System.currentTimeMillis() - start);
+            "SUCCESS! Skipped %d, found continuation in %d ms\n",
+            skipped, System.currentTimeMillis() - start);
         return clonedGame;
       }
     }
 
-    System.out.printf("FAIL! Lost continuation in %d ms\n", System.currentTimeMillis() - start);
+    System.out.printf(
+        "FAIL! Skipped %d, failed continuation in %d ms\n",
+        skipped, System.currentTimeMillis() - start);
     return null;
   }
 
