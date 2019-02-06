@@ -38,6 +38,7 @@ import com.rits.cloning.Cloner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class EmulatingSolver implements Solver<Board> {
   private static final int PLAYERS_IN_ROUND = 5;
@@ -58,17 +59,23 @@ public class EmulatingSolver implements Solver<Board> {
       // initialize from scratch
       System.out.println("NEW ROUND!");
       game = initializeGame(board.boardAsString());
+      game.addWallsBehindSleepingHeroes();
       // System.out.print(printerFactory.getPrinter(game.reader(),
       // game.getPlayers().get(0)).print());
     } else {
-      // continue existing game
+      System.out.println("Active heroes: " + game.getHeroes().stream().filter(h -> h.isActive()).count());
       game = continueGame(game, board);
 
       if (game == null) {
+        throw new IllegalStateException("Failed to continue");
+
         // re-sync :(
-        game = initializeGame(board.boardAsString());
+        // game = initializeGame(board.boardAsString());
       }
     }
+
+    System.out.println("Tracked game: ");
+    System.out.println(gameAsString(game));
 
     for (int i = 0; i < game.getHeroes().size(); i++) {
       System.out.printf("Hero %d: %s\n", i, game.getHeroes().get(i));
@@ -101,24 +108,26 @@ public class EmulatingSolver implements Solver<Board> {
             new SimpleParameter<>(10),
             new SimpleParameter<>(3));
 
+    boolean snakesActive = boardString.indexOf(Elements.HEAD_SLEEP.ch()) < 0;
+
     Hero hero = level.getHero();
     if (hero != null) {
-      hero.setActive(true);
       Player heroPlayer = new Player(new EmulatingEventListener(0));
       game.newGame(heroPlayer);
       heroPlayer.setHero(hero);
+      hero.setActive(snakesActive);
       hero.init(game);
     }
 
     List<Hero> enemies = level.getEnemies();
     for (int i = 0; i < enemies.size(); i++) {
       Hero enemy = enemies.get(i);
-      enemy.setActive(true);
       final int j = i + 1;
       Player enemyPlayer = new Player(new EmulatingEventListener(j));
       game.newGame(enemyPlayer);
       enemyPlayer.setHero(enemy);
       enemy.init(game);
+      enemy.setActive(snakesActive);
     }
 
     return game;
@@ -127,8 +136,21 @@ public class EmulatingSolver implements Solver<Board> {
   private SnakeBoard continueGame(SnakeBoard game, Board expectedBoard) {
     long start = System.currentTimeMillis();
 
+    if (game.getHeroes().stream().allMatch(h -> !h.isActive())) {
+      // simply activate heroes and return the same board
+      game.getHeroes().forEach(h -> h.setActive(true));
+      if (gameAsString(game).equals(expectedBoard.boardAsString())) {
+        System.out.println("SUCCESS activating heroes");
+      } else {
+        System.out.println("FAIL activating heroes");
+      }
+
+      return game;
+    }
+
     List<Integer[]> permutations = new ArrayList<>();
-    List<Hero> heroes = game.getHeroes();
+    List<Hero> heroes = game.getHeroes().stream().filter(h -> h.isAlive()).collect(
+        Collectors.toList());
     getPermutations(new Integer[heroes.size()], permutations, 0, 6);
     System.out.printf(
         "Found %d permutations for %d players.\n", permutations.size(), heroes.size());
@@ -209,6 +231,19 @@ public class EmulatingSolver implements Solver<Board> {
   }
 
   private Direction getRandomDirection() {
+    if (game != null) {
+      Hero me = game.getHeroes().get(0);
+      for (int i = 0; i < 3; i++) {
+        Direction newDirection = me.newDirection(i);
+        Point newHead = me.head().copy();
+        newHead.change(newDirection);
+
+        if (game.isFree(newHead)) {
+          return newDirection;
+        }
+      }
+    }
+
     return Direction.onlyDirections().get(random.nextInt(4));
   }
 }
