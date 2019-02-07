@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 public class GameHelper {
   private static final Cloner cloner = new Cloner();
   private static final PrinterFactoryImpl printerFactory = new PrinterFactoryImpl();
+  public static final int MIN_SNAKE_LENGTH = 2;
 
   static {
     cloner.registerImmutable(EmulatingEventListener.class);

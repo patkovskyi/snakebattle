@@ -9,7 +9,10 @@ import com.codenjoy.dojo.snakebattle.model.objects.FlyingPill;
 import com.codenjoy.dojo.snakebattle.model.objects.FuryPill;
 import com.codenjoy.dojo.snakebattle.model.objects.Gold;
 import com.codenjoy.dojo.snakebattle.model.objects.Stone;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +42,40 @@ public class HeroAnalysis {
     analysis.findDistancesAndValues(game, hero);
     return analysis;
   }
+
+  private static int[][] findDistances(
+      boolean[][] barriers, Point fromPoint, Direction fromDirection) {
+    int[][] distances = new int[barriers.length][barriers[0].length];
+    for (int[] row : distances) Arrays.fill(row, Integer.MAX_VALUE);
+
+    Queue<Point> q = new ArrayDeque<>();
+    distances[fromPoint.getX()][fromPoint.getY()] = 0;
+
+    while (!q.isEmpty()) {
+      Point point = q.remove();
+
+      for (Direction nextDirection : Direction.onlyDirections()) {
+        if (distances[point.getX()][point.getY()] == 0
+            && nextDirection == fromDirection.inverted()) {
+          // can't turn backwards on the first step of search
+          continue;
+        }
+
+        Point nextPoint = point.copy();
+        nextPoint.change(nextDirection);
+
+        if (!barriers[nextPoint.getX()][nextPoint.getY()]
+            && distances[point.getX()][point.getY()] + 1
+                < distances[nextPoint.getX()][nextPoint.getY()]) {
+          q.add(nextPoint);
+          distances[nextPoint.getX()][nextPoint.getY()] = distances[point.getX()][point.getY()] + 1;
+        }
+      }
+    }
+
+    return distances;
+  }
+
 
   // TODO: split in two because values actually depend on computed distances
   private void findDistancesAndValues(SnakeBoard game, Hero hero) {
@@ -95,60 +132,6 @@ public class HeroAnalysis {
 
       ++step;
     }
-  }
-
-  private int[][] findDistances(SnakeBoard game, Point fromPoint, Direction fromDirection) {
-    distances = new int[game.size()][game.size()];
-
-    for (int x = 0; x < game.size(); x++) {
-      for (int y = 0; y < game.size(); y++) {
-        distances[x][y] = Integer.MAX_VALUE;
-      }
-    }
-
-    int step = 0;
-    PriorityQueue<Point> openSet =
-        new PriorityQueue<>(
-            (p1, p2) ->
-                Integer.compare(values[p2.getX()][p2.getY()], values[p1.getX()][p1.getY()]));
-
-    openSet.add(fromPoint);
-    boolean[][] visited = new boolean[game.size()][game.size()];
-
-    while (!openSet.isEmpty()) {
-      PriorityQueue<Point> closedSet = openSet;
-      openSet =
-          new PriorityQueue<>(
-              (p1, p2) ->
-                  Integer.compare(values[p2.getX()][p2.getY()], values[p1.getX()][p1.getY()]));
-
-      while (!closedSet.isEmpty()) {
-        Point p = closedSet.remove();
-        if (!visited[p.getX()][p.getY()]) {
-          visited[p.getX()][p.getY()] = true;
-          distances[p.getX()][p.getY()] = step;
-
-          for (Direction ndir : Direction.onlyDirections()) {
-            if (step > 0 || ndir != fromDirection.inverted()) {
-              Point np = p.copy();
-              np.change(ndir);
-
-              if (!isNotPassableOrRisky(np) && step + 1 < distances[np.getX()][np.getY()]) {
-                values[np.getX()][np.getY()] =
-                    Math.max(
-                        values[p.getX()][p.getY()] + getPointValue(np, step + 1),
-                        values[np.getX()][np.getY()]);
-                openSet.add(np);
-              }
-            }
-          }
-        }
-      }
-
-      ++step;
-    }
-
-    return distances;
   }
 
   private boolean isNotPassableOrRisky(Point np) {
