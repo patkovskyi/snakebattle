@@ -27,17 +27,37 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 public class EmulatingSolver implements Solver<Board> {
   private final Random random = new Random();
   private Point myHead;
   private SnakeBoard game;
+  private boolean[][] deadEnd;
 
   @Override
   public String get(Board boardFromServer) {
     game = GameHelper.getNewOrContinuedGame(game, boardFromServer);
-    return setExpectationsAndReturn(getRandomDirection(), false);
+    if (boardFromServer.isNewRound() || deadEnd == null) {
+      deadEnd = boardFromServer.getStaticDeadEnds();
+    }
+
+    return findBestMove(boardFromServer);
+  }
+
+  private String findBestMove(Board board) {
+    return "LEFT";
+  }
+
+
+
+  private Hero getMyHero() {
+    return game.getHeroes().get(0);
+  }
+
+  private Point getMyHead() {
+    return getMyHero().head();
   }
 
   private String setExpectationsAndReturn(Direction direction, boolean leaveStone) {

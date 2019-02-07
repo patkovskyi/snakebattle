@@ -119,4 +119,8 @@ public class Board extends AbstractBoard<Elements> {
 
     return deadEnds;
   }
+
+  public boolean isNewRound() {
+    return get(Elements.HEAD_SLEEP).size() == 1;
+  }
 }

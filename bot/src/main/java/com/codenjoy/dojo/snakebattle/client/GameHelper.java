@@ -27,7 +27,6 @@ import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.RandomDice;
 import com.codenjoy.dojo.services.printer.PrinterFactoryImpl;
 import com.codenjoy.dojo.services.settings.SimpleParameter;
-import com.codenjoy.dojo.snakebattle.model.BoardSnake;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.codenjoy.dojo.snakebattle.model.Player;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
@@ -49,7 +48,7 @@ public class GameHelper {
   }
 
   public static SnakeBoard getNewOrContinuedGame(SnakeBoard game, Board boardFromServer) {
-    if (game == null || GameHelper.isNewRound(boardFromServer)) {
+    if (game == null || boardFromServer.isNewRound()) {
       // initialize new game
       System.out.println("NEW ROUND!");
       game = initializeGame(boardFromServer);
@@ -66,6 +65,10 @@ public class GameHelper {
     return game;
   }
 
+  public static int getManhattanDistance(Point p1, Point p2) {
+    return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY());
+  }
+
   private static SnakeBoard initializeGame(Board board) {
     String boardString = board.boardAsString();
     LevelImpl level = new LevelImpl(boardString.replaceAll("\n", ""));
@@ -80,7 +83,7 @@ public class GameHelper {
             new SimpleParameter<>(10),
             new SimpleParameter<>(3));
 
-    boolean snakesActive = !isNewRound(board);
+    boolean snakesActive = !board.isNewRound();
 
     Hero hero = level.getHero();
     if (hero != null) {
@@ -192,10 +195,6 @@ public class GameHelper {
     System.out.println("Last board tried: ");
     System.out.println(clonedBoardString);
     return null;
-  }
-
-  private static boolean isNewRound(Board board) {
-    return board.get(Elements.HEAD_SLEEP).size() == 1;
   }
 
   private static String gameAsString(SnakeBoard game) {
