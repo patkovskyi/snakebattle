@@ -50,9 +50,6 @@ public class Board extends AbstractBoard<Elements> {
   private Collection<Point> flyingPills;
 
   @Getter
-  private Collection<Point> enemySnakeHeads;
-
-  @Getter
   private Collection<Point> walls;
 
   @Override
@@ -68,14 +65,12 @@ public class Board extends AbstractBoard<Elements> {
   @Override
   public Board forString(String boardString) {
     super.forString(boardString);
-
     gold = get(Elements.GOLD);
     apples = get(Elements.APPLE);
     stones = get(Elements.STONE);
     furyPills = get(Elements.FURY_PILL);
     flyingPills = get(Elements.FLYING_PILL);
     walls = get(Elements.WALL);
-    enemySnakeHeads = get(Elements.ENEMY_HEAD.toArray(new Elements[0]));
     return this;
   }
 

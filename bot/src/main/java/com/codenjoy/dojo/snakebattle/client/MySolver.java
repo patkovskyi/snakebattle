@@ -31,7 +31,6 @@ import java.util.Random;
 
 public class MySolver implements Solver<Board> {
   private final Random random = new Random();
-  private Point myHead;
   private SnakeBoard game;
 
   @Override
@@ -41,24 +40,6 @@ public class MySolver implements Solver<Board> {
     }
 
     return getRandomDirection().toString();
-  }
-
-  private String findBestMove(Board board) {
-    return "LEFT";
-  }
-
-  private Hero getMyHero() {
-    return game.getHeroes().get(0);
-  }
-
-  private Point getMyHead() {
-    return getMyHero().head();
-  }
-
-  private String setExpectationsAndReturn(Direction direction, boolean leaveStone) {
-    myHead = game.getHeroes().get(0).head().copy();
-    myHead.change(direction);
-    return direction.toString();
   }
 
   private Direction getRandomDirection() {

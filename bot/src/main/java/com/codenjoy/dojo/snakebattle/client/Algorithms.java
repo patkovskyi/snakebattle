@@ -9,6 +9,9 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Queue;
 
+/**
+ * This class should know NOTHING about our domain.
+ */
 public class Algorithms {
 
   public static int[][] findDynamicDistances(SnakeBoard game, Hero hero) {
@@ -158,7 +161,7 @@ public class Algorithms {
 
   private static boolean wouldSurviveHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
     boolean heroLonger = hero.size() + hero.getGrowBy() >= enemy.size() + enemy.getGrowBy()
-        + GameHelper.MIN_SNAKE_LENGTH;
+        + Constants.MIN_SNAKE_LENGTH;
 
     boolean heroFury = hero.getFuryCount() >= ticksToCollision;
     boolean enemyFury = enemy.getFuryCount() >= ticksToCollision;

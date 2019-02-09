@@ -37,7 +37,7 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 
-public class AlgoHelperTest {
+public class AlgorithmsTest {
 
   @Rule
   public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));

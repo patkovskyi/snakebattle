@@ -38,11 +38,11 @@ import com.rits.cloning.Cloner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GameHelper {
 
-  public static final int MIN_SNAKE_LENGTH = 2;
   private static final Cloner cloner = new Cloner();
   private static final PrinterFactoryImpl printerFactory = new PrinterFactoryImpl();
 
@@ -65,7 +65,8 @@ public class GameHelper {
       }
     }
 
-    if (!game.getHeroes().get(0).isAlive() && game.getHeroes().stream().anyMatch(h -> h.isAlive())) {
+    if (!game.getHeroes().get(0).isAlive() && game.getHeroes().stream()
+        .anyMatch(h -> h.isAlive())) {
       System.out.println("ROUND LOST");
     }
 
@@ -233,5 +234,46 @@ public class GameHelper {
     board.getStones().forEach(s -> game.setStone(s));
     board.getFuryPills().forEach(f -> game.setFuryPill(f));
     board.getFlyingPills().forEach(f -> game.setFlyingPill(f));
+  }
+
+  public static class BoardStringComparator {
+
+    private static final Set<Elements> objects =
+        Set.of(Elements.GOLD, Elements.APPLE, Elements.STONE, Elements.FURY_PILL,
+            Elements.FLYING_PILL);
+
+    public static boolean movesEqual(String board1, String board2) {
+      if (board1.length() != board2.length()) {
+        return false;
+      }
+
+      for (int i = 0; i < board1.length(); i++) {
+        char c1 = board1.charAt(i);
+        char c2 = board2.charAt(i);
+        if (c1 == c2) {
+          continue;
+        }
+
+        if (objects.contains(Elements.valueOf(c1))) {
+          c1 = ' ';
+        }
+        if (objects.contains(Elements.valueOf(c2))) {
+          c2 = ' ';
+        }
+        if ((c1 == Elements.HEAD_DEAD.ch() || c1 == Elements.ENEMY_HEAD_DEAD.ch()) && c2 != ' ') {
+          continue;
+        }
+
+        if ((c2 == Elements.HEAD_DEAD.ch() || c2 == Elements.ENEMY_HEAD_DEAD.ch()) && c1 != ' ') {
+          continue;
+        }
+
+        if (c1 != c2) {
+          return false;
+        }
+      }
+
+      return true;
+    }
   }
 }
