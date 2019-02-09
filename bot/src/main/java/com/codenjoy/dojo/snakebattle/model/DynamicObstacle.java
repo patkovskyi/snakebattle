@@ -1,6 +1,6 @@
-package com.codenjoy.dojo.snakebattle.client;
+package com.codenjoy.dojo.snakebattle.model;
 
-enum DynamicObstacle {
+public enum DynamicObstacle {
   Nothing(0),
   Body(1),
   Neck(2);

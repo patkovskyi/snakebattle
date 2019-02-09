@@ -1,4 +1,4 @@
-package com.codenjoy.dojo.snakebattle.client;
+package com.codenjoy.dojo.snakebattle.model;
 
 /*-
  * #%L

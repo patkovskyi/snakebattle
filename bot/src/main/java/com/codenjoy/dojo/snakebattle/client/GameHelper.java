@@ -10,12 +10,12 @@ package com.codenjoy.dojo.snakebattle.client;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -28,6 +28,7 @@ import com.codenjoy.dojo.services.RandomDice;
 import com.codenjoy.dojo.services.printer.PrinterFactoryImpl;
 import com.codenjoy.dojo.services.settings.SimpleParameter;
 import com.codenjoy.dojo.snakebattle.model.Elements;
+import com.codenjoy.dojo.snakebattle.model.EmulatingEventListener;
 import com.codenjoy.dojo.snakebattle.model.Player;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.board.Timer;
@@ -40,9 +41,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GameHelper {
+
+  public static final int MIN_SNAKE_LENGTH = 2;
   private static final Cloner cloner = new Cloner();
   private static final PrinterFactoryImpl printerFactory = new PrinterFactoryImpl();
-  public static final int MIN_SNAKE_LENGTH = 2;
 
   static {
     cloner.registerImmutable(EmulatingEventListener.class);
@@ -63,7 +65,7 @@ public class GameHelper {
       }
     }
 
-    if (!game.getHeroes().get(0).isAlive()) {
+    if (!game.getHeroes().get(0).isAlive() && game.getHeroes().stream().anyMatch(h -> h.isAlive())) {
       System.out.println("ROUND LOST");
     }
 
@@ -131,9 +133,17 @@ public class GameHelper {
       return game;
     }
 
-    List<Integer[]> permutations = new ArrayList<>();
     List<Hero> heroes =
         game.getHeroes().stream().filter(h -> h.isAlive()).collect(Collectors.toList());
+
+    if (expectedBoard.get(Elements.HEAD_DEAD, Elements.ENEMY_HEAD_DEAD).size() == heroes.size()) {
+      // round ended by timeout
+      System.out.println("ROUND ENDED");
+      heroes.forEach(h -> h.setAlive(false));
+      return game;
+    }
+
+    List<Integer[]> permutations = new ArrayList<>();
     getPermutations(new Integer[heroes.size()], permutations, 0, 3);
     System.out.printf(
         "Found %d permutations for %d players.\n", permutations.size(), heroes.size());
