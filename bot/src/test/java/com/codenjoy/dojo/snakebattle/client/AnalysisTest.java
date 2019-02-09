@@ -37,7 +37,7 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 
-public class AlgorithmsTest {
+public class AnalysisTest {
 
   @Rule
   public TestRule globalTimeout = new DisableOnDebug(new Timeout(500, TimeUnit.MILLISECONDS));
@@ -77,13 +77,113 @@ public class AlgorithmsTest {
   }
 
   private void assertDynamicDistances(String expected) {
-    int[][] arr = Algorithms.findDynamicDistances(game, hero);
+    int[][] arr = Analysis.create(game).getDynamicDistances(hero);
     assertEqual(expected, arr);
   }
 
   private void assertStaticDistances(String expected) {
-    int[][] arr = Algorithms.findStaticDistances(game, hero);
+    int[][] arr = Analysis.create(game).getStaticDistances(hero);
     assertEqual(expected, arr);
+  }
+
+  private void assertDeadEnds(String board, String expectedDeadEnds) {
+    SnakeBoard game = GameHelper.initializeGame(new Board().forString(board));
+    Analysis analysis = Analysis.create(game);
+    boolean[][] deadEnds = analysis.getStaticObstacles(game.getHeroes().get(0));
+    StringBuilder sb = new StringBuilder();
+    for (int y = deadEnds.length; y --> 0; ) {
+      for (int x = 0; x < deadEnds.length; x++) {
+        sb.append(deadEnds[x][y] ? "☼" : " ");
+      }
+    }
+
+    TestUtils.assertBoardsEqual(expectedDeadEnds, sb.toString());
+  }
+
+  @Test
+  public void deadEndsSmall() {
+    assertDeadEnds(
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼     ☼"
+            + "☼☼☼☼   ☼"
+            + "☼☼    ●☼"
+            + "☼☼   ˄ ☼"
+            + "☼☼ ×─┘▲☼"
+            + "☼☼╘═══╝☼"
+            + "☼☼☼☼☼☼☼☼",
+        "☼☼☼☼☼☼☼☼"
+            + "☼☼☼☼   ☼"
+            + "☼☼☼☼   ☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼     ☼"
+            + "☼☼☼☼☼☼☼☼");
+  }
+
+  @Test
+  public void deadEndsBig() {
+    assertDeadEnds(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+            + "☼☼┌>                         ☼"
+            + "*ø│         ®                ☼"
+            + "☼☼└──ö   ●         ○         ☼"
+            + "☼☼                      ○    ☼"
+            + "☼☼           ●    ○          ☼"
+            + "☼☼     ☼☼☼☼☼                 ☼"
+            + "☼☼     ☼                     ☼"
+            + "☼#     ☼☼☼     ○  ☼☼☼☼#      ☼"
+            + "☼☼     ☼          ☼   ☼  ●   ☼"
+            + "☼☼  ○  ☼☼☼*ø    ○ ☼☼☼☼# ○    ☼"
+            + "☼☼                ☼ ○        ☼"
+            + "☼☼                ☼        ®$☼"
+            + "☼☼    ●  $                   ☼"
+            + "*ø             ○ ○    ○      ☼"
+            + "☼☼    ○                    ® ☼"
+            + "☼☼        ☼☼☼    $           ☼"
+            + "☼☼       ☼  ☼                ☼"
+            + "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼"
+            + "☼☼      ☼   ☼   ● ☼●☼ ☼ ☼ ○  ☼"
+            + "☼#      ☼   ☼     ☼  ☼  ☼    ☼"
+            + "☼☼   ○          © ☼     ☼    ☼"
+            + "☼☼     ●          ☼   ╓ ☼    ☼"
+            + "☼☼                    ║      ☼"
+            + "☼☼                    ║      ☼"
+            + "☼☼             ●      ╚══╗   ☼"
+            + "☼#                       ║   ☼"
+            + "☼☼   ©                ◄╗ ║   ☼"
+            + "☼☼                     ╚═╝   ☼"
+            + "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼",
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼     ☼☼☼☼☼                 ☼"
+            + "☼☼     ☼☼☼                   ☼"
+            + "☼☼     ☼☼☼        ☼☼☼☼☼      ☼"
+            + "☼☼     ☼☼☼        ☼☼☼☼☼      ☼"
+            + "☼☼     ☼☼☼☼☼      ☼☼☼☼☼      ☼"
+            + "☼☼                ☼          ☼"
+            + "☼☼                ☼          ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼        ☼☼☼                ☼"
+            + "☼☼       ☼☼☼☼                ☼"
+            + "☼☼      ☼☼☼☼☼     ☼☼   ☼☼    ☼"
+            + "☼☼      ☼   ☼     ☼☼☼☼☼☼☼    ☼"
+            + "☼☼      ☼   ☼     ☼  ☼  ☼    ☼"
+            + "☼☼                ☼     ☼    ☼"
+            + "☼☼                ☼     ☼    ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼                           ☼"
+            + "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼");
   }
 
   @Test
