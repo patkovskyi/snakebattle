@@ -4,6 +4,11 @@ import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.DynamicObstacle;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
+import com.codenjoy.dojo.snakebattle.model.objects.Apple;
+import com.codenjoy.dojo.snakebattle.model.objects.FlyingPill;
+import com.codenjoy.dojo.snakebattle.model.objects.FuryPill;
+import com.codenjoy.dojo.snakebattle.model.objects.Gold;
+import com.codenjoy.dojo.snakebattle.model.objects.Stone;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -120,15 +125,74 @@ public class Analysis {
     });
   }
 
-  Stream<Point> getBarriers() {
+  private Stream<Point> getBarriers() {
     return Stream.concat(game.getWalls().stream(), game.getStarts().stream());
   }
 
-  Stream<Hero> getActiveAliveHeroes() {
+  private Stream<Hero> getActiveAliveHeroes() {
     return game.getHeroes().stream().filter(h -> h.isActive() && h.isAlive());
   }
 
-  Hero getMyHero() {
+  private Hero getMyHero() {
     return game.getHeroes().get(0);
+  }
+
+  private int getPointValue(Point point, int distanceToPoint) {
+    Point p = game.getObjOn(point);
+    if (p instanceof Apple) {
+      return 3;
+    }
+    if (p instanceof Gold) {
+      return 5;
+    }
+    if (p instanceof Stone && getMyHero().getFuryCount() >= distanceToPoint) {
+      return 12;
+    }
+    if (p instanceof Stone && getMyHero().size() >= 5) {
+      return 10;
+    }
+    if (p instanceof FlyingPill) {
+      return -10;
+    }
+    if (p instanceof FuryPill) {
+      return Math.max(
+          getShittingPoints(), getPointsForStonesAround(p, game.furyCount().getValue()));
+    }
+
+    // enemy head
+    // enemy neck
+    // enemy body if I'm furious
+
+    return 0;
+  }
+
+  private int getPointsForStonesAround(Point point, int radius) {
+    return 10
+        * Math.min(
+        3,
+        (int)
+            game.getStones().stream()
+                .filter(stone -> GameHelper.getManhattanDistance(stone, point) < radius)
+                .count());
+  }
+
+  private int getShittingPoints() {
+    // TODO: rethink this considering tail positioning
+    int total = 0;
+    Hero hero = getMyHero();
+    int furyRounds = Math.max(0, game.furyCount().getValue() - hero.size() - 1);
+    int skips = Math.max(0, hero.size() - hero.getStonesCount());
+    if (furyRounds >= hero.getStonesCount()) {
+      furyRounds -= hero.getStonesCount();
+      total += 10 * hero.getStonesCount();
+    }
+
+    while (furyRounds > 0) {
+      furyRounds -= skips;
+      total += 10 * Math.min(hero.getFuryCount(), hero.getStonesCount());
+      furyRounds -= hero.getStonesCount();
+    }
+
+    return total;
   }
 }

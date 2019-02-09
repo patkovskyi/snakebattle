@@ -28,7 +28,7 @@ public class Algorithms {
       for (Direction nextDirection : Direction.onlyDirections()) {
         if (distances[point.getX()][point.getY()] == 0
             && nextDirection == fromDirection.inverted()) {
-          // can't turn backwards on the first step of search
+          // can't turn backwards on the first step of a search
           continue;
         }
 
@@ -47,11 +47,11 @@ public class Algorithms {
     return distances;
   }
 
-  public static boolean[][] findStaticDeadEnds(boolean[][] barriers) {
-    boolean[][] deadEnds = new boolean[barriers.length][barriers.length];
-    for (int i = 0; i < barriers.length; i++) {
-      for (int j = 0; j < barriers.length; j++) {
-        deadEnds[i][j] = barriers[i][j];
+  public static boolean[][] findStaticDeadEnds(boolean[][] staticObstacles) {
+    boolean[][] deadEnds = new boolean[staticObstacles.length][staticObstacles.length];
+    for (int i = 0; i < staticObstacles.length; i++) {
+      for (int j = 0; j < staticObstacles.length; j++) {
+        deadEnds[i][j] = staticObstacles[i][j];
       }
     }
 
@@ -60,14 +60,14 @@ public class Algorithms {
 
     do {
       updated = false;
-      for (int x = 0; x < barriers.length; x++) {
-        for (int y = 0; y < barriers.length; y++) {
+      for (int x = 0; x < staticObstacles.length; x++) {
+        for (int y = 0; y < staticObstacles.length; y++) {
           if (!deadEnds[x][y]) {
             int passableNeighbors = 0;
             for (int d = 0; d < 4; d++) {
               int nx = directions[d].changeX(x);
               int ny = directions[d].changeY(y);
-              if (!isOutOf(nx, ny, barriers.length) && !deadEnds[nx][ny]) {
+              if (!isOutOf(nx, ny, staticObstacles.length) && !deadEnds[nx][ny]) {
                 ++passableNeighbors;
               }
             }

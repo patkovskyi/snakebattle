@@ -22,13 +22,8 @@ package com.codenjoy.dojo.snakebattle.model;
  * #L%
  */
 
-import com.codenjoy.dojo.snakebattle.client.Analysis;
-import com.codenjoy.dojo.snakebattle.client.Board;
-import com.codenjoy.dojo.snakebattle.client.GameHelper;
-import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;

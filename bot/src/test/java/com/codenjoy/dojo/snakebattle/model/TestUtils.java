@@ -34,7 +34,7 @@ public class TestUtils {
   public static String injectN(String expected) {
     int size = (int) Math.sqrt(expected.length());
     if (size * size != expected.length()) {
-      throw new IllegalArgumentException("Board is not square.");
+      throw new IllegalArgumentException("MyBoard is not square.");
     }
 
     return inject(expected, size, "\n");

@@ -32,7 +32,7 @@ import lombok.Getter;
  * This class simply captures string representation of the game board. It does not make any
  * assumptions and is not stateful (does not track previous states in any way).
  */
-public class Board extends AbstractBoard<Elements> {
+public class MyBoard extends AbstractBoard<Elements> {
 
   @Getter
   private Collection<Point> gold;
@@ -63,7 +63,7 @@ public class Board extends AbstractBoard<Elements> {
   }
 
   @Override
-  public Board forString(String boardString) {
+  public MyBoard forString(String boardString) {
     super.forString(boardString);
     gold = get(Elements.GOLD);
     apples = get(Elements.APPLE);

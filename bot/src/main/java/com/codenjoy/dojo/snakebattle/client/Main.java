@@ -47,7 +47,7 @@ public class Main {
         URI.create(
             "wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
         new MySolver(),
-        new Board(),
+        new MyBoard(),
         1000);
   }
 }

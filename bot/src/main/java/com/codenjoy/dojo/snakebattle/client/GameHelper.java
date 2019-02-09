@@ -50,7 +50,7 @@ public class GameHelper {
     cloner.registerImmutable(EmulatingEventListener.class);
   }
 
-  public static SnakeBoard getNewOrContinuedGame(SnakeBoard game, Board boardFromServer) {
+  public static SnakeBoard getNewOrContinuedGame(SnakeBoard game, MyBoard boardFromServer) {
     if (game == null || boardFromServer.isNewRound()) {
       // initialize new game
       System.out.println("NEW ROUND!");
@@ -77,7 +77,7 @@ public class GameHelper {
     return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY());
   }
 
-  public static SnakeBoard initializeGame(Board board) {
+  public static SnakeBoard initializeGame(MyBoard board) {
     String boardString = board.boardAsString();
     LevelImpl level = new LevelImpl(boardString.replaceAll("\n", ""));
     SnakeBoard game =
@@ -116,7 +116,7 @@ public class GameHelper {
     return game;
   }
 
-  private static SnakeBoard continueGame(SnakeBoard game, Board expectedBoard) {
+  private static SnakeBoard continueGame(SnakeBoard game, MyBoard expectedBoard) {
     long start = System.currentTimeMillis();
 
     if (game.getHeroes().stream().allMatch(h -> !h.isActive())) {
@@ -228,7 +228,7 @@ public class GameHelper {
     }
   }
 
-  private static void copyObjectsFromBoardToGame(SnakeBoard game, Board board) {
+  private static void copyObjectsFromBoardToGame(SnakeBoard game, MyBoard board) {
     board.getApples().forEach(a -> game.setApple(a));
     board.getGold().forEach(g -> game.setGold(g));
     board.getStones().forEach(s -> game.setStone(s));

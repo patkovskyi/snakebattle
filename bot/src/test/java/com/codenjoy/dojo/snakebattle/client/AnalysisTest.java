@@ -45,7 +45,7 @@ public class AnalysisTest {
   private Hero hero;
 
   private void newGame(String boardAsString) {
-    game = GameHelper.initializeGame(new Board().forString(boardAsString));
+    game = GameHelper.initializeGame(new MyBoard().forString(boardAsString));
     hero = game.getHeroes().get(0);
   }
 
@@ -87,7 +87,7 @@ public class AnalysisTest {
   }
 
   private void assertDeadEnds(String board, String expectedDeadEnds) {
-    SnakeBoard game = GameHelper.initializeGame(new Board().forString(board));
+    SnakeBoard game = GameHelper.initializeGame(new MyBoard().forString(board));
     Analysis analysis = Analysis.create(game);
     boolean[][] deadEnds = analysis.getStaticObstacles(game.getHeroes().get(0));
     StringBuilder sb = new StringBuilder();

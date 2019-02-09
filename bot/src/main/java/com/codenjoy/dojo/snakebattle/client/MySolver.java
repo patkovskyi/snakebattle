@@ -29,12 +29,12 @@ import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import java.util.Random;
 
-public class MySolver implements Solver<Board> {
+public class MySolver implements Solver<MyBoard> {
   private final Random random = new Random();
   private SnakeBoard game;
 
   @Override
-  public String get(Board boardFromServer) {
+  public String get(MyBoard boardFromServer) {
     game = GameHelper.getNewOrContinuedGame(game, boardFromServer);
     if (boardFromServer.isNewRound()) {
     }
