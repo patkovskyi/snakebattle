@@ -64,9 +64,9 @@ public class AnalysisTest {
     for (int y = arr.length; y-- > 0; ) {
       for (int x = 0; x < arr[y].length; x++) {
         if (arr[x][y] == Integer.MAX_VALUE) {
-          actual.append("*");
+          actual.append("☼");
         } else {
-          actual.append(arr[x][y]);
+          actual.append(arr[x][y] % 10);
         }
       }
 
@@ -91,7 +91,7 @@ public class AnalysisTest {
     Analysis analysis = Analysis.create(game);
     boolean[][] deadEnds = analysis.getStaticObstacles(game.getHeroes().get(0));
     StringBuilder sb = new StringBuilder();
-    for (int y = deadEnds.length; y --> 0; ) {
+    for (int y = deadEnds.length; y-- > 0; ) {
       for (int x = 0; x < deadEnds.length; x++) {
         sb.append(deadEnds[x][y] ? "☼" : " ");
       }
@@ -126,7 +126,7 @@ public class AnalysisTest {
     assertDeadEnds(
         "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
             + "☼☼┌>                         ☼"
-            + "*ø│         ®                ☼"
+            + "☼ø│         ®                ☼"
             + "☼☼└──ö   ●         ○         ☼"
             + "☼☼                      ○    ☼"
             + "☼☼           ●    ○          ☼"
@@ -134,11 +134,11 @@ public class AnalysisTest {
             + "☼☼     ☼                     ☼"
             + "☼#     ☼☼☼     ○  ☼☼☼☼#      ☼"
             + "☼☼     ☼          ☼   ☼  ●   ☼"
-            + "☼☼  ○  ☼☼☼*ø    ○ ☼☼☼☼# ○    ☼"
+            + "☼☼  ○  ☼☼☼☼ø    ○ ☼☼☼☼# ○    ☼"
             + "☼☼                ☼ ○        ☼"
             + "☼☼                ☼        ®$☼"
             + "☼☼    ●  $                   ☼"
-            + "*ø             ○ ○    ○      ☼"
+            + "☼ø             ○ ○    ○      ☼"
             + "☼☼    ○                    ® ☼"
             + "☼☼        ☼☼☼    $           ☼"
             + "☼☼       ☼  ☼                ☼"
@@ -194,11 +194,11 @@ public class AnalysisTest {
         + "☼   ☼"
         + "☼☼☼☼☼");
 
-    assertStaticDistances("*****"
-        + "*123*"
-        + "*012*"
-        + "*123*"
-        + "*****");
+    assertStaticDistances("☼☼☼☼☼"
+        + "☼123☼"
+        + "☼012☼"
+        + "☼123☼"
+        + "☼☼☼☼☼");
   }
 
   @Test
@@ -209,11 +209,11 @@ public class AnalysisTest {
         + "☼   ☼"
         + "☼☼☼☼☼");
 
-    assertStaticDistances("*****"
-        + "*123*"
-        + "*0*4*"
-        + "*123*"
-        + "*****");
+    assertStaticDistances("☼☼☼☼☼"
+        + "☼123☼"
+        + "☼0☼4☼"
+        + "☼123☼"
+        + "☼☼☼☼☼");
   }
 
   @Test
@@ -224,11 +224,11 @@ public class AnalysisTest {
         + "☼  ¤☼"
         + "☼☼☼☼☼");
 
-    assertDynamicDistances("*****"
-        + "*123*"
-        + "*012*"
-        + "*123*"
-        + "*****");
+    assertDynamicDistances("☼☼☼☼☼"
+        + "☼123☼"
+        + "☼012☼"
+        + "☼123☼"
+        + "☼☼☼☼☼");
   }
 
   @Test
@@ -239,11 +239,11 @@ public class AnalysisTest {
         + "☼ ¤ ☼"
         + "☼☼☼☼☼");
 
-    assertDynamicDistances("*****"
-        + "*1*5*"
-        + "*0*4*"
-        + "*123*"
-        + "*****");
+    assertDynamicDistances("☼☼☼☼☼"
+        + "☼1☼5☼"
+        + "☼0☼4☼"
+        + "☼123☼"
+        + "☼☼☼☼☼");
   }
 
   @Test
@@ -256,12 +256,75 @@ public class AnalysisTest {
         + "☼☼☼☼☼☼");
 
     // this assumes neck hits == head hits
-    assertDynamicDistances("******"
-        + "*2123*"
-        + "*30*4*"
-        + "*2123*"
-        + "*3234*"
-        + "******");
+    assertDynamicDistances("☼☼☼☼☼☼"
+        + "☼2123☼"
+        + "☼30☼4☼"
+        + "☼2123☼"
+        + "☼3234☼"
+        + "☼☼☼☼☼☼");
+  }
+
+  @Test
+  public void dynamicDistanceEnemyOnThePassageDoesNotBlock() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼   ☼  ☼"
+        + "☼╘► ☼  ☼"
+        + "☼  ˄   ☼"
+        + "☼  ¤☼  ☼"
+        + "☼   ☼  ☼"
+        + "☼   ☼  ☼"
+        + "☼☼☼☼☼☼☼☼");
+    
+    assertDynamicDistances("☼☼☼☼☼☼☼☼"
+        + "☼212☼67☼"
+        + "☼301☼56☼"
+        + "☼212345☼"
+        + "☼323☼56☼"
+        + "☼434☼67☼"
+        + "☼545☼78☼"
+        + "☼☼☼☼☼☼☼☼");
+  }
+
+  @Test
+  public void dynamicDistanceEnemyOnThePassageBlocks() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼   ☼  ☼"
+        + "☼╘► ☼  ☼"
+        + "☼  ˄   ☼"
+        + "☼  │☼  ☼"
+        + "☼  ¤☼  ☼"
+        + "☼   ☼  ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    assertDynamicDistances("☼☼☼☼☼☼☼☼"
+        + "☼212☼☼☼☼"
+        + "☼301☼☼☼☼"
+        + "☼21☼☼☼☼☼"
+        + "☼323☼☼☼☼"
+        + "☼434☼☼☼☼"
+        + "☼545☼☼☼☼"
+        + "☼☼☼☼☼☼☼☼");
+  }
+
+  @Test
+  public void dynamicDistanceEnemyOnThePassageDetour() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼   ☼  ☼"
+        + "☼╘► ☼  ☼"
+        + "☼  ˄   ☼"
+        + "☼  │☼  ☼"
+        + "☼  ¤   ☼"
+        + "☼   ☼  ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    assertDynamicDistances("☼☼☼☼☼☼☼☼"
+        + "☼212☼01☼"
+        + "☼301☼90☼"
+        + "☼21☼989☼"
+        + "☼323☼78☼"
+        + "☼434567☼"
+        + "☼545☼78☼"
+        + "☼☼☼☼☼☼☼☼");
   }
 
   @Test
@@ -282,12 +345,12 @@ public class AnalysisTest {
         + "☼    ☼"
         + "☼☼☼☼☼☼");
 
-    assertDynamicDistances("******"
-        + "*2123*"
-        + "*3012*"
-        + "*2123*"
-        + "*3234*"
-        + "******");
+    assertDynamicDistances("☼☼☼☼☼☼"
+        + "☼2123☼"
+        + "☼3012☼"
+        + "☼2123☼"
+        + "☼3234☼"
+        + "☼☼☼☼☼☼");
   }
 
   @Test
@@ -300,12 +363,12 @@ public class AnalysisTest {
         + "☼☼☼☼☼☼");
 
     // this assumes neck hits == head hits
-    assertDynamicDistances("******"
-        + "*2123*"
-        + "*3012*"
-        + "*2123*"
-        + "*3234*"
-        + "******");
+    assertDynamicDistances("☼☼☼☼☼☼"
+        + "☼2123☼"
+        + "☼3012☼"
+        + "☼2123☼"
+        + "☼3234☼"
+        + "☼☼☼☼☼☼");
   }
 
   @Test
@@ -327,11 +390,11 @@ public class AnalysisTest {
         + "☼    ☼"
         + "☼☼☼☼☼☼");
 
-    assertDynamicDistances("******"
-        + "*30*4*"
-        + "*2123*"
-        + "*3234*"
-        + "*4345*"
-        + "******");
+    assertDynamicDistances("☼☼☼☼☼☼"
+        + "☼30☼4☼"
+        + "☼2123☼"
+        + "☼3234☼"
+        + "☼4345☼"
+        + "☼☼☼☼☼☼");
   }
 }
