@@ -1,4 +1,4 @@
-package com.codenjoy.dojo.snakebattle.model;
+package com.codenjoy.dojo.snakebattle.old;
 
 /*-
  * #%L
@@ -25,7 +25,8 @@ package com.codenjoy.dojo.snakebattle.model;
 import static org.junit.Assert.assertEquals;
 
 import com.codenjoy.dojo.services.Direction;
-import com.codenjoy.dojo.snakebattle.client.ClosestBestBoard;
+import com.codenjoy.dojo.snakebattle.old.ClosestBestBoard;
+import com.codenjoy.dojo.snakebattle.old.OldSnake;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;

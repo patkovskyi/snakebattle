@@ -1,4 +1,4 @@
-package com.codenjoy.dojo.snakebattle.client;
+package com.codenjoy.dojo.snakebattle.old;
 
 /*-
  * #%L
@@ -69,7 +69,6 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
-import com.codenjoy.dojo.snakebattle.model.OldSnake;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;

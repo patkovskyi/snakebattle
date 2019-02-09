@@ -134,26 +134,6 @@ public class AlgoHelper {
                     break;
                 }
               });
-
-              // start from 1 (if no negative growBy) because tail is immediately passable
-              // skip neck and head in this loop
-//              for (int i = 1 - enemy.getGrowBy(); i < enemy.getBody().size() - 2; i++) {
-//                int roundsInPlace = i + enemy.getGrowBy();
-//                Point p = enemy.getBody().get(i);
-//                if (roundsInPlace >= staticDistances[p.getX()][p.getY()]
-//                    && !wouldSurviveHeadToBody(hero, enemy, staticDistances[p.getX()][p.getY()])) {
-//                  dynamicBarriers[p.getX()][p.getY()] = true;
-//                }
-//              }
-//
-//              for (int i = enemy.getBody().size() - 2; i < enemy.getBody().size(); i++) {
-//                int roundsInPlace = i + enemy.getGrowBy();
-//                Point p = enemy.getBody().get(i);
-//                if (roundsInPlace >= staticDistances[p.getX()][p.getY()]
-//                    && !wouldSurviveHeadToHead(hero, enemy, staticDistances[p.getX()][p.getY()])) {
-//                  dynamicBarriers[p.getX()][p.getY()] = true;
-//                }
-//              }
             });
 
     return dynamicBarriers;

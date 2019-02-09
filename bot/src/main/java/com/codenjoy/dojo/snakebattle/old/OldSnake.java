@@ -1,4 +1,4 @@
-package com.codenjoy.dojo.snakebattle.model;
+package com.codenjoy.dojo.snakebattle.old;
 
 /*-
  * #%L
@@ -36,7 +36,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.MY_TAIL;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
-import com.codenjoy.dojo.snakebattle.client.ClosestBestBoard;
+import com.codenjoy.dojo.snakebattle.model.Elements;
 import java.util.Set;
 import java.util.Stack;
 import lombok.Data;
