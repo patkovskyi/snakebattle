@@ -1,5 +1,9 @@
 Run jar with logging
-java -Xmx1024m -jar bot.jar 2>&1 | tee >(rotatelogs -l Snake_%Y-%m-%d-%H.txt 3600)
+java -Xmx1024m -jar bot.jar 2>&1 | tee >(rotatelogs -l -L current_log.txt Snake_%Y-%m-%d-%H.txt 3600)
+
+tail -f current_log.txt | grep FAIL
+
+fgrep FAIL Snake_2019-0*
 
 Find all snakebattle.jar processes
 ps -eo pid,lstart,args | grep bot.jar | grep -v grep

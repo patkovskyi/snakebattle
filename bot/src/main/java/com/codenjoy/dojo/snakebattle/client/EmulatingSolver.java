@@ -27,7 +27,6 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
-import java.util.PriorityQueue;
 import java.util.Random;
 
 public class EmulatingSolver implements Solver<Board> {
@@ -43,14 +42,12 @@ public class EmulatingSolver implements Solver<Board> {
       deadEnd = boardFromServer.getStaticDeadEnds();
     }
 
-    return findBestMove(boardFromServer);
+    return getRandomDirection().toString();
   }
 
   private String findBestMove(Board board) {
     return "LEFT";
   }
-
-
 
   private Hero getMyHero() {
     return game.getHeroes().get(0);

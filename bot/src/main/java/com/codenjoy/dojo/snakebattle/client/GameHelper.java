@@ -58,9 +58,13 @@ public class GameHelper {
 
       if (game == null) {
         // re-sync required :(
-        System.out.println("RESYNC :(");
+        System.out.println("FAIL: RESYNC :(");
         game = initializeGame(boardFromServer);
       }
+    }
+
+    if (!game.getHeroes().get(0).isAlive()) {
+      System.out.println("ROUND LOST");
     }
 
     return game;
@@ -79,10 +83,11 @@ public class GameHelper {
             new RandomDice(),
             new Timer(new SimpleParameter<>(0)),
             new Timer(new SimpleParameter<>(300)),
-            new SimpleParameter<>(0),
+            new SimpleParameter<>(0), // rounds per one match
             new SimpleParameter<>(10),
             new SimpleParameter<>(10),
-            new SimpleParameter<>(3));
+            new SimpleParameter<>(3),
+            new SimpleParameter<>(2));
 
     boolean snakesActive = !board.isNewRound();
 
@@ -129,7 +134,7 @@ public class GameHelper {
     List<Integer[]> permutations = new ArrayList<>();
     List<Hero> heroes =
         game.getHeroes().stream().filter(h -> h.isAlive()).collect(Collectors.toList());
-    getPermutations(new Integer[heroes.size()], permutations, 0, 4);
+    getPermutations(new Integer[heroes.size()], permutations, 0, 3);
     System.out.printf(
         "Found %d permutations for %d players.\n", permutations.size(), heroes.size());
 
