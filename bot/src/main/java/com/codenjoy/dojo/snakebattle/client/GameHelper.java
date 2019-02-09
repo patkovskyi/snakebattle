@@ -91,14 +91,12 @@ public class GameHelper {
             new SimpleParameter<>(3),
             new SimpleParameter<>(2));
 
-    boolean snakesActive = !board.isNewRound();
-
     Hero hero = level.getHero();
     if (hero != null) {
       Player heroPlayer = new Player(new EmulatingEventListener(0));
       game.newGame(heroPlayer);
       heroPlayer.setHero(hero);
-      hero.setActive(snakesActive);
+      hero.setActive(board.getAt(hero.head()) != Elements.HEAD_SLEEP);
       hero.init(game);
     }
 
@@ -110,7 +108,7 @@ public class GameHelper {
       game.newGame(enemyPlayer);
       enemyPlayer.setHero(enemy);
       enemy.init(game);
-      enemy.setActive(snakesActive);
+      enemy.setActive(board.getAt(enemy.head()) != Elements.ENEMY_HEAD_SLEEP);
     }
 
     game.addWallsBehindSleepingHeroes();
@@ -160,7 +158,7 @@ public class GameHelper {
         Point head = heroes.get(j).head().copy();
         Direction newDirection = heroes.get(j).getRelativeDirection(actions[j]);
         head.change(newDirection);
-        if (!expectedBoard.containsPoint(head)) {
+        if (head.isOutOf(expectedBoard.size())) {
           theOne = false;
           break;
         }

@@ -29,7 +29,7 @@ import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import java.util.Random;
 
-public class EmulatingSolver implements Solver<Board> {
+public class MySolver implements Solver<Board> {
   private final Random random = new Random();
   private Point myHead;
   private SnakeBoard game;

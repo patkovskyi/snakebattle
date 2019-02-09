@@ -79,19 +79,7 @@ public class Board extends AbstractBoard<Elements> {
     return this;
   }
 
-  public boolean containsPoint(Point p) {
-    return !p.isOutOf(size);
-  }
-
   public boolean isNewRound() {
-    return get(Elements.HEAD_SLEEP).size() == 1;
-  }
-
-  public boolean[][] getStaticDeadEnds() {
-    boolean[][] barriers = new boolean[size][size];
-    get(Elements.WALL, Elements.HEAD_SLEEP, Elements.ENEMY_HEAD_SLEEP, Elements.TAIL_INACTIVE,
-        Elements.ENEMY_TAIL_INACTIVE, Elements.START_FLOOR)
-        .forEach(w -> barriers[w.getX()][w.getY()] = true);
-    return AlgoHelper.findStaticDeadEnds(barriers);
+    return get(Elements.HEAD_SLEEP, Elements.ENEMY_HEAD_SLEEP).size() > 0;
   }
 }

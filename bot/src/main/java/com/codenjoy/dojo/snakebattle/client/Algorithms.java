@@ -9,7 +9,7 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Queue;
 
-public class AlgoHelper {
+public class Algorithms {
 
   public static int[][] findDynamicDistances(SnakeBoard game, Hero hero) {
     boolean[][] staticDeadEnds = findStaticDeadEnds(game);

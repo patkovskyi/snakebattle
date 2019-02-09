@@ -25,12 +25,9 @@ package com.codenjoy.dojo.snakebattle.client;
 import com.codenjoy.dojo.client.WebSocketRunner;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -49,7 +46,7 @@ public class Main {
     WebSocketRunner.run(
         URI.create(
             "wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
-        new EmulatingSolver(),
+        new MySolver(),
         new Board(),
         1000);
   }

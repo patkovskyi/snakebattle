@@ -77,12 +77,12 @@ public class AlgoHelperTest {
   }
 
   private void assertDynamicDistances(String expected) {
-    int[][] arr = AlgoHelper.findDynamicDistances(game, hero);
+    int[][] arr = Algorithms.findDynamicDistances(game, hero);
     assertEqual(expected, arr);
   }
 
   private void assertStaticDistances(String expected) {
-    int[][] arr = AlgoHelper.findStaticDistances(game, hero);
+    int[][] arr = Algorithms.findStaticDistances(game, hero);
     assertEqual(expected, arr);
   }
 
