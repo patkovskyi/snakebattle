@@ -74,7 +74,7 @@ public class GameHelper {
     return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY());
   }
 
-  private static SnakeBoard initializeGame(Board board) {
+  public static SnakeBoard initializeGame(Board board) {
     String boardString = board.boardAsString();
     LevelImpl level = new LevelImpl(boardString.replaceAll("\n", ""));
     SnakeBoard game =

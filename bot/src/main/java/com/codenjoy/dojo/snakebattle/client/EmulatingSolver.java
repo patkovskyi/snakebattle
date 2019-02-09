@@ -33,13 +33,11 @@ public class EmulatingSolver implements Solver<Board> {
   private final Random random = new Random();
   private Point myHead;
   private SnakeBoard game;
-  private boolean[][] deadEnd;
 
   @Override
   public String get(Board boardFromServer) {
     game = GameHelper.getNewOrContinuedGame(game, boardFromServer);
-    if (boardFromServer.isNewRound() || deadEnd == null) {
-      deadEnd = boardFromServer.getStaticDeadEnds();
+    if (boardFromServer.isNewRound()) {
     }
 
     return getRandomDirection().toString();
