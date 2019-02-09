@@ -20,6 +20,7 @@ public class Analysis {
   private final Map<Hero, boolean[][]> dynamicObstacles;
   private final Map<Hero, int[][]> staticDistances;
   private final Map<Hero, int[][]> dynamicDistances;
+  private final Map<Hero, int[][]> values;
 
   private Analysis(SnakeBoard game) {
     this.game = game;
@@ -27,48 +28,13 @@ public class Analysis {
     dynamicObstacles = new HashMap<>();
     staticDistances = new HashMap<>();
     dynamicDistances = new HashMap<>();
+    values = new HashMap<>();
   }
 
   public static Analysis create(SnakeBoard game) {
     // TODO: check if game is in valid state and hero is alive & active ?
     Analysis a = new Analysis(game);
     return a;
-  }
-
-  private static DynamicObstacle whatWillBeOnThisPoint(Hero hero, Point point, int rounds) {
-    int trueBodyIndex = Math.max(-1, hero.getBodyIndex(point) + hero.getGrowBy() - rounds);
-    if (trueBodyIndex < 0) {
-      return DynamicObstacle.Nothing;
-    }
-
-    int trueSize = hero.size() + hero.getGrowBy();
-    int trueDistanceFromHead = trueSize - trueBodyIndex - 1;
-    // TODO: this place assumes head == neck
-    if (trueDistanceFromHead <= 1) {
-      return DynamicObstacle.Neck;
-    } else {
-      return DynamicObstacle.Body;
-    }
-  }
-
-  private static boolean wouldSurviveHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroLonger = hero.size() + hero.getGrowBy() >= enemy.size() + enemy.getGrowBy()
-        + Constants.MIN_SNAKE_LENGTH;
-
-    boolean heroFury = hero.getFuryCount() >= ticksToCollision;
-    boolean enemyFury = enemy.getFuryCount() >= ticksToCollision;
-    boolean heroFly = hero.getFlyingCount() >= ticksToCollision;
-    boolean enemyFly = enemy.getFlyingCount() >= ticksToCollision;
-
-    return heroFly || enemyFly || heroFury && !enemyFury || heroFury == enemyFury && heroLonger;
-  }
-
-  private static boolean wouldSurviveHeadToBody(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroFury = hero.getFuryCount() >= ticksToCollision;
-    boolean heroFly = hero.getFlyingCount() >= ticksToCollision;
-    boolean enemyFly = enemy.getFlyingCount() >= ticksToCollision;
-
-    return heroFury || heroFly || enemyFly;
   }
 
   boolean[][] getStaticObstacles(Hero hero) {
@@ -94,15 +60,17 @@ public class Analysis {
       getActiveAliveHeroes().forEach(
           enemy -> enemy.getBody().forEach(p -> {
             int roundsToPoint = staticDistances[p.getX()][p.getY()];
-            DynamicObstacle obstacle = whatWillBeOnThisPoint(enemy, p, roundsToPoint);
+            DynamicObstacle obstacle = Mechanics.whatWillBeOnThisPoint(enemy, p, roundsToPoint);
             switch (obstacle) {
               case Neck:
-                dynamicObstacles[p.getX()][p.getY()] |= !wouldSurviveHeadToHead(hero, enemy,
-                    roundsToPoint);
+                dynamicObstacles[p.getX()][p.getY()] |= !Mechanics
+                    .wouldSurviveHeadToHead(hero, enemy,
+                        roundsToPoint);
                 break;
               case Body:
-                dynamicObstacles[p.getX()][p.getY()] |= !wouldSurviveHeadToBody(hero, enemy,
-                    roundsToPoint);
+                dynamicObstacles[p.getX()][p.getY()] |= !Mechanics
+                    .wouldSurviveHeadToBody(hero, enemy,
+                        roundsToPoint);
                 break;
             }
           }));
@@ -122,6 +90,13 @@ public class Analysis {
     return dynamicDistances.computeIfAbsent(hero, h -> {
       boolean[][] dynamicObstacles = getDynamicObstacles(hero);
       return Algorithms.findStaticDistances(dynamicObstacles, hero.head(), hero.getDirection());
+    });
+  }
+
+  int[][] getValues(Hero hero) {
+    return values.computeIfAbsent(hero, h -> {
+      int[][] values = new int[game.size()][game.size()];
+      return null;
     });
   }
 
@@ -156,7 +131,8 @@ public class Analysis {
     }
     if (p instanceof FuryPill) {
       return Math.max(
-          getShittingPoints(), getPointsForStonesAround(p, game.furyCount().getValue()));
+          estimatePointsForFuryShitLoop(getMyHero()),
+          estimatePointsForFuryStonesAround(p, game.furyCount().getValue()));
     }
 
     // enemy head
@@ -166,20 +142,19 @@ public class Analysis {
     return 0;
   }
 
-  private int getPointsForStonesAround(Point point, int radius) {
-    return 10
-        * Math.min(
-        3,
-        (int)
-            game.getStones().stream()
-                .filter(stone -> GameHelper.getManhattanDistance(stone, point) < radius)
-                .count());
+  private int estimatePointsForFuryStonesAround(Point point, int radius) {
+    int stonesWithinRadius = (int) game.getStones().stream()
+        .filter(stone -> GameHelper.getManhattanDistance(stone, point) < radius)
+        .count();
+
+    return Mechanics.STONE_REWARD * Math.min(3, stonesWithinRadius);
   }
 
-  private int getShittingPoints() {
-    // TODO: rethink this considering tail positioning
+  // Fury shit loop starts when we take a Fury pill and start leaving stones and eating them.
+  // This estimation relies only on stoneCount and length.
+  // TODO: rethink this considering tail positioning ?
+  int estimatePointsForFuryShitLoop(Hero hero) {
     int total = 0;
-    Hero hero = getMyHero();
     int furyRounds = Math.max(0, game.furyCount().getValue() - hero.size() - 1);
     int skips = Math.max(0, hero.size() - hero.getStonesCount());
     if (furyRounds >= hero.getStonesCount()) {
