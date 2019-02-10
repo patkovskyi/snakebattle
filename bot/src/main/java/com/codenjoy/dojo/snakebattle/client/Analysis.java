@@ -25,6 +25,7 @@ public abstract class Analysis {
   private final Map<Hero, int[][]> dynamicDistances;
   private final Map<Hero, int[][]> values;
   private final Map<Hero, double[][]> distanceAdjustedValues;
+  private final Map<Hero, int[][]> accumulatedValues;
 
   protected Analysis(SnakeBoard game) {
     this.game = game;
@@ -34,6 +35,7 @@ public abstract class Analysis {
     dynamicDistances = new HashMap<>();
     values = new HashMap<>();
     distanceAdjustedValues = new HashMap<>();
+    accumulatedValues = new HashMap<>();
   }
 
   public abstract HeroAction findBestAction();
@@ -180,6 +182,11 @@ public abstract class Analysis {
 
       return result;
     });
+  }
+
+  int[][] getAccumulatedValues(Hero hero) {
+    return accumulatedValues.computeIfAbsent(hero,
+        h -> Algorithms.findAccumulatedValues(getDynamicDistances(hero), getValues(hero)));
   }
 
   protected Stream<Point> getBarriers() {

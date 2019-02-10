@@ -2,14 +2,26 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
+import com.codenjoy.dojo.services.PointImpl;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * This class should know NOTHING about our domain.
  */
 public class Algorithms {
+
+  public static int[][] arrayCopy(int[][] original) {
+    int[][] copy = new int[original.length][];
+    for (int i = 0; i < original.length; i++) {
+      copy[i] = Arrays.copyOf(original[i], original[i].length);
+    }
+
+    return copy;
+  }
 
   public static int[][] findStaticDistances(
       boolean[][] staticObstacles, Point fromPoint, Direction fromDirection) {
@@ -45,6 +57,40 @@ public class Algorithms {
     }
 
     return distances;
+  }
+
+  public static int[][] findAccumulatedValues(int[][] distances, int[][] values) {
+    Point start = findStartingPoint(distances);
+    int[][] acc = new int[values.length][values.length];
+
+    Set<Point> openSet = new HashSet<>();
+    openSet.add(start);
+
+    while (!openSet.isEmpty()) {
+      Queue<Point> closedSet = new ArrayDeque<>(openSet);
+      openSet = new HashSet<>();
+
+      while (!closedSet.isEmpty()) {
+        Point p = closedSet.remove();
+        acc[p.getX()][p.getY()] += values[p.getX()][p.getY()];
+
+        for (Direction newDirection : Direction.onlyDirections()) {
+          Point np = p.copy();
+          np.change(newDirection);
+
+          if (!np.isOutOf(values.length) &&
+              distances[np.getX()][np.getY()] == distances[p.getX()][p.getY()] + 1) {
+
+            acc[np.getX()][np.getY()] = Math
+                .max(acc[p.getX()][p.getY()], acc[np.getX()][np.getY()]);
+
+            openSet.add(np);
+          }
+        }
+      }
+    }
+
+    return acc;
   }
 
   public static boolean[][] findDirectionalDeadEnds(boolean[][] obstacles, Point fromPoint,
@@ -87,6 +133,26 @@ public class Algorithms {
     }
 
     return foundCycle;
+  }
+
+  private static Point findStartingPoint(int[][] distances) {
+    Point start = null;
+    for (int x = 0; x < distances.length; x++) {
+      for (int y = 0; y < distances.length; y++) {
+        if (distances[x][y] == 0) {
+          if (start != null) {
+            throw new IllegalArgumentException("Found more than one starting point");
+          }
+
+          start = PointImpl.pt(x, y);
+        }
+      }
+    }
+
+    if (start == null) {
+      throw new IllegalArgumentException("Could not find starting point.");
+    }
+    return start;
   }
 
   private static boolean isOutOf(int x, int y, int size) {

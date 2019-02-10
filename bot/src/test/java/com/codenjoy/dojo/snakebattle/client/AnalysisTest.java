@@ -23,7 +23,6 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import com.codenjoy.dojo.services.printer.PrinterFactoryImpl;
 import com.codenjoy.dojo.snakebattle.model.HeroAction;
@@ -67,6 +66,8 @@ public class AnalysisTest {
       for (int x = 0; x < arr[y].length; x++) {
         if (arr[x][y] == Integer.MAX_VALUE) {
           actual.append("☼");
+        } else if (arr[x][y] < 0) {
+          actual.append("#");
         } else {
           actual.append(arr[x][y] % 10);
         }
@@ -78,6 +79,26 @@ public class AnalysisTest {
     Assert.assertEquals(TestUtils.injectN(expected), actual.toString());
   }
 
+  private void assertWithPadding(String expected, int[][] arr, int padding) {
+    StringBuilder actual = new StringBuilder();
+
+    for (int y = arr.length; y-- > 0; ) {
+      for (int x = 0; x < arr[y].length; x++) {
+        if (arr[x][y] == Integer.MAX_VALUE) {
+          actual.append(String.format("%-" + padding + "s", "☼"));
+        } else if (arr[x][y] < 0) {
+          actual.append(String.format("%-" + padding + "s", "#"));
+        } else {
+          actual.append(String.format("%-" + padding + "s", arr[x][y]));
+        }
+      }
+
+      actual.append("\n");
+    }
+
+    Assert.assertEquals(TestUtils.inject(expected, arr.length * padding, "\n"), actual.toString());
+  }
+
   private void assertDynamicDistances(String expected) {
     int[][] arr = new GreedyAnalysis(game).getDynamicDistances(hero);
     assertEqual(expected, arr);
@@ -86,6 +107,16 @@ public class AnalysisTest {
   private void assertStaticDistances(String expected) {
     int[][] arr = new GreedyAnalysis(game).getStaticDistances(hero);
     assertEqual(expected, arr);
+  }
+
+  private void assertValues(String expected) {
+    int[][] acc = new GreedyAnalysis(game).getValues(hero);
+    assertWithPadding(expected, acc, 2);
+  }
+
+  private void assertAccumulatedValues(String expected) {
+    int[][] acc = new GreedyAnalysis(game).getAccumulatedValues(hero);
+    assertWithPadding(expected, acc, 2);
   }
 
   private void assertDeadEnds(String board, String expectedDeadEnds) {
@@ -558,6 +589,86 @@ public class AnalysisTest {
         + "☼3234☼"
         + "☼4345☼"
         + "☼☼☼☼☼☼");
+  }
+
+  @Test
+  public void getValues() {
+    // @formatter:off
+    newGame(  "☼☼☼☼☼☼"
+            + "☼▲ $ ☼"
+            + "☼║ ○●☼"
+            + "☼║   ☼"
+            + "☼╙© ®☼"
+            + "☼☼☼☼☼☼");
+
+    assertValues(
+              "0 0 0 0 0 0 "
+            + "0 0 0 100 0 "
+            + "0 0 0 4 # 0 "
+            + "0 0 0 0 0 0 "
+            + "0 0 # 0 300 "
+            + "0 0 0 0 0 0 ");
+    // @formatter:on
+  }
+
+  @Test
+  public void getAccummulatedValues() {
+    // @formatter:off
+    newGame(  "☼☼☼☼☼☼"
+            + "☼▲ $ ☼"
+            + "☼║ ○●☼"
+            + "☼║   ☼"
+            + "☼╙© ®☼"
+            + "☼☼☼☼☼☼");
+
+    assertAccumulatedValues(
+              "0 0 0 0 0 0 "
+            + "0 0 0 10100 "
+            + "0 0 0 140 0 "
+            + "0 0 0 14140 "
+            + "0 0 # 14440 "
+            + "0 0 0 0 0 0 ");
+    // @formatter:on
+  }
+
+  @Test
+  public void getAccummulatedValuesFight() {
+    // @formatter:off
+    newGame(  "☼☼☼☼☼☼"
+            + "☼▲˄  ☼"
+            + "☼║¤  ☼"
+            + "☼║   ☼"
+            + "☼╙   ☼"
+            + "☼☼☼☼☼☼");
+
+    assertAccumulatedValues(
+              "0 0 0 0 0 0 "
+            + "0 0 2020200 "
+            + "0 202020200 "
+            + "0 202020200 "
+            + "0 202020200 "
+            + "0 0 0 0 0 0 ");
+    // @formatter:on
+  }
+
+  @Test
+  public void getAccummulatedValuesLosingFight() {
+    // @formatter:off
+    newGame(  "☼☼☼☼☼☼"
+            + "☼▲˄  ☼"
+            + "☼║│  ☼"
+            + "☼║¤  ☼"
+            + "☼╙   ☼"
+            + "☼☼☼☼☼☼");
+
+    assertAccumulatedValues(
+              "0 0 0 0 0 0 "
+            + "0 0 0 0 0 0 "
+            + "0 0 0 0 0 0 "
+            + "0 0 0 0 0 0 "
+            + "0 0 0 0 0 0 "
+            + "0 0 0 0 0 0 ");
+    // @formatter:on
   }
 
   @Test

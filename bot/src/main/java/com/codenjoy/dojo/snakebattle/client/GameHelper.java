@@ -145,7 +145,7 @@ public class GameHelper {
     List<Integer[]> permutations = new ArrayList<>();
     getPermutations(new Integer[heroes.size()], permutations, 0, 3);
     System.out.printf(
-        "Found %d permutations for %d players.\n", permutations.size(), heroes.size());
+        "Found %d permutations for %d players.", permutations.size(), heroes.size());
 
     int skipped = 0;
 
@@ -193,14 +193,14 @@ public class GameHelper {
       if (BoardStringComparator.movesEqual(clonedBoardString, expectedBoard.boardAsString())) {
         copyObjectsFromBoardToGame(clonedGame, expectedBoard);
         System.out.printf(
-            "SUCCESS! Skipped %d, found continuation in %d ms\n",
+            "SUCCESS! Skipped %d, tracked in %d ms\n",
             skipped, System.currentTimeMillis() - start);
         return clonedGame;
       }
     }
 
     System.out.printf(
-        "FAIL! Skipped %d, failed continuation in %d ms. Considered permutations: \n",
+        "FAIL! Skipped %d, lost track in %d ms. Considered: \n",
         skipped, System.currentTimeMillis() - start);
     consideredPerms.forEach(p -> System.out.println(Arrays.toString(p)));
 
