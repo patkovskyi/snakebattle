@@ -160,6 +160,8 @@ public abstract class Analysis {
         }
       }));
 
+      game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 50);
+
       return values;
     });
   }
