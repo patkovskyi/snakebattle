@@ -21,6 +21,7 @@ public class Analysis {
   private final Map<Hero, int[][]> staticDistances;
   private final Map<Hero, int[][]> dynamicDistances;
   private final Map<Hero, int[][]> values;
+  private final Map<Hero, double[][]> distanceAdjustedValues;
 
   private Analysis(SnakeBoard game) {
     this.game = game;
@@ -29,6 +30,7 @@ public class Analysis {
     staticDistances = new HashMap<>();
     dynamicDistances = new HashMap<>();
     values = new HashMap<>();
+    distanceAdjustedValues = new HashMap<>();
   }
 
   public static Analysis create(SnakeBoard game) {
@@ -96,9 +98,19 @@ public class Analysis {
   int[][] getValues(Hero hero) {
     return values.computeIfAbsent(hero, h -> {
       int[][] values = new int[game.size()][game.size()];
-      return null;
+      int[][] distance = getDynamicDistances(hero);
+      game.getApples().forEach(p ->
+          values[p.getX()][p.getY()] = 1 + Mechanics.APPLE_REWARD + Mechanics.STONE_REWARD / 3);
+
+      game.getStones().forEach(p -> {
+        values[p.getX()][p.getY()] = hero.getFuryCount() <= distance[p.getX()][p.getY()] ?
+      });
     });
   }
+
+//  double[][] getDistanceAdjustedValues(Hero hero) {
+//
+//  }
 
   private Stream<Point> getBarriers() {
     return Stream.concat(game.getWalls().stream(), game.getStarts().stream());
