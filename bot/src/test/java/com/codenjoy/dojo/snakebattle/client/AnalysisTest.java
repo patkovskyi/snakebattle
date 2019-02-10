@@ -77,18 +77,18 @@ public class AnalysisTest {
   }
 
   private void assertDynamicDistances(String expected) {
-    int[][] arr = Analysis.create(game).getDynamicDistances(hero);
+    int[][] arr = new GreedyAnalysis(game).getDynamicDistances(hero);
     assertEqual(expected, arr);
   }
 
   private void assertStaticDistances(String expected) {
-    int[][] arr = Analysis.create(game).getStaticDistances(hero);
+    int[][] arr = new GreedyAnalysis(game).getStaticDistances(hero);
     assertEqual(expected, arr);
   }
 
   private void assertDeadEnds(String board, String expectedDeadEnds) {
     SnakeBoard game = GameHelper.initializeGame(new MyBoard().forString(board));
-    Analysis analysis = Analysis.create(game);
+    Analysis analysis = new GreedyAnalysis(game);
     boolean[][] deadEnds = analysis.getStaticObstacles(game.getHeroes().get(0));
     StringBuilder sb = new StringBuilder();
     for (int y = deadEnds.length; y-- > 0; ) {

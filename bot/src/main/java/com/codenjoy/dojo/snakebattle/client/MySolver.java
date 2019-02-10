@@ -23,39 +23,15 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 import com.codenjoy.dojo.client.Solver;
-import com.codenjoy.dojo.services.Direction;
-import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
-import com.codenjoy.dojo.snakebattle.model.hero.Hero;
-import java.util.Random;
 
 public class MySolver implements Solver<MyBoard> {
-  private final Random random = new Random();
   private SnakeBoard game;
 
   @Override
   public String get(MyBoard boardFromServer) {
     game = GameHelper.getNewOrContinuedGame(game, boardFromServer);
-    if (boardFromServer.isNewRound()) {
-    }
-
-    return getRandomDirection().toString();
-  }
-
-  private Direction getRandomDirection() {
-    if (game != null) {
-      Hero me = game.getHeroes().get(0);
-      for (int i = 0; i < 3; i++) {
-        Direction newDirection = me.getRelativeDirection(i);
-        Point newHead = me.head().copy();
-        newHead.change(newDirection);
-
-        if (game.isFree(newHead)) {
-          return newDirection;
-        }
-      }
-    }
-
-    return Direction.onlyDirections().get(random.nextInt(4));
+    Analysis analysis = new RandomAnalysis(game);
+    return analysis.findBestAction().getStr();
   }
 }

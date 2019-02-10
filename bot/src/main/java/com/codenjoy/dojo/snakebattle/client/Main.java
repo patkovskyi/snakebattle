@@ -37,7 +37,8 @@ public class Main {
     //                new ClosestBestSolver(new RandomDice()),
     //                new ClosestBestBoard());
 
-    String urlString = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/rest/player/njmbrnksebyfo8n9q7xiwwekm3foksnw/6001978481505125210/reset";
+    // String urlString = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/rest/player/njmbrnksebyfo8n9q7xiwwekm3foksnw/6001978481505125210/reset";
+    String urlString = "https://snakebattle.tk/codenjoy-contest/rest/player/patkovskyi@unreal.com/16412357891426281969/reset";
     URL url = new URL(urlString);
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
     System.out.println("Content: " + bufferedReader.lines().collect(Collectors.joining("\n")));
@@ -45,7 +46,8 @@ public class Main {
 
     WebSocketRunner.run(
         URI.create(
-            "wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
+            // "wss://game2.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=patkovskyi@gmail.com&code=6001978481505125210"),
+            "wss://snakebattle.tk/codenjoy-contest/ws?user=patkovskyi@unreal.com&code=16412357891426281969"),
         new MySolver(),
         new MyBoard(),
         1000);

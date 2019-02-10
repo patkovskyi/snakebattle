@@ -2,6 +2,7 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.DynamicObstacle;
+import com.codenjoy.dojo.snakebattle.model.HeroAction;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import com.codenjoy.dojo.snakebattle.model.objects.Apple;
@@ -13,9 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class Analysis {
+public abstract class Analysis {
 
-  private final SnakeBoard game;
+  protected final SnakeBoard game;
+
   private final Map<Hero, boolean[][]> staticObstacles;
   private final Map<Hero, boolean[][]> dynamicObstacles;
   private final Map<Hero, int[][]> staticDistances;
@@ -23,7 +25,7 @@ public class Analysis {
   private final Map<Hero, int[][]> values;
   private final Map<Hero, double[][]> distanceAdjustedValues;
 
-  private Analysis(SnakeBoard game) {
+  protected Analysis(SnakeBoard game) {
     this.game = game;
     staticObstacles = new HashMap<>();
     dynamicObstacles = new HashMap<>();
@@ -33,11 +35,7 @@ public class Analysis {
     distanceAdjustedValues = new HashMap<>();
   }
 
-  public static Analysis create(SnakeBoard game) {
-    // TODO: check if game is in valid state and hero is alive & active ?
-    Analysis a = new Analysis(game);
-    return a;
-  }
+  public abstract HeroAction findBestAction();
 
   boolean[][] getStaticObstacles(Hero hero) {
     return staticObstacles.computeIfAbsent(hero, h -> {
