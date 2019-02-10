@@ -41,9 +41,9 @@ public class Analysis {
 
   boolean[][] getStaticObstacles(Hero hero) {
     return staticObstacles.computeIfAbsent(hero, h -> {
-      boolean[][] barriers = new boolean[game.size()][game.size()];
-      getBarriers().forEach(b -> barriers[b.getX()][b.getY()] = true);
-      return Algorithms.findStaticDeadEnds(barriers);
+      boolean[][] obstacles = new boolean[game.size()][game.size()];
+      getBarriers().forEach(b -> obstacles[b.getX()][b.getY()] = true);
+      return Algorithms.findDirectionalDeadEnds(obstacles, hero.head(), hero.getDirection());
     });
   }
 

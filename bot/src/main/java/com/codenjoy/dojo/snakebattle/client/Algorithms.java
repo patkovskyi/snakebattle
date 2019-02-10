@@ -4,9 +4,7 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Queue;
-import java.util.Set;
 
 /**
  * This class should know NOTHING about our domain.
@@ -49,11 +47,11 @@ public class Algorithms {
     return distances;
   }
 
-  public static boolean[][] findStaticDeadEnds(boolean[][] staticObstacles) {
-    boolean[][] deadEnds = new boolean[staticObstacles.length][staticObstacles.length];
-    for (int i = 0; i < staticObstacles.length; i++) {
-      for (int j = 0; j < staticObstacles.length; j++) {
-        deadEnds[i][j] = staticObstacles[i][j];
+  public static boolean[][] findStaticDeadEnds(boolean[][] obstacles) {
+    boolean[][] deadEnds = new boolean[obstacles.length][obstacles.length];
+    for (int i = 0; i < obstacles.length; i++) {
+      for (int j = 0; j < obstacles.length; j++) {
+        deadEnds[i][j] = obstacles[i][j];
       }
     }
 
@@ -62,14 +60,14 @@ public class Algorithms {
 
     do {
       updated = false;
-      for (int x = 0; x < staticObstacles.length; x++) {
-        for (int y = 0; y < staticObstacles.length; y++) {
+      for (int x = 0; x < obstacles.length; x++) {
+        for (int y = 0; y < obstacles.length; y++) {
           if (!deadEnds[x][y]) {
             int passableNeighbors = 0;
             for (int d = 0; d < 4; d++) {
               int nx = directions[d].changeX(x);
               int ny = directions[d].changeY(y);
-              if (!isOutOf(nx, ny, staticObstacles.length) && !deadEnds[nx][ny]) {
+              if (!isOutOf(nx, ny, obstacles.length) && !deadEnds[nx][ny]) {
                 ++passableNeighbors;
               }
             }
@@ -84,6 +82,48 @@ public class Algorithms {
     } while (updated);
 
     return deadEnds;
+  }
+
+  public static boolean[][] findDirectionalDeadEnds(boolean[][] obstacles, Point fromPoint,
+      Direction fromDirection) {
+    boolean[][] deadEnds = new boolean[obstacles.length][obstacles.length];
+    for (int i = 0; i < obstacles.length; i++) {
+      Arrays.fill(deadEnds[i], true);
+    }
+
+    recDirectionalDeadEnds(obstacles, fromPoint, fromDirection, deadEnds,
+        new boolean[obstacles.length][obstacles.length]);
+
+    return deadEnds;
+  }
+
+  private static boolean recDirectionalDeadEnds(boolean[][] obstacles, Point fromPoint,
+      Direction fromDirection, boolean[][] deadEnds, boolean[][] visited) {
+    visited[fromPoint.getX()][fromPoint.getY()] = true;
+
+    boolean foundCycle = false;
+    for (Direction newDirection : Direction.onlyDirections()) {
+      if (fromDirection != newDirection.inverted()) {
+        Point newPoint = fromPoint.copy();
+        newPoint.change(newDirection);
+
+        if (!newPoint.isOutOf(obstacles.length) && visited[newPoint.getX()][newPoint.getY()]) {
+          foundCycle = true;
+          continue;
+        }
+
+        if (!newPoint.isOutOf(obstacles.length) && !obstacles[newPoint.getX()][newPoint.getY()]) {
+          foundCycle |= recDirectionalDeadEnds(obstacles, newPoint, newDirection, deadEnds,
+              visited);
+        }
+      }
+    }
+
+    if (foundCycle) {
+      deadEnds[fromPoint.getX()][fromPoint.getY()] = false;
+    }
+
+    return foundCycle;
   }
 
   private static boolean isOutOf(int x, int y, int size) {

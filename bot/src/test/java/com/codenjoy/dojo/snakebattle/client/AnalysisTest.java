@@ -102,8 +102,9 @@ public class AnalysisTest {
 
   @Test
   public void deadEndsSmall() {
+    // @formatter:off
     assertDeadEnds(
-        "☼☼☼☼☼☼☼☼"
+              "☼☼☼☼☼☼☼☼"
             + "☼☼     ☼"
             + "☼☼☼☼   ☼"
             + "☼☼    ●☼"
@@ -111,7 +112,8 @@ public class AnalysisTest {
             + "☼☼ ×─┘▲☼"
             + "☼☼╘═══╝☼"
             + "☼☼☼☼☼☼☼☼",
-        "☼☼☼☼☼☼☼☼"
+
+              "☼☼☼☼☼☼☼☼"
             + "☼☼☼☼   ☼"
             + "☼☼☼☼   ☼"
             + "☼☼     ☼"
@@ -119,6 +121,79 @@ public class AnalysisTest {
             + "☼☼     ☼"
             + "☼☼     ☼"
             + "☼☼☼☼☼☼☼☼");
+    // @formatter:on
+  }
+
+  @Test
+  public void deadEndsSmallDirectional() {
+    // @formatter:off
+    assertDeadEnds(
+              "☼☼☼☼☼☼☼☼"
+            + "☼      ☼"
+            + "☼      ☼"
+            + "☼☼☼☼☼☼ ☼"
+            + "☼ ╘►   ☼"
+            + "☼☼☼☼☼☼ ☼"
+            + "☼      ☼"
+            + "☼☼☼☼☼☼☼☼",
+
+              "☼☼☼☼☼☼☼☼"
+            + "☼      ☼"
+            + "☼      ☼"
+            + "☼☼☼☼☼☼ ☼"
+            + "☼☼☼    ☼"
+            + "☼☼☼☼☼☼☼☼"
+            + "☼☼☼☼☼☼☼☼"
+            + "☼☼☼☼☼☼☼☼");
+    // @formatter:on
+  }
+
+  @Test
+  public void deadEndsSmallDirectional2() {
+    // @formatter:off
+    assertDeadEnds(
+              "☼☼☼☼☼☼☼☼"
+            + "☼      ☼"
+            + "☼ ╘►   ☼"
+            + "☼☼☼☼☼☼ ☼"
+            + "☼      ☼"
+            + "☼☼☼☼☼☼ ☼"
+            + "☼      ☼"
+            + "☼☼☼☼☼☼☼☼",
+
+              "☼☼☼☼☼☼☼☼"
+            + "☼      ☼"
+            + "☼      ☼"
+            + "☼☼☼☼☼☼☼☼"
+            + "☼☼☼☼☼☼☼☼"
+            + "☼☼☼☼☼☼☼☼"
+            + "☼☼☼☼☼☼☼☼"
+            + "☼☼☼☼☼☼☼☼");
+    // @formatter:on
+  }
+
+  @Test
+  public void deadEndsSmallDirectional3() {
+    // @formatter:off
+    assertDeadEnds(
+              "☼☼☼☼☼☼☼☼"
+            + "☼      ☼"
+            + "☼ ╘►   ☼"
+            + "☼☼☼☼☼☼ ☼"
+            + "☼      ☼"
+            + "☼☼☼ ☼☼ ☼"
+            + "☼      ☼"
+            + "☼☼☼☼☼☼☼☼",
+
+              "☼☼☼☼☼☼☼☼"
+            + "☼      ☼"
+            + "☼      ☼"
+            + "☼☼☼☼☼☼ ☼"
+            + "☼☼☼    ☼"
+            + "☼☼☼ ☼☼ ☼"
+            + "☼☼☼    ☼"
+            + "☼☼☼☼☼☼☼☼");
+    // @formatter:on
   }
 
   @Test
@@ -274,7 +349,7 @@ public class AnalysisTest {
         + "☼   ☼  ☼"
         + "☼   ☼  ☼"
         + "☼☼☼☼☼☼☼☼");
-    
+
     assertDynamicDistances("☼☼☼☼☼☼☼☼"
         + "☼212☼67☼"
         + "☼301☼56☼"
