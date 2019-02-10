@@ -60,7 +60,7 @@ public class Analysis {
       }
 
       getActiveAliveHeroes().forEach(
-          enemy -> enemy.getBody().forEach(p -> {
+          enemy -> enemy.body().forEach(p -> {
             int roundsToPoint = staticDistances[p.getX()][p.getY()];
             DynamicObstacle obstacle = Mechanics.whatWillBeOnThisPoint(enemy, p, roundsToPoint);
             switch (obstacle) {
@@ -103,8 +103,10 @@ public class Analysis {
           values[p.getX()][p.getY()] = 1 + Mechanics.APPLE_REWARD + Mechanics.STONE_REWARD / 3);
 
       game.getStones().forEach(p -> {
-        values[p.getX()][p.getY()] = hero.getFuryCount() <= distance[p.getX()][p.getY()] ?
+        // values[p.getX()][p.getY()] = hero.getFuryCount() <= distance[p.getX()][p.getY()] ?
       });
+
+      return null;
     });
   }
 
@@ -125,7 +127,7 @@ public class Analysis {
   }
 
   private int getPointValue(Point point, int distanceToPoint) {
-    Point p = game.getObjOn(point);
+    Point p = game.getOn(point);
     if (p instanceof Apple) {
       return 3;
     }

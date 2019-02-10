@@ -80,19 +80,19 @@ public class GameHelper {
   public static SnakeBoard initializeGame(MyBoard board) {
     String boardString = board.boardAsString();
     LevelImpl level = new LevelImpl(boardString.replaceAll("\n", ""));
-    SnakeBoard game =
-        new SnakeBoard(
+    SnakeBoard game = new SnakeBoard(
             level,
             new RandomDice(),
             new Timer(new SimpleParameter<>(0)),
             new Timer(new SimpleParameter<>(300)),
-            new SimpleParameter<>(0), // rounds per one match
+            new Timer(new SimpleParameter<>(1)),
+            new SimpleParameter<>(1), // rounds per one match
             new SimpleParameter<>(10),
             new SimpleParameter<>(10),
             new SimpleParameter<>(3),
-            new SimpleParameter<>(2));
+            new SimpleParameter<>(40));
 
-    Hero hero = level.getHero();
+    Hero hero = level.getHero(game);
     if (hero != null) {
       Player heroPlayer = new Player(new EmulatingEventListener(0));
       game.newGame(heroPlayer);
@@ -101,7 +101,7 @@ public class GameHelper {
       hero.init(game);
     }
 
-    List<Hero> enemies = level.getEnemies();
+    List<Hero> enemies = level.getEnemies(game);
     for (int i = 0; i < enemies.size(); i++) {
       Hero enemy = enemies.get(i);
       final int j = i + 1;
