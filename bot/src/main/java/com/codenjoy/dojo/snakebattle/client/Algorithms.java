@@ -4,7 +4,9 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * This class should know NOTHING about our domain.
@@ -87,4 +89,35 @@ public class Algorithms {
   private static boolean isOutOf(int x, int y, int size) {
     return x < 0 || y < 0 || x >= size || y >= size;
   }
+
+//  public static int maximumTSP(int[][] distancesBetweenObjects, int[] distanceFromMeToObject,
+//      int[] objectValues, int turns) {
+//    int numObjects = objectValues.length;
+//    // m[i][t] will reflect total value we can get if we finish on object i and have t turns left
+//    int[][] m = new int[numObjects][turns + 1];
+//    Set<Integer>[] visited = new HashSet[numObjects];
+//
+//    for (int t = turns; t-- > 0; ) {
+//      for (int i = 0; i < objectValues.length; i++) {
+//        if (distanceFromMeToObject[i] <= t) {
+//          m[i][turns - distanceFromMeToObject[i]] = objectValues[i];
+//          visited[i].add(i);
+//        }
+//      }
+//    }
+//
+//    for (int t = turns; t-- > 0; ) {
+//      for (int i = 0; i < objectValues.length; i++) {
+//        for (int j = 0; j < objectValues.length; j++) {
+//          if (visited[i].contains(j))
+//            continue;
+//
+//          if (t >= distancesBetweenObjects[i][j]) {
+//            m[j][t - distancesBetweenObjects[i][j]] =
+//                Math.max(m[j][t - distancesBetweenObjects[i][j]], m[i][t]);
+//          }
+//        }
+//      }
+//    }
+//  }
 }
