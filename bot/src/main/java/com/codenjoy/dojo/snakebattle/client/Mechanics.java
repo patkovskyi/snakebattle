@@ -21,6 +21,18 @@ public class Mechanics {
     return hero.size() + hero.getGrowBy();
   }
 
+  static boolean canPassStone(Hero hero, int ticksToStone) {
+    boolean heroFly = hero.getFlyingCount() >= ticksToStone;
+    return heroFly || canEatStone(hero, ticksToStone);
+  }
+
+  static boolean canEatStone(Hero hero, int ticksToStone) {
+    boolean heroFury = hero.getFuryCount() >= ticksToStone;
+    boolean heroLongEnough = getTrueLength(hero) - STONE_LENGTH_PENALTY >= MIN_SNAKE_LENGTH;
+
+    return heroFury || heroLongEnough;
+  }
+
   static boolean wouldSurviveHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
     boolean heroFly = hero.getFlyingCount() >= ticksToCollision;
     boolean enemyFly = enemy.getFlyingCount() >= ticksToCollision;

@@ -62,6 +62,11 @@ public abstract class Analysis {
         }
       }
 
+      game.getStones().forEach(s -> {
+        int distanceToStone = staticDistances[s.getX()][s.getY()];
+        dynamicObstacles[s.getX()][s.getY()] |= !Mechanics.canPassStone(hero, distanceToStone);
+      });
+
       getAliveActiveHeroes().forEach(
           enemy -> enemy.body().forEach(p -> {
             int roundsToPoint = staticDistances[p.getX()][p.getY()];

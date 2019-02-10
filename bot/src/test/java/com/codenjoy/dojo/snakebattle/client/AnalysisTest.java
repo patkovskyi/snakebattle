@@ -309,6 +309,76 @@ public class AnalysisTest {
   }
 
   @Test
+  public void dynamicDistanceStoneCantPass() {
+    newGame("☼☼☼☼☼"
+        + "☼   ☼"
+        + "╘►● ☼"
+        + "☼   ☼"
+        + "☼☼☼☼☼");
+
+    assertDynamicDistances("☼☼☼☼☼"
+        + "☼123☼"
+        + "☼0☼4☼"
+        + "☼123☼"
+        + "☼☼☼☼☼");
+  }
+
+  @Test
+  public void dynamicDistanceStoneCanPass() {
+    newGame("☼☼☼☼☼☼"
+        + "☼    ☼"
+        + " ╔►● ☼"
+        + "☼║   ☼"
+        + "☼╚╕  ☼"
+        + "☼☼☼☼☼☼");
+
+    assertDynamicDistances("☼☼☼☼☼☼"
+        + "☼2123☼"
+        + "☼☼012☼"
+        + "☼☼123☼"
+        + "☼3234☼"
+        + "☼☼☼☼☼☼");
+  }
+
+  @Test
+  public void dynamicDistanceStoneCanPassFury() {
+    newGame("☼☼☼☼☼☼"
+        + "☼    ☼"
+        + "╘►®● ☼"
+        + "☼    ☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    game.tick();
+
+    assertDynamicDistances("☼☼☼☼☼☼"
+        + "☼2123☼"
+        + "☼3012☼"
+        + "☼2123☼"
+        + "☼3234☼"
+        + "☼☼☼☼☼☼");
+  }
+
+  @Test
+  public void dynamicDistanceStoneCanPassFlight() {
+    newGame("☼☼☼☼☼☼"
+        + "☼    ☼"
+        + "╘►©● ☼"
+        + "☼    ☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    game.tick();
+
+    assertDynamicDistances("☼☼☼☼☼☼"
+        + "☼2123☼"
+        + "☼3012☼"
+        + "☼2123☼"
+        + "☼3234☼"
+        + "☼☼☼☼☼☼");
+  }
+
+  @Test
   public void dynamicDistanceEnemyOutOfReach() {
     newGame("☼☼☼☼☼"
         + "☼  ˄☼"
