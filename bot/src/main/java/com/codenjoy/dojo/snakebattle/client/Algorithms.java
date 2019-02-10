@@ -47,43 +47,6 @@ public class Algorithms {
     return distances;
   }
 
-  public static boolean[][] findStaticDeadEnds(boolean[][] obstacles) {
-    boolean[][] deadEnds = new boolean[obstacles.length][obstacles.length];
-    for (int i = 0; i < obstacles.length; i++) {
-      for (int j = 0; j < obstacles.length; j++) {
-        deadEnds[i][j] = obstacles[i][j];
-      }
-    }
-
-    boolean updated;
-    Direction[] directions = Direction.onlyDirections().toArray(new Direction[0]);
-
-    do {
-      updated = false;
-      for (int x = 0; x < obstacles.length; x++) {
-        for (int y = 0; y < obstacles.length; y++) {
-          if (!deadEnds[x][y]) {
-            int passableNeighbors = 0;
-            for (int d = 0; d < 4; d++) {
-              int nx = directions[d].changeX(x);
-              int ny = directions[d].changeY(y);
-              if (!isOutOf(nx, ny, obstacles.length) && !deadEnds[nx][ny]) {
-                ++passableNeighbors;
-              }
-            }
-
-            if (passableNeighbors <= 1) {
-              deadEnds[x][y] = true;
-              updated = true;
-            }
-          }
-        }
-      }
-    } while (updated);
-
-    return deadEnds;
-  }
-
   public static boolean[][] findDirectionalDeadEnds(boolean[][] obstacles, Point fromPoint,
       Direction fromDirection) {
     boolean[][] deadEnds = new boolean[obstacles.length][obstacles.length];
@@ -159,5 +122,42 @@ public class Algorithms {
 //        }
 //      }
 //    }
+//  }
+
+//  public static boolean[][] findStaticDeadEnds(boolean[][] obstacles) {
+//    boolean[][] deadEnds = new boolean[obstacles.length][obstacles.length];
+//    for (int i = 0; i < obstacles.length; i++) {
+//      for (int j = 0; j < obstacles.length; j++) {
+//        deadEnds[i][j] = obstacles[i][j];
+//      }
+//    }
+//
+//    boolean updated;
+//    Direction[] directions = Direction.onlyDirections().toArray(new Direction[0]);
+//
+//    do {
+//      updated = false;
+//      for (int x = 0; x < obstacles.length; x++) {
+//        for (int y = 0; y < obstacles.length; y++) {
+//          if (!deadEnds[x][y]) {
+//            int passableNeighbors = 0;
+//            for (int d = 0; d < 4; d++) {
+//              int nx = directions[d].changeX(x);
+//              int ny = directions[d].changeY(y);
+//              if (!isOutOf(nx, ny, obstacles.length) && !deadEnds[nx][ny]) {
+//                ++passableNeighbors;
+//              }
+//            }
+//
+//            if (passableNeighbors <= 1) {
+//              deadEnds[x][y] = true;
+//              updated = true;
+//            }
+//          }
+//        }
+//      }
+//    } while (updated);
+//
+//    return deadEnds;
 //  }
 }
