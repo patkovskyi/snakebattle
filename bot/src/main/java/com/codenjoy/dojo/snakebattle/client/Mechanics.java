@@ -13,34 +13,48 @@ public class Mechanics {
   public static int STONE_LENGTH_PENALTY = 3;
   public static int BLOOD_REWARD_PER_CELL = 10;
 
-  static boolean wouldSurviveHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroLonger = hero.size() + hero.getGrowBy() >= enemy.size() + enemy.getGrowBy()
-        + MIN_SNAKE_LENGTH;
+  static int getTrueBodyIndex(Hero hero, Point point) {
+    return hero.getBodyIndex(point) + hero.getGrowBy();
+  }
 
-    boolean heroFury = hero.getFuryCount() >= ticksToCollision;
-    boolean enemyFury = enemy.getFuryCount() >= ticksToCollision;
+  static int getTrueLength(Hero hero) {
+    return hero.size() + hero.getGrowBy();
+  }
+
+  static boolean wouldSurviveHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
     boolean heroFly = hero.getFlyingCount() >= ticksToCollision;
     boolean enemyFly = enemy.getFlyingCount() >= ticksToCollision;
 
-    return heroFly || enemyFly || heroFury && !enemyFury || heroFury == enemyFury && heroLonger;
+    return heroFly || enemyFly || wouldWinHeadToHead(hero, enemy, ticksToCollision);
+  }
+
+  static boolean wouldWinHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
+    boolean heroLonger = getTrueLength(hero) >= getTrueLength(enemy) + MIN_SNAKE_LENGTH;
+    boolean heroFury = hero.getFuryCount() >= ticksToCollision;
+    boolean enemyFury = enemy.getFuryCount() >= ticksToCollision;
+
+    return heroFury && !enemyFury || heroFury == enemyFury && heroLonger;
   }
 
   static boolean wouldSurviveHeadToBody(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroFury = hero.getFuryCount() >= ticksToCollision;
     boolean heroFly = hero.getFlyingCount() >= ticksToCollision;
     boolean enemyFly = enemy.getFlyingCount() >= ticksToCollision;
 
-    return heroFury || heroFly || enemyFly;
+    return heroFly || enemyFly || wouldWinHeadToBody(hero, enemy, ticksToCollision);
+  }
+
+  static boolean wouldWinHeadToBody(Hero hero, Hero enemy, int ticksToCollision) {
+    boolean heroFury = hero.getFuryCount() >= ticksToCollision;
+    return heroFury;
   }
 
   static DynamicObstacle whatWillBeOnThisPoint(Hero hero, Point point, int inRounds) {
-    int trueBodyIndex = Math.max(-1, hero.getBodyIndex(point) + hero.getGrowBy() - inRounds);
+    int trueBodyIndex = getTrueBodyIndex(hero, point) - inRounds;
     if (trueBodyIndex < 0) {
       return DynamicObstacle.Nothing;
     }
 
-    int trueSize = hero.size() + hero.getGrowBy();
-    int trueDistanceFromHead = trueSize - trueBodyIndex - 1;
+    int trueDistanceFromHead = getTrueLength(hero) - 1 - trueBodyIndex;
 
     // TODO: this place assumes head == neck
     if (trueDistanceFromHead <= 1) {

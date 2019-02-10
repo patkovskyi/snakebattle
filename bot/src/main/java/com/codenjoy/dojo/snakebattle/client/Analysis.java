@@ -59,7 +59,7 @@ public class Analysis {
         }
       }
 
-      getActiveAliveHeroes().forEach(
+      getAliveActiveHeroes().forEach(
           enemy -> enemy.body().forEach(p -> {
             int roundsToPoint = staticDistances[p.getX()][p.getY()];
             DynamicObstacle obstacle = Mechanics.whatWillBeOnThisPoint(enemy, p, roundsToPoint);
@@ -98,15 +98,59 @@ public class Analysis {
   int[][] getValues(Hero hero) {
     return values.computeIfAbsent(hero, h -> {
       int[][] values = new int[game.size()][game.size()];
-      int[][] distance = getDynamicDistances(hero);
-      game.getApples().forEach(p ->
-          values[p.getX()][p.getY()] = 1 + Mechanics.APPLE_REWARD + Mechanics.STONE_REWARD / 3);
+      int[][] distances = getDynamicDistances(hero);
 
+      // TODO: think how much value should +1 length have
+      game.getApples().forEach(p ->
+          values[p.getX()][p.getY()] = 1 + Mechanics.APPLE_REWARD);
+
+      // TODO: think about how stones eaten with fury should be valued higher
       game.getStones().forEach(p -> {
-        // values[p.getX()][p.getY()] = hero.getFuryCount() <= distance[p.getX()][p.getY()] ?
+        if (hero.getFlyingCount() >= distances[p.getX()][p.getY()]) {
+          values[p.getX()][p.getY()] = 0;
+          return;
+        }
+
+        if (hero.getFuryCount() >= distances[p.getX()][p.getY()]) {
+          values[p.getX()][p.getY()] = Mechanics.STONE_REWARD;
+        }
+
+        if (getTrueLength(hero) - Mechanics.STONE_LENGTH_PENALTY >= Mechanics.MIN_SNAKE_LENGTH) {
+          values[p.getX()][p.getY()] = Mechanics.STONE_REWARD;
+        }
       });
 
-      return null;
+      game.getGold().forEach(p -> values[p.getX()][p.getY()] = Mechanics.GOLD_REWARD);
+
+      // TODO: think how much value should flight pill have
+      game.getFlyingPills().forEach(p -> values[p.getX()][p.getY()] = -10);
+
+      getAliveActiveEnemies().forEach(enemy -> enemy.body().forEach(p -> {
+        int roundsToTarget = distances[p.getX()][p.getY()];
+
+        switch (Mechanics.whatWillBeOnThisPoint(enemy, p, roundsToTarget)) {
+          case Nothing:
+            break;
+          case Body:
+            if (Mechanics.wouldWinHeadToBody(hero, enemy, roundsToTarget)) {
+              int lengthToEat = Mechanics.getTrueBodyIndex(enemy, p) - roundsToTarget;
+              values[p.getX()][p.getY()] += Mechanics.BLOOD_REWARD_PER_CELL * lengthToEat;
+            } else if (Mechanics.wouldSurviveHeadToBody(hero, enemy, roundsToTarget)) {
+              values[p.getX()][p.getY()] = 0;
+            } else {
+              // TODO: how negative should it be ?
+              values[p.getX()][p.getY()] = -10;
+            }
+            break;
+          case Neck:
+            if (Mechanics.wouldWinHeadToHead(hero, enemy, roundsToTarget)) {
+              int lengthToEat = Mechanics.getTrueLength(enemy);
+              values[p.getX()][p.getY()] += Mechanics.BLOOD_REWARD_PER_CELL * lengthToEat;
+            }
+        }
+      }));
+
+      return values;
     });
   }
 
@@ -118,8 +162,13 @@ public class Analysis {
     return Stream.concat(game.getWalls().stream(), game.getStarts().stream());
   }
 
-  private Stream<Hero> getActiveAliveHeroes() {
+  private Stream<Hero> getAliveActiveHeroes() {
     return game.getHeroes().stream().filter(h -> h.isActive() && h.isAlive());
+  }
+
+  private Stream<Hero> getAliveActiveEnemies() {
+    Hero myHero = getMyHero();
+    return getAliveActiveHeroes().filter(h -> h != myHero);
   }
 
   private Hero getMyHero() {
@@ -162,6 +211,10 @@ public class Analysis {
         .count();
 
     return Mechanics.STONE_REWARD * Math.min(3, stonesWithinRadius);
+  }
+
+  private int getTrueLength(Hero hero) {
+    return hero.size() + hero.getGrowBy();
   }
 
   // Fury shit loop starts when we take a Fury pill and start leaving stones and eating them.
