@@ -5,6 +5,7 @@ import com.codenjoy.dojo.snakebattle.model.DynamicObstacle;
 import com.codenjoy.dojo.snakebattle.model.HeroAction;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
+import com.codenjoy.dojo.snakebattle.model.hero.Tail;
 import com.codenjoy.dojo.snakebattle.model.objects.Apple;
 import com.codenjoy.dojo.snakebattle.model.objects.FlyingPill;
 import com.codenjoy.dojo.snakebattle.model.objects.FuryPill;
@@ -36,6 +37,10 @@ public abstract class Analysis {
   }
 
   public abstract HeroAction findBestAction();
+
+  public boolean hasRoundStarted() {
+    return getMyHero().isActive();
+  }
 
   boolean[][] getStaticObstacles(Hero hero) {
     return staticObstacles.computeIfAbsent(hero, h -> {
@@ -168,21 +173,46 @@ public abstract class Analysis {
     });
   }
 
-  private Stream<Point> getBarriers() {
+  protected Stream<Point> getBarriers() {
     return Stream.concat(game.getWalls().stream(), game.getStarts().stream());
   }
 
-  private Stream<Hero> getAliveActiveHeroes() {
+  protected Stream<Hero> getAliveActiveHeroes() {
     return game.getHeroes().stream().filter(h -> h.isActive() && h.isAlive());
   }
 
-  private Stream<Hero> getAliveActiveEnemies() {
+  protected Stream<Hero> getAliveActiveEnemies() {
     Hero myHero = getMyHero();
     return getAliveActiveHeroes().filter(h -> h != myHero);
   }
 
-  private Hero getMyHero() {
+  protected Hero getMyHero() {
     return game.getHeroes().get(0);
+  }
+
+  protected String getTargetPointType(Point point) {
+    Point p = game.getOn(point);
+
+    if (p instanceof Apple) {
+      return "APPLE";
+    }
+    if (p instanceof Gold) {
+      return "GOLD";
+    }
+    if (p instanceof Stone) {
+      return "STONE";
+    }
+    if (p instanceof FlyingPill) {
+      return "FLIGHT";
+    }
+    if (p instanceof FuryPill) {
+      return "FURY";
+    }
+    if (p instanceof Tail) {
+      return "ENEMY";
+    }
+
+    return "NOTHING";
   }
 
   private int getPointValue(Point point, int distanceToPoint) {

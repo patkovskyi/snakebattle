@@ -23,8 +23,10 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.codenjoy.dojo.services.printer.PrinterFactoryImpl;
+import com.codenjoy.dojo.snakebattle.model.HeroAction;
 import com.codenjoy.dojo.snakebattle.model.Player;
 import com.codenjoy.dojo.snakebattle.model.TestUtils;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
@@ -292,6 +294,21 @@ public class AnalysisTest {
   }
 
   @Test
+  public void dynamicDistanceSleep() {
+    newGame("☼☼☼☼☼"
+        + "☼  ˄☼"
+        + "~& │☼"
+        + "☼  ¤☼"
+        + "☼☼☼☼☼");
+
+    assertDynamicDistances("☼☼☼☼☼"
+        + "☼123☼"
+        + "☼012☼"
+        + "☼123☼"
+        + "☼☼☼☼☼");
+  }
+
+  @Test
   public void dynamicDistanceEnemyOutOfReach() {
     newGame("☼☼☼☼☼"
         + "☼  ˄☼"
@@ -471,5 +488,18 @@ public class AnalysisTest {
         + "☼3234☼"
         + "☼4345☼"
         + "☼☼☼☼☼☼");
+  }
+
+  @Test
+  public void greedyAnalysisTest() {
+    newGame("☼☼☼☼☼☼"
+        + " ▲   ☼"
+        + "☼║  ○☼"
+        + "☼║   ☼"
+        + "☼╙   ☼"
+        + "☼☼☼☼☼☼");
+
+    Analysis a = new GreedyAnalysis(game);
+    assertEquals(HeroAction.RIGHT, a.findBestAction());
   }
 }

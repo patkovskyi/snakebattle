@@ -31,7 +31,7 @@ public class MySolver implements Solver<MyBoard> {
   @Override
   public String get(MyBoard boardFromServer) {
     game = GameHelper.getNewOrContinuedGame(game, boardFromServer);
-    Analysis analysis = new RandomAnalysis(game);
+    Analysis analysis = new GreedyAnalysis(game);
     return analysis.findBestAction().getStr();
   }
 }
