@@ -53,21 +53,25 @@ public class GameHelper {
   public static SnakeBoard getNewOrContinuedGame(SnakeBoard game, MyBoard boardFromServer) {
     if (game == null || boardFromServer.isNewRound()) {
       // initialize new game
-      System.out.println("NEW ROUND!");
       game = initializeGame(boardFromServer);
     } else {
       game = GameHelper.continueGame(game, boardFromServer);
 
       if (game == null) {
         // re-sync required :(
-        System.out.println("FAIL: RESYNC :(");
         game = initializeGame(boardFromServer);
       }
     }
 
-    if (!game.getHeroes().get(0).isAlive() && game.getHeroes().stream()
-        .anyMatch(h -> h.isAlive())) {
+    System.out.printf("TICK %d\n", game.getTick());
+
+    if (game.getHeroes().stream().noneMatch(h -> h.isAlive())) {
+      System.out.println("ROUND DRAW");
+    } else if (!game.getHeroes().get(0).isAlive() &&
+        game.getHeroes().stream().anyMatch(h -> h.isAlive())) {
       System.out.println("ROUND LOST");
+    } else if (game.getHeroes().stream().filter(h -> h.isAlive()).count() == 1) {
+      System.out.println("ROUND WON");
     }
 
     return game;
@@ -81,16 +85,16 @@ public class GameHelper {
     String boardString = board.boardAsString();
     LevelImpl level = new LevelImpl(boardString.replaceAll("\n", ""));
     SnakeBoard game = new SnakeBoard(
-            level,
-            new RandomDice(),
-            new Timer(new SimpleParameter<>(0)),
-            new Timer(new SimpleParameter<>(300)),
-            new Timer(new SimpleParameter<>(1)),
-            new SimpleParameter<>(1), // rounds per one match
-            new SimpleParameter<>(10),
-            new SimpleParameter<>(10),
-            new SimpleParameter<>(3),
-            new SimpleParameter<>(40));
+        level,
+        new RandomDice(),
+        new Timer(new SimpleParameter<>(0)),
+        new Timer(new SimpleParameter<>(300)),
+        new Timer(new SimpleParameter<>(1)),
+        new SimpleParameter<>(1), // rounds per one match
+        new SimpleParameter<>(10),
+        new SimpleParameter<>(10),
+        new SimpleParameter<>(3),
+        new SimpleParameter<>(40));
 
     Hero hero = level.getHero(game);
     if (hero != null) {

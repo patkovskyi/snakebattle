@@ -133,9 +133,10 @@ public class AnalysisTest {
     TestUtils.assertBoardsEqual(expectedDeadEnds, sb.toString());
   }
 
+  // @formatter:off
+
   @Test
   public void deadEndsSmall() {
-    // @formatter:off
     assertDeadEnds(
               "☼☼☼☼☼☼☼☼"
             + "☼☼     ☼"
@@ -154,12 +155,10 @@ public class AnalysisTest {
             + "☼☼     ☼"
             + "☼☼     ☼"
             + "☼☼☼☼☼☼☼☼");
-    // @formatter:on
   }
 
   @Test
   public void deadEndsSmallDirectional() {
-    // @formatter:off
     assertDeadEnds(
               "☼☼☼☼☼☼☼☼"
             + "☼      ☼"
@@ -178,12 +177,10 @@ public class AnalysisTest {
             + "☼☼☼☼☼☼☼☼"
             + "☼☼☼☼☼☼☼☼"
             + "☼☼☼☼☼☼☼☼");
-    // @formatter:on
   }
 
   @Test
   public void deadEndsSmallDirectional2() {
-    // @formatter:off
     assertDeadEnds(
               "☼☼☼☼☼☼☼☼"
             + "☼      ☼"
@@ -202,12 +199,10 @@ public class AnalysisTest {
             + "☼☼☼☼☼☼☼☼"
             + "☼☼☼☼☼☼☼☼"
             + "☼☼☼☼☼☼☼☼");
-    // @formatter:on
   }
 
   @Test
   public void deadEndsSmallDirectional3() {
-    // @formatter:off
     assertDeadEnds(
               "☼☼☼☼☼☼☼☼"
             + "☼      ☼"
@@ -226,7 +221,6 @@ public class AnalysisTest {
             + "☼☼☼ ☼☼ ☼"
             + "☼☼☼    ☼"
             + "☼☼☼☼☼☼☼☼");
-    // @formatter:on
   }
 
   @Test
@@ -593,7 +587,6 @@ public class AnalysisTest {
 
   @Test
   public void getValues() {
-    // @formatter:off
     newGame(  "☼☼☼☼☼☼"
             + "☼▲ $ ☼"
             + "☼║ ○●☼"
@@ -608,12 +601,10 @@ public class AnalysisTest {
             + "0 0 0 0 0 0 "
             + "0 0 # 0 300 "
             + "0 0 0 0 0 0 ");
-    // @formatter:on
   }
 
   @Test
   public void getAccummulatedValues() {
-    // @formatter:off
     newGame(  "☼☼☼☼☼☼"
             + "☼▲ $ ☼"
             + "☼║ ○●☼"
@@ -628,12 +619,10 @@ public class AnalysisTest {
             + "0 0 0 14140 "
             + "0 0 # 14440 "
             + "0 0 0 0 0 0 ");
-    // @formatter:on
   }
 
   @Test
   public void getAccummulatedValuesFight() {
-    // @formatter:off
     newGame(  "☼☼☼☼☼☼"
             + "☼▲˄  ☼"
             + "☼║¤  ☼"
@@ -648,12 +637,10 @@ public class AnalysisTest {
             + "0 202020200 "
             + "0 202020200 "
             + "0 0 0 0 0 0 ");
-    // @formatter:on
   }
 
   @Test
   public void getAccummulatedValuesLosingFight() {
-    // @formatter:off
     newGame(  "☼☼☼☼☼☼"
             + "☼▲˄  ☼"
             + "☼║│  ☼"
@@ -668,7 +655,6 @@ public class AnalysisTest {
             + "0 0 0 0 0 0 "
             + "0 0 0 0 0 0 "
             + "0 0 0 0 0 0 ");
-    // @formatter:on
   }
 
   @Test
@@ -683,4 +669,36 @@ public class AnalysisTest {
     Analysis a = new GreedyAnalysis(game);
     assertEquals(HeroAction.RIGHT, a.findBestAction());
   }
+
+  @Test
+  public void greedyAnalysisTestBetterPath1() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "☼ ●●●☼"
+        + "☼ ○ ®☼"
+        + "☼╘►○○☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+
+    Analysis a = new GreedyAnalysis(game);
+    assertEquals(HeroAction.RIGHT, a.findBestAction());
+  }
+
+  @Test
+  public void greedyAnalysisTestBetterPath2() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "☼ ●●●☼"
+        + "☼ ○○®☼"
+        + "☼╘► ○☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+
+    Analysis a = new GreedyAnalysis(game);
+    assertEquals(HeroAction.UP, a.findBestAction());
+  }
+
+  // @formatter:on
 }

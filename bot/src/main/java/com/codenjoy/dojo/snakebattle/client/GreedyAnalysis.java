@@ -24,13 +24,22 @@ public class GreedyAnalysis extends Analysis {
     System.out.printf("Heading to: [%d %d] (%s | value = %d | distance = %d)\n",
         target.getX(), target.getY(), targetType, value, distance);
 
-    System.out.printf("Hero head at: [%d %d] (dir = %s)\n", getMyHero().head().getX(), getMyHero().head().getY(), getMyHero().getDirection());
+    System.out
+        .printf("Hero head: [%d %d] (dir = %s, length = %d, alive = %s)\n",
+            getMyHero().head().getX(), getMyHero().head().getY(),
+            getMyHero().getDirection(), Mechanics.getTrueLength(getMyHero()),
+            getMyHero().isAlive());
 
-    return HeroAction.valueOf(findFirstStepTo(getMyHero(), target).value());
+    if (getMyHero().isAlive()) {
+      return HeroAction.valueOf(findFirstStepTo(getMyHero(), target).value());
+    } else {
+      return HeroAction.valueOf(getMyHero().getDirection().value());
+    }
   }
 
   private Direction findFirstStepTo(Hero hero, Point target) {
     int[][] distances = getDynamicDistances(hero);
+    int[][] acc = getAccumulatedValues(hero);
 
     Point head = hero.head();
     Point bestP = target;
@@ -47,7 +56,7 @@ public class GreedyAnalysis extends Analysis {
             return d.inverted();
           }
 
-          if (bestP == null) {
+          if (bestP == null || acc[newP.getX()][newP.getY()] > acc[bestP.getX()][bestP.getY()]) {
             bestP = newP;
           }
         }

@@ -113,7 +113,7 @@ public abstract class Analysis {
       // TODO: think how much value should +1 length have, thing how it changes closer to end
       game.getApples().forEach(p ->
           values[p.getX()][p.getY()] =
-              Mechanics.APPLE_REWARD + (game.getRound() < Mechanics.LATE_GAME ? 3 : 10));
+              Mechanics.APPLE_REWARD + (game.getTick() < Mechanics.LATE_GAME ? 3 : 10));
 
       game.getStones().forEach(s -> {
         boolean heroFury = hero.getFuryCount() >= distances[s.getX()][s.getY()];
