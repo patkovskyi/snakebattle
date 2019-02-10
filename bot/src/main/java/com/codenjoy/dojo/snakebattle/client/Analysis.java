@@ -108,30 +108,33 @@ public abstract class Analysis {
       int[][] values = new int[game.size()][game.size()];
       int[][] distances = getDynamicDistances(hero);
 
-      // TODO: think how much value should +1 length have
+      // TODO: think how much value should +1 length have, thing how it changes closer to end
       game.getApples().forEach(p ->
-          values[p.getX()][p.getY()] = 1 + Mechanics.APPLE_REWARD);
+          values[p.getX()][p.getY()] =
+              Mechanics.APPLE_REWARD + (game.getRound() < Mechanics.LATE_GAME ? 3 : 10));
 
-      // TODO: think about how stones eaten with fury should be valued higher
-      game.getStones().forEach(p -> {
-        if (hero.getFlyingCount() >= distances[p.getX()][p.getY()]) {
-          values[p.getX()][p.getY()] = 0;
-          return;
-        }
+      game.getStones().forEach(s -> {
+        boolean heroFury = hero.getFuryCount() >= distances[s.getX()][s.getY()];
+        boolean heroFly = hero.getFlyingCount() >= distances[s.getX()][s.getY()];
+        boolean heroLong =
+            getTrueLength(hero) - Mechanics.STONE_LENGTH_PENALTY >= Mechanics.MIN_SNAKE_LENGTH;
 
-        if (hero.getFuryCount() >= distances[p.getX()][p.getY()]) {
-          values[p.getX()][p.getY()] = Mechanics.STONE_REWARD;
-        }
-
-        if (getTrueLength(hero) - Mechanics.STONE_LENGTH_PENALTY >= Mechanics.MIN_SNAKE_LENGTH) {
-          values[p.getX()][p.getY()] = Mechanics.STONE_REWARD;
+        if (heroFly) {
+          values[s.getX()][s.getY()] = 0;
+        } else if (heroFury) {
+          // TODO: think about how stones eaten with fury should be valued higher
+          values[s.getX()][s.getY()] = 2 * Mechanics.STONE_REWARD;
+        } else if (heroLong) {
+          values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
+        } else {
+          values[s.getX()][s.getY()] = Mechanics.VERY_NEGATIVE;
         }
       });
 
       game.getGold().forEach(p -> values[p.getX()][p.getY()] = Mechanics.GOLD_REWARD);
 
       // TODO: think how much value should flight pill have
-      game.getFlyingPills().forEach(p -> values[p.getX()][p.getY()] = -10);
+      game.getFlyingPills().forEach(p -> values[p.getX()][p.getY()] = Mechanics.SOMEWHAT_NEGATIVE);
 
       getAliveActiveEnemies().forEach(enemy -> enemy.body().forEach(p -> {
         int roundsToTarget = distances[p.getX()][p.getY()];
@@ -146,8 +149,7 @@ public abstract class Analysis {
             } else if (Mechanics.wouldSurviveHeadToBody(hero, enemy, roundsToTarget)) {
               values[p.getX()][p.getY()] = 0;
             } else {
-              // TODO: how negative should it be ?
-              values[p.getX()][p.getY()] = -10;
+              values[p.getX()][p.getY()] = Mechanics.VERY_NEGATIVE;
             }
             break;
           case Neck:

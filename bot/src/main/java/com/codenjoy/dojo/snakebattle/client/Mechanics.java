@@ -12,6 +12,12 @@ public class Mechanics {
   public static int STONE_REWARD = 5;
   public static int STONE_LENGTH_PENALTY = 3;
   public static int BLOOD_REWARD_PER_CELL = 10;
+  public static int TICKS_PER_ROUND = 300;
+  public static int LATE_GAME = 200;
+
+  // TODO: think about these dummy values
+  public static int SOMEWHAT_NEGATIVE = -42;
+  public static int VERY_NEGATIVE = -424242;
 
   static int getTrueBodyIndex(Hero hero, Point point) {
     return hero.getBodyIndex(point) + hero.getGrowBy();
