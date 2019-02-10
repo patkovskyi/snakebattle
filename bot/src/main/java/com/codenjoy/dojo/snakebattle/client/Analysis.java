@@ -154,9 +154,21 @@ public class Analysis {
     });
   }
 
-//  double[][] getDistanceAdjustedValues(Hero hero) {
-//
-//  }
+  double[][] getDistanceAdjustedValues(Hero hero) {
+    return distanceAdjustedValues.computeIfAbsent(hero, h -> {
+      int[][] values = getValues(hero);
+      int[][] distances = getDynamicDistances(hero);
+      double[][] result = new double[game.size()][game.size()];
+
+      for (int x = 0; x < game.size(); x++) {
+        for (int y = 0; y < game.size(); y++) {
+          result[x][y] = values[x][y] / (double) distances[x][y];
+        }
+      }
+
+      return result;
+    });
+  }
 
   private Stream<Point> getBarriers() {
     return Stream.concat(game.getWalls().stream(), game.getStarts().stream());
