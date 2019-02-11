@@ -45,9 +45,14 @@ public class GameHelper {
 
   private static final Cloner cloner = new Cloner();
   private static final PrinterFactoryImpl printerFactory = new PrinterFactoryImpl();
+  private static int tick = 0;
 
   static {
     cloner.registerImmutable(EmulatingEventListener.class);
+  }
+
+  public static int getTick(SnakeBoard game) {
+    return tick;
   }
 
   public static SnakeBoard getNewOrContinuedGame(SnakeBoard game, MyBoard boardFromServer) {
@@ -63,7 +68,7 @@ public class GameHelper {
       }
     }
 
-    System.out.printf("TICK %d\n", game.getTick());
+    System.out.printf("TICK %d\n", tick);
 
     if (game.getHeroes().stream().noneMatch(h -> h.isAlive())) {
       System.out.println("ROUND DRAW");
@@ -82,6 +87,8 @@ public class GameHelper {
   }
 
   public static SnakeBoard initializeGame(MyBoard board) {
+    tick = 0;
+
     String boardString = board.boardAsString();
     LevelImpl level = new LevelImpl(boardString.replaceAll("\n", ""));
     SnakeBoard game = new SnakeBoard(
@@ -122,6 +129,8 @@ public class GameHelper {
 
   private static SnakeBoard continueGame(SnakeBoard game, MyBoard expectedBoard) {
     long start = System.currentTimeMillis();
+
+    ++tick;
 
     if (game.getHeroes().stream().allMatch(h -> !h.isActive())) {
       // simply activate heroes and return the same board

@@ -113,7 +113,7 @@ public abstract class Analysis {
       // TODO: think how much value should +1 length have, thing how it changes closer to end
       game.getApples().forEach(p ->
           values[p.getX()][p.getY()] =
-              Mechanics.APPLE_REWARD + (game.getTick() < Mechanics.LATE_GAME ? 3 : 10));
+              Mechanics.APPLE_REWARD + (GameHelper.getTick(game) < Mechanics.LATE_GAME ? 3 : 10));
 
       game.getStones().forEach(s -> {
         boolean heroFury = hero.getFuryCount() >= distances[s.getX()][s.getY()];
@@ -231,66 +231,45 @@ public abstract class Analysis {
     return "NOTHING";
   }
 
-  private int getPointValue(Point point, int distanceToPoint) {
-    Point p = game.getOn(point);
-    if (p instanceof Apple) {
-      return 3;
-    }
-    if (p instanceof Gold) {
-      return 5;
-    }
-    if (p instanceof Stone && getMyHero().getFuryCount() >= distanceToPoint) {
-      return 12;
-    }
-    if (p instanceof Stone && getMyHero().size() >= 5) {
-      return 10;
-    }
-    if (p instanceof FlyingPill) {
-      return -10;
-    }
-    if (p instanceof FuryPill) {
-      return Math.max(
-          estimatePointsForFuryShitLoop(getMyHero()),
-          estimatePointsForFuryStonesAround(p, game.furyCount().getValue()));
-    }
-
-    // enemy head
-    // enemy neck
-    // enemy body if I'm furious
-
-    return 0;
-  }
-
-  private int estimatePointsForFuryStonesAround(Point point, int radius) {
-    int stonesWithinRadius = (int) game.getStones().stream()
-        .filter(stone -> GameHelper.getManhattanDistance(stone, point) < radius)
-        .count();
-
-    return Mechanics.STONE_REWARD * Math.min(3, stonesWithinRadius);
-  }
+////  private int getPointValue(Point point, int distanceToPoint) {
+////    Point p = game.getOn(point);
+////    if (p instanceof Apple) {
+////      return 3;
+////    }
+////    if (p instanceof Gold) {
+////      return 5;
+////    }
+////    if (p instanceof Stone && getMyHero().getFuryCount() >= distanceToPoint) {
+////      return 12;
+////    }
+////    if (p instanceof Stone && getMyHero().size() >= 5) {
+////      return 10;
+////    }
+////    if (p instanceof FlyingPill) {
+////      return -10;
+////    }
+////    if (p instanceof FuryPill) {
+////      return Math.max(
+////          estimatePointsForFuryShitLoop(getMyHero()),
+////          estimatePointsForFuryStonesAround(p, game.furyCount().getValue()));
+////    }
+////
+////    // enemy head
+////    // enemy neck
+////    // enemy body if I'm furious
+////
+////    return 0;
+////  }
+//
+//  private int estimatePointsForFuryStonesAround(Point point, int radius) {
+//    int stonesWithinRadius = (int) game.getStones().stream()
+//        .filter(stone -> GameHelper.getManhattanDistance(stone, point) < radius)
+//        .count();
+//
+//    return Mechanics.STONE_REWARD * Math.min(3, stonesWithinRadius);
+//  }
 
   private int getTrueLength(Hero hero) {
     return hero.size() + hero.getGrowBy();
-  }
-
-  // Fury shit loop starts when we take a Fury pill and start leaving stones and eating them.
-  // This estimation relies only on stoneCount and length.
-  // TODO: rethink this considering tail positioning ?
-  int estimatePointsForFuryShitLoop(Hero hero) {
-    int total = 0;
-    int furyRounds = Math.max(0, game.furyCount().getValue() - hero.size() - 1);
-    int skips = Math.max(0, hero.size() - hero.getStonesCount());
-    if (furyRounds >= hero.getStonesCount()) {
-      furyRounds -= hero.getStonesCount();
-      total += 10 * hero.getStonesCount();
-    }
-
-    while (furyRounds > 0) {
-      furyRounds -= skips;
-      total += 10 * Math.min(hero.getFuryCount(), hero.getStonesCount());
-      furyRounds -= hero.getStonesCount();
-    }
-
-    return total;
   }
 }

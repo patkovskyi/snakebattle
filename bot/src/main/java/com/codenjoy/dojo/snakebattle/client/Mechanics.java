@@ -14,6 +14,7 @@ public class Mechanics {
   public static int BLOOD_REWARD_PER_CELL = 10;
   public static int TICKS_PER_ROUND = 300;
   public static int LATE_GAME = 200;
+  public static int FURY_LENGTH = 9;
 
   // TODO: think about these dummy values
   public static int SOMEWHAT_NEGATIVE = -42;
@@ -80,5 +81,26 @@ public class Mechanics {
     } else {
       return DynamicObstacle.Body;
     }
+  }
+
+  // Fury shit loop starts when we take a Fury pill and start leaving stones and eating them.
+  // This estimation relies only on stoneCount and length.
+  // TODO: rethink this considering tail positioning ?
+  static int estimatePointsForFuryShitLoop(Hero hero) {
+    int total = 0;
+    int furyRounds = Math.max(0, FURY_LENGTH - hero.size() - 1);
+    int skips = Math.max(0, hero.size() - hero.getStonesCount());
+    if (furyRounds >= hero.getStonesCount()) {
+      furyRounds -= hero.getStonesCount();
+      total += Mechanics.STONE_REWARD * hero.getStonesCount();
+    }
+
+    while (furyRounds > 0) {
+      furyRounds -= skips;
+      total += Mechanics.STONE_REWARD * Math.min(hero.getFuryCount(), hero.getStonesCount());
+      furyRounds -= hero.getStonesCount();
+    }
+
+    return total;
   }
 }

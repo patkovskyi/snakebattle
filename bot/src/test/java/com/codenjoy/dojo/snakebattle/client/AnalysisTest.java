@@ -700,5 +700,22 @@ public class AnalysisTest {
     assertEquals(HeroAction.UP, a.findBestAction());
   }
 
+  @Test
+  public void timerTest() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "☼ ●●●☼"
+        + "☼ ○○®☼"
+        + "☼╘► ○☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    assertEquals(0, GameHelper.getTick(game));
+    game.tick();
+    assertEquals(1, GameHelper.getTick(game));
+    game.tick();
+    assertEquals(2, GameHelper.getTick(game));
+  }
+
   // @formatter:on
 }
