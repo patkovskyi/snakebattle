@@ -57,6 +57,7 @@ public class Mechanics {
     boolean heroFury = hero.getFuryCount() >= ticksToCollision;
     boolean enemyFury = enemy.getFuryCount() >= ticksToCollision;
 
+    // what if enemy is flying but I am not? it's not a 'win' actually
     return heroFury && !enemyFury || heroFury == enemyFury && heroLonger;
   }
 

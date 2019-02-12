@@ -430,11 +430,12 @@ public class AnalysisTest {
         + "☼ ¤ ☼"
         + "☼☼☼☼☼");
 
-    assertDynamicDistances("☼☼☼☼☼"
-        + "☼1☼5☼"
-        + "☼0☼4☼"
-        + "☼123☼"
-        + "☼☼☼☼☼");
+    assertDynamicDistances(
+        "☼☼☼☼☼"
+      + "☼☼☼☼☼"
+      + "☼0☼4☼"
+      + "☼123☼"
+      + "☼☼☼☼☼");
   }
 
   @Test
@@ -466,13 +467,14 @@ public class AnalysisTest {
         + "☼   ☼  ☼"
         + "☼☼☼☼☼☼☼☼");
 
-    assertDynamicDistances("☼☼☼☼☼☼☼☼"
-        + "☼212☼67☼"
-        + "☼301☼56☼"
-        + "☼212345☼"
-        + "☼323☼56☼"
-        + "☼434☼67☼"
-        + "☼545☼78☼"
+    assertDynamicDistances(
+          "☼☼☼☼☼☼☼☼"
+        + "☼212☼☼☼☼"
+        + "☼30☼☼☼☼☼"
+        + "☼4☼☼☼☼☼☼"
+        + "☼567☼☼☼☼"
+        + "☼678☼☼☼☼"
+        + "☼789☼☼☼☼"
         + "☼☼☼☼☼☼☼☼");
   }
 
@@ -487,14 +489,16 @@ public class AnalysisTest {
         + "☼   ☼  ☼"
         + "☼☼☼☼☼☼☼☼");
 
-    assertDynamicDistances("☼☼☼☼☼☼☼☼"
-        + "☼212☼☼☼☼"
-        + "☼301☼☼☼☼"
-        + "☼21☼☼☼☼☼"
-        + "☼323☼☼☼☼"
-        + "☼434☼☼☼☼"
-        + "☼545☼☼☼☼"
-        + "☼☼☼☼☼☼☼☼");
+    assertDynamicDistances(
+        "☼☼☼☼☼☼☼☼"
+      + "☼212☼☼☼☼"
+      + "☼30☼☼☼☼☼"
+      + "☼4☼☼☼☼☼☼"
+      + "☼567☼☼☼☼"
+      + "☼678☼☼☼☼"
+      + "☼789☼☼☼☼"
+      + "☼☼☼☼☼☼☼☼"
+    );
   }
 
   @Test
@@ -508,13 +512,14 @@ public class AnalysisTest {
         + "☼   ☼  ☼"
         + "☼☼☼☼☼☼☼☼");
 
-    assertDynamicDistances("☼☼☼☼☼☼☼☼"
-        + "☼212☼01☼"
-        + "☼301☼90☼"
-        + "☼21☼989☼"
-        + "☼323☼78☼"
-        + "☼434567☼"
-        + "☼545☼78☼"
+    assertDynamicDistances(
+          "☼☼☼☼☼☼☼☼"
+        + "☼212☼45☼"
+        + "☼30☼☼34☼"
+        + "☼4☼☼☼23☼"
+        + "☼567☼12☼"
+        + "☼678901☼"
+        + "☼789☼12☼"
         + "☼☼☼☼☼☼☼☼");
   }
 
@@ -796,6 +801,62 @@ public class AnalysisTest {
 
     GreedyAnalysis ga = new GreedyAnalysis(game);
     Assert.assertEquals(HeroAction.LEFT, ga.findBestAction());
+  }
+
+  @Test
+  public void selfDefense1() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "╘►®˄ ☼"
+        + "☼  │ ☼"
+        + "☼ ○│ ☼"
+        + "☼  ¤ ☼"
+        + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.DOWN, ga.findBestAction());
+  }
+
+  @Test
+  public void selfDefense2() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "╘►○ ˄☼"
+        + "☼   │☼"
+        + "☼   │☼"
+        + "☼   ¤☼"
+        + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.DOWN, ga.findBestAction());
+  }
+
+  @Test
+  public void selfDefense3() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "╘►○˄ ☼"
+        + "☼  │ ☼"
+        + "☼  ¤ ☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.DOWN, ga.findBestAction());
+  }
+
+  @Test
+  public void selfDefense4() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "╘►○ ˄☼"
+        + "☼   │☼"
+        + "☼   ¤☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
   }
 
   // @formatter:on

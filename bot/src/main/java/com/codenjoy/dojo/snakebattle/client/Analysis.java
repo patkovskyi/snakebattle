@@ -12,8 +12,10 @@ import com.codenjoy.dojo.snakebattle.model.objects.FlyingPill;
 import com.codenjoy.dojo.snakebattle.model.objects.FuryPill;
 import com.codenjoy.dojo.snakebattle.model.objects.Gold;
 import com.codenjoy.dojo.snakebattle.model.objects.Stone;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -96,6 +98,17 @@ public abstract class Analysis {
           }));
 
       // consider going head-to-head with a stronger hero just as bad as insta-death
+      getAliveActiveEnemies(hero).forEach(enemy -> {
+        Point enemyHead = enemy.head();
+        int distanceToEnemyHead = staticDistances[enemyHead.getX()][enemyHead.getY()];
+        if (distanceToEnemyHead == 3 && Mechanics.wouldWinHeadToHead(enemy, hero, 2)) {
+          getHeadThreatSpear(enemy, 2).forEach(p -> dynObstacles[p.getX()][p.getY()] = true);
+        }
+
+        if (distanceToEnemyHead == 2 && !Mechanics.wouldWinHeadToHead(hero, enemy, 1)) {
+          getHeadThreatSpear(enemy, 1).forEach(p -> dynObstacles[p.getX()][p.getY()] = true);
+        }
+      });
 
       return dynObstacles;
     });
@@ -295,6 +308,20 @@ public abstract class Analysis {
 
       return cmp;
     }).orElse(null);
+  }
+
+  private List<Point> getHeadThreatSpear(Hero hero, int radius) {
+    int[][] distances = getStaticDistances(hero);
+    List<Point> result = new ArrayList<>();
+    for (int x = 0; x < game.size(); x++) {
+      for (int y = 0; y < game.size(); y++) {
+        if (distances[x][y] <= radius) {
+          result.add(PointImpl.pt(x, y));
+        }
+      }
+    }
+
+    return result;
   }
 
   // closest - first
