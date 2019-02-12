@@ -335,6 +335,6 @@ public abstract class Analysis {
       }
 
       return cmp;
-    }).orElseGet(null);
+    }).orElse(null);
   }
 }

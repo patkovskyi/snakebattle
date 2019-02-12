@@ -76,11 +76,15 @@ public class GreedyAnalysis extends Analysis {
   private Point findMaxPoint(double[][] distanceAdjustedValues) {
     Point p = null;
 
+    int[][] distances = getDynamicDistances(getMyHero());
+
     for (int x = 0; x < distanceAdjustedValues.length; x++) {
       for (int y = 0; y < distanceAdjustedValues.length; y++) {
-        if (p == null || distanceAdjustedValues[x][y] > distanceAdjustedValues[p.getX()][p
-            .getY()]) {
-          p = PointImpl.pt(x, y);
+        if (distances[x][y] < Integer.MAX_VALUE) {
+          if (p == null || distanceAdjustedValues[x][y] > distanceAdjustedValues[p.getX()][p
+              .getY()]) {
+            p = PointImpl.pt(x, y);
+          }
         }
       }
     }
