@@ -110,8 +110,12 @@ public class AnalysisTest {
   }
 
   private void assertValues(String expected) {
+    assertValues(expected, 1);
+  }
+
+  private void assertValues(String expected, int padding) {
     int[][] acc = new GreedyAnalysis(game).getValues(hero);
-    assertWithPadding(expected, acc, 2);
+    assertWithPadding(expected, acc, padding);
   }
 
   private void assertAccumulatedValues(String expected) {
@@ -600,7 +604,7 @@ public class AnalysisTest {
             + "0 0 0 4 # 0 "
             + "0 0 0 0 0 0 "
             + "0 0 # 0 300 "
-            + "0 0 0 0 0 0 ");
+            + "0 0 0 0 0 0 ", 2);
   }
 
   @Test
@@ -698,6 +702,75 @@ public class AnalysisTest {
 
     Analysis a = new GreedyAnalysis(game);
     assertEquals(HeroAction.UP, a.findBestAction());
+  }
+
+  @Test
+  public void shitAndEatValue() {
+    newGame("☼☼☼☼☼☼"
+        + "☼    ☼"
+        + "╘►®● ☼"
+        + "☼    ☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    game.tick();
+    game.tick();
+
+    assertValues("000000"
+        + "000000"
+        + "005000"
+        + "000000"
+        + "000000"
+        + "000000", 1);
+  }
+
+  @Test
+  public void shitAndEatValue2() {
+    newGame("☼☼☼☼☼☼"
+        + "☼    ☼"
+        + "╘══►®☼"
+        + "☼   ●☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    game.tick();
+    hero.down();
+    game.tick();
+
+    assertValues("000000"
+        + "000000"
+        + "005000"
+        + "000000"
+        + "000000"
+        + "000000", 1);
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.LEFT_STONE, ga.findBestAction());
+  }
+
+  @Test
+  public void shitAndEatValue3() {
+    newGame("☼☼☼☼☼☼"
+        + "☼  ●®☼"
+        + " ╘══►☼"
+        + "☼    ☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    hero.up();
+    game.tick();
+    hero.left();
+    game.tick();
+
+    assertValues("000000"
+        + "000000"
+        + "000500"
+        + "000000"
+        + "000000"
+        + "000000", 1);
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.DOWN_STONE, ga.findBestAction());
   }
 
   // @formatter:on

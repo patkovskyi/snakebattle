@@ -17,6 +17,7 @@ public class GreedyAnalysis extends Analysis {
   public HeroAction findBestAction() {
     double[][] distanceAdjustedValues = getDistanceAdjustedValues(getMyHero());
     Point target = findMaxPoint(distanceAdjustedValues);
+
     String targetType = getTargetPointType(target);
     int value = getValues(getMyHero())[target.getX()][target.getY()];
     int distance = getDynamicDistances(getMyHero())[target.getX()][target.getY()];
@@ -31,7 +32,13 @@ public class GreedyAnalysis extends Analysis {
             getMyHero().isAlive());
 
     if (getMyHero().isAlive()) {
-      return HeroAction.valueOf(findFirstStepTo(getMyHero(), target).value());
+      int addAction = 0;
+      if (target.equals(getMyHero().getTailPoint())) {
+        addAction = 4;
+        getMyHero().reduceStoneCount();
+      }
+
+      return HeroAction.valueOf(addAction + findFirstStepTo(getMyHero(), target).value());
     } else {
       return HeroAction.valueOf(getMyHero().getDirection().value());
     }

@@ -1,6 +1,9 @@
 Run jar with logging
 java -Xmx1024m -jar bot.jar 2>&1 | tee >(rotatelogs -l -L current_log.txt Snake_%Y-%m-%d-%H.txt 3600)
 
+To run in background indefinitely:
+nohup java -Xmx1024m -jar bot.jar 2>&1 </dev/null | rotatelogs -l -L current_log.txt Snake_%Y-%m-%d-%H.txt 3600 &
+
 tail -f current_log.txt | grep FAIL
 
 fgrep FAIL Snake_2019-0*

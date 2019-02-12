@@ -1,6 +1,5 @@
 package com.codenjoy.dojo.snakebattle.client;
 
-import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.DynamicObstacle;
 import com.codenjoy.dojo.snakebattle.model.HeroAction;
@@ -126,9 +125,9 @@ public abstract class Analysis {
           values[s.getX()][s.getY()] = 0;
         } else if (heroFury) {
           // TODO: think about how stones eaten with fury should be valued higher
-          values[s.getX()][s.getY()] = 2 * Mechanics.STONE_REWARD;
-        } else if (heroLong) {
           values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
+        } else if (heroLong) {
+          values[s.getX()][s.getY()] = Mechanics.STONE_REWARD - 1;
         } else {
           values[s.getX()][s.getY()] = Mechanics.VERY_NEGATIVE;
         }
@@ -163,6 +162,13 @@ public abstract class Analysis {
             }
         }
       }));
+
+      // fury-shit-and-eat
+      Point tail = hero.getTailPoint();
+      int roundsToTail = distances[tail.getX()][tail.getY()];
+      if (hero.getFuryCount() >= roundsToTail && hero.getStonesCount() > 0) {
+        values[tail.getX()][tail.getY()] = Mechanics.STONE_REWARD;
+      }
 
       // TODO: calculate true fury pill value
       game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 30);
