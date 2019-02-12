@@ -149,8 +149,8 @@ public abstract class Analysis {
 
       // STONES - complex
       game.getStones().forEach(s -> {
-        boolean heroFury = hero.getFuryCount() >= distances[s.getX()][s.getY()];
-        boolean heroFly = hero.getFlyingCount() >= distances[s.getX()][s.getY()];
+        boolean heroFury = hero.getFuryCount() > distances[s.getX()][s.getY()];
+        boolean heroFly = hero.getFlyingCount() > distances[s.getX()][s.getY()];
         boolean heroLong =
             getTrueLength(hero) - Mechanics.STONE_LENGTH_PENALTY >= Mechanics.MIN_SNAKE_LENGTH;
 
@@ -175,7 +175,7 @@ public abstract class Analysis {
       // LEAVE STONE AT TAIL
       Point tail = hero.getTailPoint();
       int roundsToTail = distances[tail.getX()][tail.getY()];
-      if (hero.getFuryCount() >= roundsToTail && hero.getStonesCount() > 0) {
+      if (hero.getFuryCount() > roundsToTail && hero.getStonesCount() > 0) {
         values[tail.getX()][tail.getY()] = Mechanics.STONE_REWARD;
       }
 
@@ -361,8 +361,8 @@ public abstract class Analysis {
 
     @Override
     public int compare(Hero o1, Hero o2) {
-      boolean o1Fury = o1.getFuryCount() >= ticksToCollision;
-      boolean o2Fury = o2.getFuryCount() >= ticksToCollision;
+      boolean o1Fury = o1.getFuryCount() > ticksToCollision;
+      boolean o2Fury = o2.getFuryCount() > ticksToCollision;
 
       int cmp = 0;
 

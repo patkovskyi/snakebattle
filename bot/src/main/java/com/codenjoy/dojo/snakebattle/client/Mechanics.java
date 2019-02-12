@@ -30,12 +30,12 @@ public class Mechanics {
   }
 
   static boolean canPassStone(Hero hero, int ticksToStone) {
-    boolean heroFly = hero.getFlyingCount() >= ticksToStone;
+    boolean heroFly = hero.getFlyingCount() > ticksToStone;
     return heroFly || canEatStone(hero, ticksToStone);
   }
 
   static boolean canEatStone(Hero hero, int ticksToStone) {
-    boolean heroFury = hero.getFuryCount() >= ticksToStone;
+    boolean heroFury = hero.getFuryCount() > ticksToStone;
     boolean heroLongEnough = getTrueLength(hero) - STONE_LENGTH_PENALTY >= MIN_SNAKE_LENGTH;
 
     return heroFury || heroLongEnough;
@@ -46,30 +46,30 @@ public class Mechanics {
   }
 
   static boolean wouldSurviveHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroFly = hero.getFlyingCount() >= ticksToCollision;
-    boolean enemyFly = enemy.getFlyingCount() >= ticksToCollision;
+    boolean heroFly = hero.getFlyingCount() > ticksToCollision;
+    boolean enemyFly = enemy.getFlyingCount() > ticksToCollision;
 
     return heroFly || enemyFly || wouldWinHeadToHead(hero, enemy, ticksToCollision);
   }
 
   static boolean wouldWinHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroLonger = getTrueLength(hero) >= getTrueLength(enemy) + MIN_SNAKE_LENGTH;
-    boolean heroFury = hero.getFuryCount() >= ticksToCollision;
-    boolean enemyFury = enemy.getFuryCount() >= ticksToCollision;
+    boolean heroLonger = getTrueLength(hero) > getTrueLength(enemy) + MIN_SNAKE_LENGTH;
+    boolean heroFury = hero.getFuryCount() > ticksToCollision;
+    boolean enemyFury = enemy.getFuryCount() > ticksToCollision;
 
     // what if enemy is flying but I am not? it's not a 'win' actually
     return heroFury && !enemyFury || heroFury == enemyFury && heroLonger;
   }
 
   static boolean wouldSurviveHeadToBody(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroFly = hero.getFlyingCount() >= ticksToCollision;
-    boolean enemyFly = enemy.getFlyingCount() >= ticksToCollision;
+    boolean heroFly = hero.getFlyingCount() > ticksToCollision;
+    boolean enemyFly = enemy.getFlyingCount() > ticksToCollision;
 
     return heroFly || enemyFly || wouldWinHeadToBody(hero, enemy, ticksToCollision);
   }
 
   static boolean wouldWinHeadToBody(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroFury = hero.getFuryCount() >= ticksToCollision;
+    boolean heroFury = hero.getFuryCount() > ticksToCollision;
     return heroFury;
   }
 
@@ -91,26 +91,5 @@ public class Mechanics {
 
   static boolean isLateGame(SnakeBoard game) {
     return GameHelper.getTick(game) >= 200;
-  }
-
-  // Fury shit loop starts when we take a Fury pill and start leaving stones and eating them.
-  // This estimation relies only on stoneCount and length.
-  // TODO: rethink this considering tail positioning ?
-  static int estimatePointsForFuryShitLoop(Hero hero) {
-    int total = 0;
-    int furyRounds = Math.max(0, FURY_LENGTH - hero.size() - 1);
-    int skips = Math.max(0, hero.size() - hero.getStonesCount());
-    if (furyRounds >= hero.getStonesCount()) {
-      furyRounds -= hero.getStonesCount();
-      total += Mechanics.STONE_REWARD * hero.getStonesCount();
-    }
-
-    while (furyRounds > 0) {
-      furyRounds -= skips;
-      total += Mechanics.STONE_REWARD * Math.min(hero.getFuryCount(), hero.getStonesCount());
-      furyRounds -= hero.getStonesCount();
-    }
-
-    return total;
   }
 }
