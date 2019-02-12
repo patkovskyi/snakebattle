@@ -10,10 +10,11 @@ public class Mechanics {
   public static int APPLE_REWARD = 1;
   public static int GOLD_REWARD = 10;
   public static int STONE_REWARD = 5;
+  public static int ROUND_REWARD = 50;
   public static int STONE_LENGTH_PENALTY = 3;
   public static int BLOOD_REWARD_PER_CELL = 10;
   public static int TICKS_PER_ROUND = 300;
-  public static int LATE_GAME = 200;
+  public static int LATE_GAME = (TICKS_PER_ROUND * 2) / 3;
   public static int FURY_LENGTH = 9;
 
   // TODO: think about these dummy values

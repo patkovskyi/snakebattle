@@ -1,5 +1,6 @@
 package com.codenjoy.dojo.snakebattle.client;
 
+import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.DynamicObstacle;
 import com.codenjoy.dojo.snakebattle.model.HeroAction;
@@ -157,12 +158,30 @@ public abstract class Analysis {
           case Neck:
             if (Mechanics.wouldWinHeadToHead(hero, enemy, roundsToTarget)) {
               int lengthToEat = Mechanics.getTrueLength(enemy);
-              values[p.getX()][p.getY()] += Mechanics.BLOOD_REWARD_PER_CELL * lengthToEat;
+              values[p.getX()][p.getY()] +=
+                  Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * lengthToEat;
             }
         }
       }));
 
+      // TODO: calculate true fury pill value
       game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 30);
+
+//      getAliveActiveEnemies().forEach(enemy ->
+//      {
+//        Point enemyHead = enemy.head();
+//
+//        if ( static)
+//
+//        for (Direction possibleDir : Direction.onlyDirections()) {
+//          if (possibleDir.inverted() != enemy.getDirection()) {
+//            Point possibleNextPoint = enemyHead.copy();
+//            possibleNextPoint.change(possibleDir);
+//
+//            if (!game.isBarrier())
+//          }
+//        }
+//      });
 
       return values;
     });

@@ -632,10 +632,10 @@ public class AnalysisTest {
 
     assertAccumulatedValues(
               "0 0 0 0 0 0 "
-            + "0 0 2020200 "
-            + "0 202020200 "
-            + "0 202020200 "
-            + "0 202020200 "
+            + "0 0 7070700 "
+            + "0 707070700 "
+            + "0 707070700 "
+            + "0 707070700 "
             + "0 0 0 0 0 0 ");
   }
 
@@ -698,23 +698,6 @@ public class AnalysisTest {
 
     Analysis a = new GreedyAnalysis(game);
     assertEquals(HeroAction.UP, a.findBestAction());
-  }
-
-  @Test
-  public void timerTest() {
-    newGame(
-          "☼☼☼☼☼☼"
-        + "☼ ●●●☼"
-        + "☼ ○○®☼"
-        + "☼╘► ○☼"
-        + "☼    ☼"
-        + "☼☼☼☼☼☼");
-
-    assertEquals(0, GameHelper.getTick(game));
-    game.tick();
-    assertEquals(1, GameHelper.getTick(game));
-    game.tick();
-    assertEquals(2, GameHelper.getTick(game));
   }
 
   // @formatter:on

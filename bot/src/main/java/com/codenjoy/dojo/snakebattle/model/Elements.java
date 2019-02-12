@@ -25,6 +25,7 @@ package com.codenjoy.dojo.snakebattle.model;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.printer.CharElements;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -122,7 +123,7 @@ public enum Elements implements CharElements {
       // don't count HEAD_SLEEP and HEAD_DEAD because they don't matter
       Stream.of(
           HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_EVIL, HEAD_FLY)
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> MY_BODY =
       Stream.of(
@@ -132,15 +133,15 @@ public enum Elements implements CharElements {
           BODY_LEFT_UP,
           BODY_RIGHT_DOWN,
           BODY_RIGHT_UP)
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> MY_TAIL =
       Stream.of(TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT)
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> MY_SNAKE =
       Stream.concat(MY_HEAD.stream(), Stream.concat(MY_BODY.stream(), MY_TAIL.stream()))
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> ENEMY_HEAD =
       // don't count ENEMY_HEAD_SLEEP and ENEMY_HEAD_DEAD because they don't matter
@@ -151,7 +152,7 @@ public enum Elements implements CharElements {
           ENEMY_HEAD_UP,
           ENEMY_HEAD_EVIL,
           ENEMY_HEAD_FLY)
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> ENEMY_BODY =
       Stream.of(
@@ -161,7 +162,7 @@ public enum Elements implements CharElements {
           ENEMY_BODY_LEFT_UP,
           ENEMY_BODY_RIGHT_DOWN,
           ENEMY_BODY_RIGHT_UP)
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> ENEMY_TAIL =
       Stream.of(
@@ -169,22 +170,22 @@ public enum Elements implements CharElements {
           ENEMY_TAIL_END_LEFT,
           ENEMY_TAIL_END_UP,
           ENEMY_TAIL_END_RIGHT)
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> ENEMY_SNAKE =
       Stream.concat(ENEMY_HEAD.stream(), Stream.concat(ENEMY_BODY.stream(), ENEMY_TAIL.stream()))
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> IMMEDIATELY_PASSABLE =
       Stream.of(NONE, APPLE, GOLD, STONE, FLYING_PILL, FURY_PILL)
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> STATIC_BARRIER =
       Stream.of(WALL, START_FLOOR, HEAD_SLEEP, ENEMY_HEAD_SLEEP, TAIL_INACTIVE, ENEMY_TAIL_INACTIVE)
-          .collect(Collectors.toUnmodifiableSet());
+          .collect(Collectors.toSet());
 
   public static Set<Elements> POWER_UPS =
-      Stream.of(APPLE, GOLD, FLYING_PILL, FURY_PILL).collect(Collectors.toUnmodifiableSet());
+      Stream.of(APPLE, GOLD, FLYING_PILL, FURY_PILL).collect(Collectors.toSet());
 
   private final char ch;
   private final List<Direction> compatibleDirections;
@@ -196,7 +197,7 @@ public enum Elements implements CharElements {
 
   Elements(char ch, Direction... compatibleDirections) {
     this.ch = ch;
-    this.compatibleDirections = List.of(compatibleDirections);
+    this.compatibleDirections = Arrays.asList(compatibleDirections);
   }
 
   public static Elements valueOf(char ch) {

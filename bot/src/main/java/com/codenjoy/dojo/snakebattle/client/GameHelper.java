@@ -37,6 +37,7 @@ import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
 import com.rits.cloning.Cloner;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -251,9 +252,9 @@ public class GameHelper {
 
   public static class BoardStringComparator {
 
-    private static final Set<Elements> objects =
-        Set.of(Elements.GOLD, Elements.APPLE, Elements.STONE, Elements.FURY_PILL,
-            Elements.FLYING_PILL);
+    private static final Set<Elements> objects = new HashSet<>(
+        Arrays.asList(Elements.GOLD, Elements.APPLE, Elements.STONE, Elements.FURY_PILL,
+            Elements.FLYING_PILL));
 
     public static boolean movesEqual(String board1, String board2) {
       if (board1.length() != board2.length()) {
