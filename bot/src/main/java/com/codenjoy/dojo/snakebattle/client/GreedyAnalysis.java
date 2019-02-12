@@ -15,7 +15,7 @@ public class GreedyAnalysis extends Analysis {
 
   @Override
   public HeroAction findBestAction() {
-    double[][] distanceAdjustedValues = getDistanceAdjustedValues(getMyHero());
+    double[][] distanceAdjustedValues = getClosestAdjustedValues(getMyHero());
     Point target = findMaxPoint(distanceAdjustedValues);
 
     String targetType = getTargetPointType(target);

@@ -1,6 +1,7 @@
 package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.services.Point;
+import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.DynamicObstacle;
 import com.codenjoy.dojo.snakebattle.model.HeroAction;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
@@ -11,6 +12,7 @@ import com.codenjoy.dojo.snakebattle.model.objects.FlyingPill;
 import com.codenjoy.dojo.snakebattle.model.objects.FuryPill;
 import com.codenjoy.dojo.snakebattle.model.objects.Gold;
 import com.codenjoy.dojo.snakebattle.model.objects.Stone;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -26,6 +28,7 @@ public abstract class Analysis {
   private final Map<Hero, int[][]> values;
   private final Map<Hero, double[][]> distanceAdjustedValues;
   private final Map<Hero, int[][]> accumulatedValues;
+  private final Map<Hero, double[][]> closestAdjustedValues;
 
   protected Analysis(SnakeBoard game) {
     this.game = game;
@@ -36,6 +39,7 @@ public abstract class Analysis {
     values = new HashMap<>();
     distanceAdjustedValues = new HashMap<>();
     accumulatedValues = new HashMap<>();
+    closestAdjustedValues = new HashMap<>();
   }
 
   public abstract HeroAction findBestAction();
@@ -301,5 +305,36 @@ public abstract class Analysis {
 
   private int getTrueLength(Hero hero) {
     return hero.size() + hero.getGrowBy();
+  }
+
+  public double[][] getClosestAdjustedValues(Hero hero) {
+    return closestAdjustedValues.computeIfAbsent(hero, h -> {
+      double[][] values = getDistanceAdjustedValues(hero);
+      double[][] result = new double[game.size()][game.size()];
+
+      for (int x = 0; x < game.size(); x++) {
+        for (int y = 0; y < game.size(); y++) {
+          if (getDynamicClosestHero(PointImpl.pt(x, y)) == hero) {
+            result[x][y] = values[x][y];
+          }
+        }
+      }
+
+      return result;
+    });
+  }
+
+  private Hero getDynamicClosestHero(Point point) {
+    return getAliveActiveHeroes().min((h1, h2) -> {
+      int dist1 = getDynamicDistances(h1)[point.getX()][point.getY()];
+      int dist2 = getDynamicDistances(h1)[point.getX()][point.getY()];
+      int cmp = Integer.compare(dist1, dist2);
+
+      if (cmp == 0) {
+        cmp = Mechanics.wouldSurviveHeadToHead(h1, h2, dist1) ? -1 : 1;
+      }
+
+      return cmp;
+    }).orElseGet(null);
   }
 }
