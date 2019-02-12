@@ -12,7 +12,7 @@ import com.codenjoy.dojo.snakebattle.model.objects.FlyingPill;
 import com.codenjoy.dojo.snakebattle.model.objects.FuryPill;
 import com.codenjoy.dojo.snakebattle.model.objects.Gold;
 import com.codenjoy.dojo.snakebattle.model.objects.Stone;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -123,7 +123,7 @@ public abstract class Analysis {
       // APPLES - higher value in late game
       game.getApples().forEach(p ->
           values[p.getX()][p.getY()] =
-              Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 6 : 3));
+              Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 8 : 3));
 
       // FURY - very useful, TODO calculation
       game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 30);
@@ -138,11 +138,15 @@ public abstract class Analysis {
         if (heroFly) {
           values[s.getX()][s.getY()] = 0;
         } else if (heroFury) {
-          // TODO: think about how stones eaten with fury should be valued higher
           values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
         } else if (heroLong) {
           if (!Mechanics.isLateGame(game)) {
-            values[s.getX()][s.getY()] = Mechanics.STONE_REWARD - 1;
+            // TODO: think when eating a stone with length is actually good
+            if (hero.getStonesCount() < 3) {
+              values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
+            } else {
+              values[s.getX()][s.getY()] = Mechanics.STONE_REWARD - 2;
+            }
           }
         } else {
           values[s.getX()][s.getY()] = Mechanics.VERY_NEGATIVE;
@@ -157,7 +161,7 @@ public abstract class Analysis {
       }
 
       // GUARANTEED KILLS - very useful
-      getAliveActiveEnemies().forEach(enemy -> enemy.body().forEach(p -> {
+      getAliveActiveEnemies(getMyHero()).forEach(enemy -> enemy.body().forEach(p -> {
         int roundsToTarget = distances[p.getX()][p.getY()];
 
         switch (Mechanics.whatWillBeOnThisPoint(enemy, p, roundsToTarget)) {
@@ -181,22 +185,6 @@ public abstract class Analysis {
             }
         }
       }));
-
-//      getAliveActiveEnemies().forEach(enemy ->
-//      {
-//        Point enemyHead = enemy.head();
-//
-//        if ( static)
-//
-//        for (Direction possibleDir : Direction.onlyDirections()) {
-//          if (possibleDir.inverted() != enemy.getDirection()) {
-//            Point possibleNextPoint = enemyHead.copy();
-//            possibleNextPoint.change(possibleDir);
-//
-//            if (!game.isBarrier())
-//          }
-//        }
-//      });
 
       return values;
     });
@@ -231,9 +219,8 @@ public abstract class Analysis {
     return game.getHeroes().stream().filter(h -> h.isActive() && h.isAlive());
   }
 
-  protected Stream<Hero> getAliveActiveEnemies() {
-    Hero myHero = getMyHero();
-    return getAliveActiveHeroes().filter(h -> h != myHero);
+  protected Stream<Hero> getAliveActiveEnemies(Hero hero) {
+    return getAliveActiveHeroes().filter(h -> h != hero);
   }
 
   protected Hero getMyHero() {
@@ -265,46 +252,12 @@ public abstract class Analysis {
     return "NOTHING";
   }
 
-////  private int getPointValue(Point point, int distanceToPoint) {
-////    Point p = game.getOn(point);
-////    if (p instanceof Apple) {
-////      return 3;
-////    }
-////    if (p instanceof Gold) {
-////      return 5;
-////    }
-////    if (p instanceof Stone && getMyHero().getFuryCount() >= distanceToPoint) {
-////      return 12;
-////    }
-////    if (p instanceof Stone && getMyHero().size() >= 5) {
-////      return 10;
-////    }
-////    if (p instanceof FlyingPill) {
-////      return -10;
-////    }
-////    if (p instanceof FuryPill) {
-////      return Math.max(
-////          estimatePointsForFuryShitLoop(getMyHero()),
-////          estimatePointsForFuryStonesAround(p, game.furyCount().getValue()));
-////    }
-////
-////    // enemy head
-////    // enemy neck
-////    // enemy body if I'm furious
-////
-////    return 0;
-////  }
-//
-//  private int estimatePointsForFuryStonesAround(Point point, int radius) {
-//    int stonesWithinRadius = (int) game.getStones().stream()
-//        .filter(stone -> GameHelper.getManhattanDistance(stone, point) < radius)
-//        .count();
-//
-//    return Mechanics.STONE_REWARD * Math.min(3, stonesWithinRadius);
-//  }
-
   private int getTrueLength(Hero hero) {
     return hero.size() + hero.getGrowBy();
+  }
+
+  private Hero getClosestHeadToHeadEnemy(Hero hero) {
+    return getAliveActiveEnemies(hero).min(new HeroDistanceComparator(hero.head())).orElse(null);
   }
 
   public double[][] getClosestAdjustedValues(Hero hero) {
@@ -336,5 +289,63 @@ public abstract class Analysis {
 
       return cmp;
     }).orElse(null);
+  }
+
+  // closest - first
+  private class HeroDistanceComparator implements Comparator<Hero> {
+
+    private final int x;
+    private final int y;
+
+    public HeroDistanceComparator(Point pointForDistanceComparison) {
+      x = pointForDistanceComparison.getX();
+      y = pointForDistanceComparison.getY();
+    }
+
+    @Override
+    public int compare(Hero o1, Hero o2) {
+      int[][] d1 = getDynamicDistances(o1);
+      int[][] d2 = getDynamicDistances(o2);
+
+      int cmp = Integer.compare(d1[x][y], d2[x][y]);
+
+      if (cmp == 0) {
+        cmp = new HeroStrengthComparator(d1[x][y]).compare(o1, o2);
+      }
+
+      return cmp;
+    }
+  }
+
+  // stronger - first, assume head-to-head collision
+  private class HeroStrengthComparator implements Comparator<Hero> {
+
+    private final int ticksToCollision;
+
+    public HeroStrengthComparator(int ticksToCollision) {
+      this.ticksToCollision = ticksToCollision;
+    }
+
+    @Override
+    public int compare(Hero o1, Hero o2) {
+      boolean o1Fury = o1.getFuryCount() >= ticksToCollision;
+      boolean o2Fury = o2.getFuryCount() >= ticksToCollision;
+
+      int cmp = 0;
+
+      if (o1Fury && o2Fury) {
+        cmp = Integer.compare(o2.getFuryCount(), o1.getFuryCount());
+      } else if (o1Fury && !o2Fury) {
+        cmp = -1;
+      } else if (!o1Fury && o2Fury) {
+        cmp = 1;
+      }
+
+      if (cmp == 0) {
+        cmp = Integer.compare(getTrueLength(o2), getTrueLength(o1));
+      }
+
+      return cmp;
+    }
   }
 }

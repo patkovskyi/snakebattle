@@ -15,7 +15,7 @@ public class GreedyAnalysis extends Analysis {
 
   @Override
   public HeroAction findBestAction() {
-    double[][] distanceAdjustedValues = getClosestAdjustedValues(getMyHero());
+    double[][] distanceAdjustedValues = getDistanceAdjustedValues(getMyHero());
     Point target = findMaxPoint(distanceAdjustedValues);
 
     String targetType = getTargetPointType(target);
@@ -68,9 +68,10 @@ public class GreedyAnalysis extends Analysis {
           }
         }
       }
-    } while (!bestP.equals(head));
+    } while (bestP != null);
 
-    throw new IllegalStateException("findFirstStepTo should never reach this line");
+    System.out.print("FAIL: ended up in deadend or could not find legit path.");
+    return hero.getDirection();
   }
 
   private Point findMaxPoint(double[][] distanceAdjustedValues) {
