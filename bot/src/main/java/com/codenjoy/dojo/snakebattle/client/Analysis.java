@@ -60,17 +60,17 @@ public abstract class Analysis {
     return dynamicObstacles.computeIfAbsent(hero, h -> {
       boolean[][] staticObstacles = getStaticObstacles(hero);
       int[][] staticDistances = getStaticDistances(hero);
-      boolean[][] dynamicObstacles = new boolean[game.size()][game.size()];
+      boolean[][] dynObstacles = new boolean[game.size()][game.size()];
 
       for (int x = 0; x < game.size(); x++) {
         for (int y = 0; y < game.size(); y++) {
-          dynamicObstacles[x][y] = staticObstacles[x][y];
+          dynObstacles[x][y] = staticObstacles[x][y];
         }
       }
 
       game.getStones().forEach(s -> {
         int distanceToStone = staticDistances[s.getX()][s.getY()];
-        dynamicObstacles[s.getX()][s.getY()] |= !Mechanics.canPassStone(hero, distanceToStone);
+        dynObstacles[s.getX()][s.getY()] |= !Mechanics.canPassStone(hero, distanceToStone);
       });
 
       getAliveActiveHeroes().forEach(
@@ -79,19 +79,25 @@ public abstract class Analysis {
             DynamicObstacle obstacle = Mechanics.whatWillBeOnThisPoint(enemy, p, roundsToPoint);
             switch (obstacle) {
               case Neck:
-                dynamicObstacles[p.getX()][p.getY()] |= !Mechanics
-                    .wouldSurviveHeadToHead(hero, enemy,
-                        roundsToPoint);
+                dynObstacles[p.getX()][p.getY()] |= !Mechanics.wouldSurviveHeadToHead(hero, enemy,
+                    roundsToPoint);
                 break;
               case Body:
-                dynamicObstacles[p.getX()][p.getY()] |= !Mechanics
-                    .wouldSurviveHeadToBody(hero, enemy,
-                        roundsToPoint);
+                if (hero == enemy) {
+                  // crossing yourself is only safe if you can fly over
+                  dynObstacles[p.getX()][p.getY()] |= !Mechanics.canFlyOver(hero, roundsToPoint);
+                } else {
+                  dynObstacles[p.getX()][p.getY()] |= !Mechanics.wouldSurviveHeadToBody(hero, enemy,
+                      roundsToPoint);
+                }
+
                 break;
             }
           }));
 
-      return dynamicObstacles;
+      // consider going head-to-head with a stronger hero just as bad as insta-death
+
+      return dynObstacles;
     });
   }
 

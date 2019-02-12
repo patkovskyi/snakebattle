@@ -773,5 +773,30 @@ public class AnalysisTest {
     Assert.assertEquals(HeroAction.DOWN_STONE, ga.findBestAction());
   }
 
+  @Test
+  public void dontCrossYourself() {
+    newGame("☼☼☼☼☼☼"
+        + "☼  ● ☼"
+        + "╘═══►☼"
+        + "☼   ®☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    hero.down();
+    game.tick();
+    hero.left();
+    game.tick();
+
+    assertH("☼☼☼☼☼☼"
+        + "☼  ● ☼"
+        + "  ╘═╗☼"
+        + "☼  ♥╝☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.LEFT, ga.findBestAction());
+  }
+
   // @formatter:on
 }

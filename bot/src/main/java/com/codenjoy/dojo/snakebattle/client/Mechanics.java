@@ -41,6 +41,10 @@ public class Mechanics {
     return heroFury || heroLongEnough;
   }
 
+  static boolean canFlyOver(Hero hero, int ticksToCollision) {
+    return hero.getFlyingCount() > ticksToCollision;
+  }
+
   static boolean wouldSurviveHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
     boolean heroFly = hero.getFlyingCount() >= ticksToCollision;
     boolean enemyFly = enemy.getFlyingCount() >= ticksToCollision;
