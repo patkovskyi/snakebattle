@@ -110,11 +110,21 @@ public abstract class Analysis {
       int[][] values = new int[game.size()][game.size()];
       int[][] distances = getDynamicDistances(hero);
 
-      // TODO: think how much value should +1 length have, thing how it changes closer to end
+      // GOLD - simplest
+      game.getGold().forEach(p -> values[p.getX()][p.getY()] = Mechanics.GOLD_REWARD);
+
+      // FLIGHT - useless
+      game.getFlyingPills().forEach(p -> values[p.getX()][p.getY()] = Mechanics.SOMEWHAT_NEGATIVE);
+
+      // APPLES - higher value in late game
       game.getApples().forEach(p ->
           values[p.getX()][p.getY()] =
-              Mechanics.APPLE_REWARD + (GameHelper.getTick(game) < Mechanics.LATE_GAME ? 3 : 10));
+              Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 6 : 3));
 
+      // FURY - very useful, TODO calculation
+      game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 30);
+
+      // STONES - complex
       game.getStones().forEach(s -> {
         boolean heroFury = hero.getFuryCount() >= distances[s.getX()][s.getY()];
         boolean heroFly = hero.getFlyingCount() >= distances[s.getX()][s.getY()];
@@ -127,17 +137,22 @@ public abstract class Analysis {
           // TODO: think about how stones eaten with fury should be valued higher
           values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
         } else if (heroLong) {
-          values[s.getX()][s.getY()] = Mechanics.STONE_REWARD - 1;
+          if (!Mechanics.isLateGame(game)) {
+            values[s.getX()][s.getY()] = Mechanics.STONE_REWARD - 1;
+          }
         } else {
           values[s.getX()][s.getY()] = Mechanics.VERY_NEGATIVE;
         }
       });
 
-      game.getGold().forEach(p -> values[p.getX()][p.getY()] = Mechanics.GOLD_REWARD);
+      // LEAVE STONE AT TAIL
+      Point tail = hero.getTailPoint();
+      int roundsToTail = distances[tail.getX()][tail.getY()];
+      if (hero.getFuryCount() >= roundsToTail && hero.getStonesCount() > 0) {
+        values[tail.getX()][tail.getY()] = Mechanics.STONE_REWARD;
+      }
 
-      // TODO: think how much value should flight pill have
-      game.getFlyingPills().forEach(p -> values[p.getX()][p.getY()] = Mechanics.SOMEWHAT_NEGATIVE);
-
+      // GUARANTEED KILLS - very useful
       getAliveActiveEnemies().forEach(enemy -> enemy.body().forEach(p -> {
         int roundsToTarget = distances[p.getX()][p.getY()];
 
@@ -162,16 +177,6 @@ public abstract class Analysis {
             }
         }
       }));
-
-      // fury-shit-and-eat
-      Point tail = hero.getTailPoint();
-      int roundsToTail = distances[tail.getX()][tail.getY()];
-      if (hero.getFuryCount() >= roundsToTail && hero.getStonesCount() > 0) {
-        values[tail.getX()][tail.getY()] = Mechanics.STONE_REWARD;
-      }
-
-      // TODO: calculate true fury pill value
-      game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 30);
 
 //      getAliveActiveEnemies().forEach(enemy ->
 //      {

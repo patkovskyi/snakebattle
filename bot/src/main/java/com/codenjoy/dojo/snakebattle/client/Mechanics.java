@@ -2,6 +2,7 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.DynamicObstacle;
+import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 
 public class Mechanics {
@@ -14,7 +15,6 @@ public class Mechanics {
   public static int STONE_LENGTH_PENALTY = 3;
   public static int BLOOD_REWARD_PER_CELL = 10;
   public static int TICKS_PER_ROUND = 300;
-  public static int LATE_GAME = (TICKS_PER_ROUND * 2) / 3;
   public static int FURY_LENGTH = 9;
 
   // TODO: think about these dummy values
@@ -82,6 +82,10 @@ public class Mechanics {
     } else {
       return DynamicObstacle.Body;
     }
+  }
+
+  static boolean isLateGame(SnakeBoard game) {
+    return GameHelper.getTick(game) >= 200;
   }
 
   // Fury shit loop starts when we take a Fury pill and start leaving stones and eating them.
