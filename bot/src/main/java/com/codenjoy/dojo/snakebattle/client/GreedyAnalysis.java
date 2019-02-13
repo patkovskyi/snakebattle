@@ -6,6 +6,7 @@ import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.HeroAction;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
+import com.codenjoy.dojo.snakebattle.model.objects.Stone;
 
 public class GreedyAnalysis extends Analysis {
 
@@ -31,6 +32,10 @@ public class GreedyAnalysis extends Analysis {
       int addAction = 0;
       if (target.equals(getMyHero().getTailPoint())) {
         addAction = 4;
+
+        // HACK: this is necessary to count stone eaten when we move onto our own tail since we never see it from server
+        game.addToPoint(new Stone(getMyHero().getTailPoint()));
+
         getMyHero().reduceStoneCount();
       }
       return HeroAction.valueOf(addAction + findFirstStepTo(getMyHero(), target).value());
