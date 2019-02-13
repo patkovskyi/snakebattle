@@ -24,14 +24,78 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
+import com.codenjoy.dojo.snakebattle.model.hero.Hero;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MySolver implements Solver<MyBoard> {
+
   private SnakeBoard game;
+
+  private static void printRoundStatus(SnakeBoard game) {
+    System.out.printf("TICK %d\n", GameHelper.getTick(game));
+    Hero me = game.getHeroes().get(0);
+    List<Hero> heroesOnBoard =
+        game.getHeroes().stream().filter(h -> isOnBoard(h, game)).collect(Collectors.toList());
+
+    boolean meDead = !me.isAlive();
+    boolean allDead = heroesOnBoard.stream().allMatch(h -> !h.isAlive());
+    boolean imTheOnlyOnBoard = heroesOnBoard.size() == 1 && heroesOnBoard.contains(me);
+    boolean imTheLongest = heroesOnBoard.stream().allMatch(h -> h.size() <= me.size());
+
+    if (meDead) {
+      if (allDead) {
+        if (imTheOnlyOnBoard) {
+          System.out.println("ROUND WON (I'm the last survivor)");
+        } else if (imTheLongest) {
+          System.out.println("ROUND WON (I'm the longest at timeout)");
+        } else {
+          System.out.println("ROUND LOST (I'm not the longest at timeout)");
+        }
+      } else {
+        System.out.println("ROUND LOST (I died, someone survived)");
+      }
+    }
+  }
+
+  private static Hero getLongestHero(Collection<Hero> heroes) {
+    return heroes.stream().max(Comparator.comparingInt(Hero::size)).orElse(null);
+  }
+
+  private static boolean isOnBoard(Hero hero, SnakeBoard game) {
+    return !hero.isOutOf(game.size());
+  }
 
   @Override
   public String get(MyBoard boardFromServer) {
-    game = GameHelper.getNewOrContinuedGame(game, boardFromServer);
-    Analysis analysis = new GreedyAnalysis(game);
-    return analysis.findBestAction().getStr();
+    if (game == null || boardFromServer.isNewRound()) {
+      // initialize new game
+      game = GameHelper.initializeGame(boardFromServer);
+    } else {
+      game = GameHelper.continueGame(game, boardFromServer);
+
+      if (game == null) {
+        // re-sync required :(
+        game = GameHelper.initializeGame(boardFromServer);
+      }
+    }
+
+    printRoundStatus(game);
+
+    if (aliveAndActive()) {
+      Analysis analysis = new Analysis(game);
+      return analysis.findBestAction().getStr();
+    } else {
+      return "right";
+    }
+  }
+
+  private boolean aliveAndActive() {
+    return
+        game.getHeroes().size() > 0 &&
+            game.getHeroes().get(0).isAlive() && game.getHeroes().get(0).isActive();
   }
 }

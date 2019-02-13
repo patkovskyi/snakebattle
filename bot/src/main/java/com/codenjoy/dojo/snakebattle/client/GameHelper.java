@@ -62,62 +62,6 @@ public class GameHelper {
     GameHelper.tick = tick;
   }
 
-  public static SnakeBoard getNewOrContinuedGame(SnakeBoard game, MyBoard boardFromServer) {
-    if (game == null || boardFromServer.isNewRound()) {
-      // initialize new game
-      game = initializeGame(boardFromServer);
-    } else {
-      game = GameHelper.continueGame(game, boardFromServer);
-
-      if (game == null) {
-        // re-sync required :(
-        game = initializeGame(boardFromServer);
-      }
-    }
-
-    printRoundStatus(game);
-
-    return game;
-  }
-
-  private static void printRoundStatus(SnakeBoard game) {
-    System.out.printf("TICK %d\n", GameHelper.getTick(game));
-
-    Hero me = game.getHeroes().get(0);
-    List<Hero> heroesOnBoard =
-        game.getHeroes().stream().filter(h -> isOnBoard(h, game)).collect(Collectors.toList());
-
-    boolean allDeadImLongest =
-        heroesOnBoard.stream().allMatch(h -> !h.isAlive()) && getLongestHero(heroesOnBoard) == me;
-
-    boolean allDeadImNotLongest =
-        heroesOnBoard.stream().allMatch(h -> !h.isAlive()) && getLongestHero(heroesOnBoard) != me;
-
-    if (heroesOnBoard.size() == 0 && !allDeadImLongest) {
-        System.out.println("ROUND DRAW");
-    } else if (!heroesOnBoard.contains(me) || allDeadImNotLongest) {
-      System.out.println("ROUND LOST");
-    } else if (heroesOnBoard.size() == 1 && heroesOnBoard.contains(me) || allDeadImLongest) {
-      System.out.println("ROUND WON");
-    }
-  }
-
-  private static Hero getLongestHero(Collection<Hero> heroes) {
-    return heroes.stream().max(Comparator.comparingInt(Hero::size)).orElse(null);
-  }
-
-  private static boolean isOnBoard(Hero hero, SnakeBoard game) {
-    return !hero.head().isOutOf(game.size());
-  }
-
-  private static Hero getMyHero(SnakeBoard game) {
-    return game.getHeroes().get(0);
-  }
-
-  public static int getManhattanDistance(Point p1, Point p2) {
-    return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY());
-  }
-
   public static SnakeBoard initializeGame(MyBoard board) {
     tick = 0;
 
@@ -159,7 +103,7 @@ public class GameHelper {
     return game;
   }
 
-  private static SnakeBoard continueGame(SnakeBoard game, MyBoard expectedBoard) {
+  public static SnakeBoard continueGame(SnakeBoard game, MyBoard expectedBoard) {
     long start = System.currentTimeMillis();
 
     ++tick;
