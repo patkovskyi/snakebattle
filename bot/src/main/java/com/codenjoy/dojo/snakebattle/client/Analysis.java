@@ -147,10 +147,12 @@ public abstract class Analysis {
       // FLIGHT - useless
       game.getFlyingPills().forEach(p -> values[p.getX()][p.getY()] = Mechanics.SOMEWHAT_NEGATIVE);
 
-      // APPLES - higher value in late game
+      // APPLES - higher value in late game, higher value if I'm smaller
+      boolean imLongest = getAliveActiveEnemies(hero).allMatch(enemy ->
+          Mechanics.enemyShorterByMinSnakeLength(hero, enemy));
       game.getApples().forEach(p ->
           values[p.getX()][p.getY()] =
-              Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 8 : 3));
+              Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 10 : 0) + (imLongest ? 0 : 10));
 
       // FURY - very useful, TODO calculation
       game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 30);
@@ -172,8 +174,12 @@ public abstract class Analysis {
             if (hero.getStonesCount() < 3) {
               values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
             } else {
-              values[s.getX()][s.getY()] = Mechanics.STONE_REWARD - 2;
+              // HACK: for now consider eating stones bad after 3 stones
+              values[s.getX()][s.getY()] = Mechanics.SOMEWHAT_NEGATIVE;
             }
+          } else {
+            // prefer not to eat stones late in the game
+            values[s.getX()][s.getY()] = Mechanics.SOMEWHAT_NEGATIVE;
           }
         } else {
           values[s.getX()][s.getY()] = Mechanics.VERY_NEGATIVE;
@@ -217,7 +223,7 @@ public abstract class Analysis {
       if (interceptPoint.isPresent()) {
         Point p = interceptPoint.get().getPoint();
         Hero enemy = interceptPoint.get().getEnemy();
-        values[p.getX()][p.getY()] =
+        values[p.getX()][p.getY()] +=
             Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
                 .getTrueLength(enemy);
       }
@@ -273,7 +279,8 @@ public abstract class Analysis {
         }
 
         if (Math.abs(distanceFromEnemy - distanceFromHero) <= 1) {
-          if (Mechanics.wouldWinHeadToHead(hero, enemy, Math.max(distanceFromEnemy, distanceFromHero))) {
+          if (Mechanics
+              .wouldWinHeadToHead(hero, enemy, Math.max(distanceFromEnemy, distanceFromHero))) {
             meetingPoints.add(new MeetingPoint(meetingPoint, enemy));
             break;
           }

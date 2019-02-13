@@ -81,8 +81,13 @@ public class Algorithms {
           if (!np.isOutOf(values.length) &&
               distances[np.getX()][np.getY()] == distances[p.getX()][p.getY()] + 1) {
 
-            acc[np.getX()][np.getY()] = Math
-                .max(acc[p.getX()][p.getY()], acc[np.getX()][np.getY()]);
+            if (!openSet.contains(np)) {
+              // hack to make sure that even negative values are set
+              acc[np.getX()][np.getY()] = acc[p.getX()][p.getY()];
+            } else {
+              acc[np.getX()][np.getY()] = Math
+                  .max(acc[p.getX()][p.getY()], acc[np.getX()][np.getY()]);
+            }
 
             openSet.add(np);
           }

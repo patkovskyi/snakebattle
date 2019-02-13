@@ -606,7 +606,7 @@ public class AnalysisTest {
     assertValues(
               "0 0 0 0 0 0 "
             + "0 0 0 100 0 "
-            + "0 0 0 4 # 0 "
+            + "0 0 0 1 # 0 "
             + "0 0 0 0 0 0 "
             + "0 0 # 0 300 "
             + "0 0 0 0 0 0 ", 2);
@@ -624,9 +624,9 @@ public class AnalysisTest {
     assertAccumulatedValues(
               "0 0 0 0 0 0 "
             + "0 0 0 10100 "
-            + "0 0 0 140 0 "
-            + "0 0 0 14140 "
-            + "0 0 # 14440 "
+            + "0 0 0 110 0 "
+            + "0 0 0 11110 "
+            + "0 0 # 11410 "
             + "0 0 0 0 0 0 ");
   }
 
@@ -936,6 +936,85 @@ public class AnalysisTest {
     int[][] values = ga.getValues(hero);
     Assert.assertEquals(values[3][4], 70);
     Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
+  }
+
+  @Test
+  public void avoidStonesInLateGame() {
+    newGame(
+          "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+        + "☼☼      ○                  ○ ☼"
+        + "☼#              ○            ☼"
+        + "☼☼                           ☼"
+        + "☼☼  ○                        ☼"
+        + "☼☼                           ☼"
+        + "☼☼     ☼☼☼☼☼ $               ☼"
+        + "☼☼     ☼                     ☼"
+        + "☼#     ☼☼☼        ☼☼☼☼#      ☼"
+        + "☼☼     ☼®   ●     ☼   ☼      ☼"
+        + "☼☼     ☼☼☼☼#▲     ☼☼☼☼#      ☼"
+        + "☼☼       ╔══╝     ☼          ☼"
+        + "☼☼       ║    ●   ☼          ☼"
+        + "☼☼       ║                   ☼"
+        + "☼#       ║     ©        ○   ○☼"
+        + "☼☼       ║●                  ☼"
+        + "☼☼×┐   ╔═╝☼☼☼ ●              ☼"
+        + "☼☼ │   ║ ☼  ☼                ☼"
+        + "☼☼ └──┐║☼☼☼☼#     ☼☼   ☼#    ☼"
+        + "☼☼    │║☼   ☼   ● ☼ ☼ ☼ ☼    ☼"
+        + "☼#    │╙☼   ☼     ☼  ☼  ☼    ☼"
+        + "☼☼   ©│           ☼     ☼    ☼"
+        + "☼☼    └┐          ☼     ☼    ☼"
+        + "☼☼●    │                 ○   ☼"
+        + "☼☼     └──>                  ☼"
+        + "☼☼                           ☼"
+        + "☼#                           ☼"
+        + "☼☼                      ○    ☼"
+        + "☼☼                           ☼"
+        + "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼");
+
+    GameHelper.setTick(250);
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    int[][] values = ga.getValues(hero);
+    int[][] acc = ga.getAccumulatedValues(hero);
+    Assert.assertEquals(Mechanics.SOMEWHAT_NEGATIVE, values[12][20]);
+    Assert.assertEquals(Mechanics.SOMEWHAT_NEGATIVE, acc[12][20]);
+    Assert.assertEquals(Mechanics.SOMEWHAT_NEGATIVE, acc[12][21]);
+    Assert.assertEquals(Mechanics.SOMEWHAT_NEGATIVE, acc[12][23]);
+    Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
+  }
+
+  @Test
+  public void appleHighValueWhenShort() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼   ☼  ☼"
+        + "☼╘► ☼  ☼"
+        + "☼  ˄   ☼"
+        + "☼  ¤☼  ☼"
+        + "☼   ☼  ☼"
+        + "☼○  ☼  ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(11, values[1][1]);
+  }
+
+  @Test
+  public void appleHighValueWhenLateGame() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼   ☼  ☼"
+        + "☼╘► ☼  ☼"
+        + "☼  ˄   ☼"
+        + "☼  ¤☼  ☼"
+        + "☼   ☼  ☼"
+        + "☼○  ☼  ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    GameHelper.setTick(220);
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(21, values[1][1]);
   }
 
   // @formatter:on

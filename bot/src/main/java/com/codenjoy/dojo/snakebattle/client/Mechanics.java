@@ -91,6 +91,10 @@ public class Mechanics {
     }
   }
 
+  static boolean enemyShorterByMinSnakeLength(Hero hero, Hero enemy) {
+    return getTrueLength(hero) - MIN_SNAKE_LENGTH >= getTrueLength(enemy);
+  }
+
   static boolean isLateGame(SnakeBoard game) {
     return GameHelper.getTick(game) >= 200;
   }

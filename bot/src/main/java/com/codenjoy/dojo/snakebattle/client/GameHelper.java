@@ -58,6 +58,10 @@ public class GameHelper {
     return tick;
   }
 
+  public static void setTick(int tick) {
+    GameHelper.tick = tick;
+  }
+
   public static SnakeBoard getNewOrContinuedGame(SnakeBoard game, MyBoard boardFromServer) {
     if (game == null || boardFromServer.isNewRound()) {
       // initialize new game
