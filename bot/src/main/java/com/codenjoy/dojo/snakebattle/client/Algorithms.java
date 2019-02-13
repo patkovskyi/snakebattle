@@ -63,6 +63,13 @@ public class Algorithms {
   public static int[][] findAccumulatedValues(int[][] distances, int[][] values) {
     Point start = findStartingPoint(distances);
     int[][] acc = new int[values.length][values.length];
+    for (int i = 0; i < values.length; i++) {
+      for (int j = 0; j < values.length; j++) {
+        if (distances[i][j] == Integer.MAX_VALUE) {
+          acc[i][j] = Integer.MIN_VALUE;
+        }
+      }
+    }
 
     Set<Point> openSet = new HashSet<>();
     openSet.add(start);

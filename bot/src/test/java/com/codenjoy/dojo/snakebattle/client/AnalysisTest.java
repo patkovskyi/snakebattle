@@ -32,6 +32,7 @@ import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
@@ -628,12 +629,12 @@ public class AnalysisTest {
             + "☼☼☼☼☼☼");
 
     assertAccumulatedValues(
-              "0 0 0 0 0 0 "
-            + "0 0 0 10100 "
-            + "0 0 0 110 0 "
-            + "0 0 0 11110 "
-            + "0 0 # 11260 "
-            + "0 0 0 0 0 0 ");
+              "# # # # # # "
+            + "# 0 0 1010# "
+            + "# 0 0 11# # "
+            + "# 0 0 1111# "
+            + "# 0 # 1126# "
+            + "# # # # # # ");
   }
 
   @Test
@@ -646,12 +647,12 @@ public class AnalysisTest {
             + "☼☼☼☼☼☼");
 
     assertAccumulatedValues(
-              "0 0 0 0 0 0 "
-            + "0 0 7070700 "
-            + "0 707070700 "
-            + "0 707070700 "
-            + "0 707070700 "
-            + "0 0 0 0 0 0 ");
+              "# # # # # # "
+            + "# 0 707070# "
+            + "# 70707070# "
+            + "# 70707070# "
+            + "# 70707070# "
+            + "# # # # # # ");
   }
 
   @Test
@@ -664,12 +665,12 @@ public class AnalysisTest {
             + "☼☼☼☼☼☼");
 
     assertAccumulatedValues(
-              "0 0 0 0 0 0 "
-            + "0 0 0 0 0 0 "
-            + "0 0 0 0 0 0 "
-            + "0 0 0 0 0 0 "
-            + "0 0 0 0 0 0 "
-            + "0 0 0 0 0 0 ");
+              "# # # # # # "
+            + "# 0 # # # # "
+            + "# # # # # # "
+            + "# # # # # # "
+            + "# # # # # # "
+            + "# # # # # # ");
   }
 
   @Test
@@ -901,6 +902,27 @@ public class AnalysisTest {
 
     Analysis ga = new Analysis(game);
     Assert.assertEquals(HeroAction.UP, ga.findBestAction());
+  }
+
+  @Ignore
+  @Test
+  public void takeEnemyWithMe() {
+    newGame(  "☼☼☼☼☼☼"
+            + "☼▲˄  ☼"
+            + "☼║│  ☼"
+            + "☼║¤  ☼"
+            + "☼╙   ☼"
+            + "☼☼☼☼☼☼");
+
+    assertAccumulatedValues(
+              "# # # # # # "
+            + "# 0 # # # # "
+            + "# # # # # # "
+            + "# # # # # # "
+            + "# # # # # # "
+            + "# # # # # # ");
+
+    assertMove(HeroAction.RIGHT);
   }
 
   @Test

@@ -52,18 +52,18 @@ public class Analysis {
   public HeroAction findBestAction() {
     double[][] distanceAdjustedValues = getAccumulatedDistanceAdjustedValues(getMyHero());
     Point target = findMaxPoint(distanceAdjustedValues);
+    if (target != null) {
+      String targetType = getTargetPointType(target);
+      int value = getValues(getMyHero())[target.getX()][target.getY()];
+      int accValue = getAccumulatedValues(getMyHero())[target.getX()][target.getY()];
+      int distance = getDynamicDistances(getMyHero())[target.getX()][target.getY()];
 
-    String targetType = getTargetPointType(target);
-    int value = getValues(getMyHero())[target.getX()][target.getY()];
-    int accValue = getAccumulatedValues(getMyHero())[target.getX()][target.getY()];
-    int distance = getDynamicDistances(getMyHero())[target.getX()][target.getY()];
+      System.out
+          .printf("Heading to: [%d %d] (%s | value = %d | acc.value = %d | distance = %d)\n\n",
+              target.getX(), target.getY(), targetType, value, accValue, distance);
 
-    System.out.printf("Heading to: [%d %d] (%s | value = %d | acc.value = %d | distance = %d)\n\n",
-        target.getX(), target.getY(), targetType, value, accValue, distance);
+      printHeroAnalytics();
 
-    printHeroAnalytics();
-
-    if (getMyHero().isAlive()) {
       int addAction = 0;
       if (target.equals(getMyHero().getTailPoint())) {
         addAction = 4;
@@ -75,6 +75,7 @@ public class Analysis {
       }
       return HeroAction.valueOf(addAction + findFirstStepTo(getMyHero(), target).value());
     } else {
+      System.out.println("FAIL: target == null, we're in dead end");
       return HeroAction.valueOf(getMyHero().getDirection().value());
     }
   }
@@ -597,12 +598,11 @@ public class Analysis {
     Point p = null;
 
     int[][] distances = getDynamicDistances(getMyHero());
-
     for (int x = 0; x < distanceAdjustedValues.length; x++) {
       for (int y = 0; y < distanceAdjustedValues.length; y++) {
-        if (distances[x][y] < Integer.MAX_VALUE) {
-          if (p == null || distanceAdjustedValues[x][y] > distanceAdjustedValues[p.getX()][p
-              .getY()]) {
+        if (distances[x][y] != 0 && distances[x][y] < Integer.MAX_VALUE) {
+          if (p == null ||
+              distanceAdjustedValues[x][y] > distanceAdjustedValues[p.getX()][p.getY()]) {
             p = PointImpl.pt(x, y);
           }
         }
