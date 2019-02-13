@@ -889,5 +889,48 @@ public class AnalysisTest {
     Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
   }
 
+  @Test
+  public void intercept1() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "╘══►○☼"
+        + "☼    ☼"
+        + "☼ ˄  ☼"
+        + "☼ ¤  ☼"
+        + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.DOWN, ga.findBestAction());
+  }
+
+  @Test
+  public void intercept2tooWeak() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + " ╘═►○☼"
+        + "☼    ☼"
+        + "☼ ˄  ☼"
+        + "☼ ¤  ☼"
+        + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
+  }
+
+  @Test
+  public void intercept3() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "╘♥   ☼"
+        + "☼    ☼"
+        + "☼○ ˄ ☼"
+        + "☼  ¤ ☼"
+        + "☼☼☼☼☼☼");
+
+    hero.setFuryCount(3);
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
+  }
+
   // @formatter:on
 }

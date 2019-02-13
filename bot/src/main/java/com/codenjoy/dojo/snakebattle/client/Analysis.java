@@ -1,9 +1,11 @@
 package com.codenjoy.dojo.snakebattle.client;
 
+import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.DynamicObstacle;
 import com.codenjoy.dojo.snakebattle.model.HeroAction;
+import com.codenjoy.dojo.snakebattle.model.MeetingPoint;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import com.codenjoy.dojo.snakebattle.model.hero.Tail;
@@ -17,6 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public abstract class Analysis {
@@ -210,6 +213,15 @@ public abstract class Analysis {
         }
       }));
 
+      Optional<MeetingPoint> interceptPoint = findClosestInterceptPoint(hero);
+      if (interceptPoint.isPresent()) {
+        Point p = interceptPoint.get().getPoint();
+        Hero enemy = interceptPoint.get().getEnemy();
+        values[p.getX()][p.getY()] =
+            Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
+                .getTrueLength(enemy);
+      }
+
       return values;
     });
   }
@@ -240,6 +252,37 @@ public abstract class Analysis {
     }
 
     return result;
+  }
+
+  private Optional<MeetingPoint> findClosestInterceptPoint(Hero hero) {
+    List<MeetingPoint> meetingPoints = new ArrayList<>();
+    int[][] heroDistances = getDynamicDistances(hero);
+
+    getAliveActiveEnemies(hero).forEach(enemy -> {
+      Direction enemyDirection = enemy.getDirection();
+      Point meetingPoint = enemy.head().copy();
+      int distanceFromEnemy = 0;
+
+      while (!meetingPoint.isOutOf(game.size())) {
+        meetingPoint.change(enemyDirection);
+        ++distanceFromEnemy;
+        int distanceFromHero = heroDistances[meetingPoint.getX()][meetingPoint.getY()];
+
+        if (game.isBarrier(meetingPoint)) {
+          break; // stop path projection
+        }
+
+        if (Math.abs(distanceFromEnemy - distanceFromHero) <= 1) {
+          if (Mechanics.wouldWinHeadToHead(hero, enemy, Math.max(distanceFromEnemy, distanceFromHero))) {
+            meetingPoints.add(new MeetingPoint(meetingPoint, enemy));
+            break;
+          }
+        }
+      }
+    });
+
+    return meetingPoints.stream().min(
+        Comparator.comparingInt(p -> heroDistances[p.getPoint().getX()][p.getPoint().getY()]));
   }
 
   protected Stream<Point> getBarriers() {
