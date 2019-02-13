@@ -37,6 +37,8 @@ import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
 import com.rits.cloning.Cloner;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -81,13 +83,23 @@ public class GameHelper {
     List<Hero> heroesOnBoard =
         game.getHeroes().stream().filter(h -> isOnBoard(h, game)).collect(Collectors.toList());
 
-    if (heroesOnBoard.size() == 0) {
-      System.out.println("ROUND DRAW");
-    } else if (!heroesOnBoard.contains(me)){
+    boolean allDeadImLongest =
+        heroesOnBoard.stream().allMatch(h -> !h.isAlive()) && getLongestHero(heroesOnBoard) == me;
+
+    boolean allDeadImNotLongest =
+        heroesOnBoard.stream().allMatch(h -> !h.isAlive()) && getLongestHero(heroesOnBoard) != me;
+
+    if (heroesOnBoard.size() == 0 && !allDeadImLongest) {
+        System.out.println("ROUND DRAW");
+    } else if (!heroesOnBoard.contains(me) || allDeadImNotLongest) {
       System.out.println("ROUND LOST");
-    } else if (heroesOnBoard.size() == 1 && heroesOnBoard.contains(me)) {
+    } else if (heroesOnBoard.size() == 1 && heroesOnBoard.contains(me) || allDeadImLongest) {
       System.out.println("ROUND WON");
     }
+  }
+
+  private static Hero getLongestHero(Collection<Hero> heroes) {
+    return heroes.stream().max(Comparator.comparingInt(Hero::size)).orElse(null);
   }
 
   private static boolean isOnBoard(Hero hero, SnakeBoard game) {
