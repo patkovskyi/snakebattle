@@ -96,6 +96,6 @@ public class Mechanics {
   }
 
   static boolean isLateGame(SnakeBoard game) {
-    return GameHelper.getTick(game) >= 200;
+    return GameHelper.getTick(game) >= 100;
   }
 }

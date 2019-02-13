@@ -109,7 +109,8 @@ public abstract class Analysis {
       getAliveActiveEnemies(hero).forEach(enemy -> {
         Point enemyHead = enemy.head();
         int distanceToEnemyHead = staticDistances[enemyHead.getX()][enemyHead.getY()];
-        if (distanceToEnemyHead == 3 && Mechanics.wouldWinHeadToHead(enemy, hero, 2)) {
+        if (distanceToEnemyHead == 3 || distanceToEnemyHead == 4 && Mechanics
+            .wouldWinHeadToHead(enemy, hero, 2)) {
           getHeadThreatSpear(enemy, 2).forEach(p -> dynObstacles[p.getX()][p.getY()] = true);
         }
 
@@ -152,7 +153,8 @@ public abstract class Analysis {
           Mechanics.enemyShorterByMinSnakeLength(hero, enemy));
       game.getApples().forEach(p ->
           values[p.getX()][p.getY()] =
-              Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 10 : 0) + (imLongest ? 0 : 10));
+              Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 10 : 0) + (imLongest ? 0
+                  : 10));
 
       // FURY - very useful, TODO calculation
       game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 30);
@@ -171,7 +173,7 @@ public abstract class Analysis {
         } else if (heroLong) {
           if (!Mechanics.isLateGame(game)) {
             // TODO: think when eating a stone with length is actually good
-            if (hero.getStonesCount() < 3) {
+            if (hero.getStonesCount() < 3 && imLongest) {
               values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
             } else {
               // HACK: for now consider eating stones bad after 3 stones
