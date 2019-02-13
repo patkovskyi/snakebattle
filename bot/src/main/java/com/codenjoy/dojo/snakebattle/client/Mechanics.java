@@ -73,7 +73,11 @@ public class Mechanics {
 
   static DynamicObstacle whatWillBeOnThisPoint(Hero hero, Point point, int inRounds) {
     int trueBodyIndex = getTrueBodyIndex(hero, point) - inRounds;
-    if (trueBodyIndex < 0) {
+    if (trueBodyIndex == -1) {
+      return DynamicObstacle.PossibleStone;
+    }
+
+    if (trueBodyIndex < -1) {
       return DynamicObstacle.Nothing;
     }
 

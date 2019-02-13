@@ -3,7 +3,8 @@ package com.codenjoy.dojo.snakebattle.model;
 public enum DynamicObstacle {
   Nothing(0),
   Body(1),
-  Neck(2);
+  Neck(2),
+  PossibleStone(3);
 
   private final int value;
 

@@ -331,8 +331,8 @@ public class AnalysisTest {
         + "☼☼☼☼☼");
 
     assertDynamicDistances("☼☼☼☼☼"
-        + "☼123☼"
-        + "☼012☼"
+        + "☼12☼☼"
+        + "☼01☼☼"
         + "☼123☼"
         + "☼☼☼☼☼");
   }
@@ -416,8 +416,8 @@ public class AnalysisTest {
         + "☼☼☼☼☼");
 
     assertDynamicDistances("☼☼☼☼☼"
-        + "☼123☼"
-        + "☼012☼"
+        + "☼12☼☼"
+        + "☼01☼☼"
         + "☼123☼"
         + "☼☼☼☼☼");
   }
@@ -451,7 +451,7 @@ public class AnalysisTest {
     assertDynamicDistances("☼☼☼☼☼☼"
         + "☼2123☼"
         + "☼30☼4☼"
-        + "☼2123☼"
+        + "☼21☼5☼"
         + "☼3234☼"
         + "☼☼☼☼☼☼");
   }
@@ -854,6 +854,36 @@ public class AnalysisTest {
         + "☼   ¤☼"
         + "☼    ☼"
         + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
+  }
+
+  @Test
+  public void avoidStoneDrop1() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "☼  ˄ ☼"
+        + "☼  │ ☼"
+        + "☼╘►¤○☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    Assert.assertEquals(HeroAction.DOWN, ga.findBestAction());
+  }
+
+  @Test
+  public void avoidStoneDrop2() {
+    newGame(
+          "☼☼☼☼☼☼"
+        + "☼  ˄ ☼"
+        + "☼  │ ☼"
+        + " ╘♥¤○☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    hero.setFuryCount(2);
 
     GreedyAnalysis ga = new GreedyAnalysis(game);
     Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());

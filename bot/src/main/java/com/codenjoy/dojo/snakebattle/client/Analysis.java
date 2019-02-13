@@ -93,6 +93,12 @@ public abstract class Analysis {
                 }
 
                 break;
+              case PossibleStone:
+                // assume that enemy drops a stone at his tail
+                if (hero != enemy) {
+                  dynObstacles[p.getX()][p.getY()] |= !Mechanics.canPassStone(hero, 1);
+                }
+                break;
             }
           }));
 
