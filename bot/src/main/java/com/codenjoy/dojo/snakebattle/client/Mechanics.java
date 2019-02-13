@@ -53,7 +53,7 @@ public class Mechanics {
   }
 
   static boolean wouldWinHeadToHead(Hero hero, Hero enemy, int ticksToCollision) {
-    boolean heroLonger = getTrueLength(hero) > getTrueLength(enemy) + MIN_SNAKE_LENGTH;
+    boolean heroLonger = getTrueLength(hero) >= getTrueLength(enemy) + MIN_SNAKE_LENGTH;
     boolean heroFury = hero.getFuryCount() > ticksToCollision;
     boolean enemyFury = enemy.getFuryCount() > ticksToCollision;
 
