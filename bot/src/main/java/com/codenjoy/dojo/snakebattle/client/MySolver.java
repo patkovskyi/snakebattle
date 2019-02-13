@@ -25,11 +25,8 @@ package com.codenjoy.dojo.snakebattle.client;
 import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class MySolver implements Solver<MyBoard> {
 
@@ -59,10 +56,6 @@ public class MySolver implements Solver<MyBoard> {
         System.out.println("ROUND LOST (I died, someone survived)");
       }
     }
-  }
-
-  private static Hero getLongestHero(Collection<Hero> heroes) {
-    return heroes.stream().max(Comparator.comparingInt(Hero::size)).orElse(null);
   }
 
   private static boolean isOnBoard(Hero hero, SnakeBoard game) {
