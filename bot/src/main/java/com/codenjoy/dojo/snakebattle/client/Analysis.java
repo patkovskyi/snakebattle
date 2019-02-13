@@ -230,6 +230,24 @@ public abstract class Analysis {
                 .getTrueLength(enemy);
       }
 
+      // FURY HEAD SPEAR - negative values
+      getAliveActiveEnemies(hero).filter(e -> e.getFuryCount() > 1).forEach(e -> {
+        if (!Mechanics.wouldWinHeadToHead(hero, e, e.getFuryCount() - 1)) {
+          List<Point> threatSpear = getHeadThreatSpear(e, e.getFuryCount() - 1);
+          threatSpear.forEach(p ->
+          {
+            // if I can reach this point before his fury runs out
+            if (distances[p.getX()][p.getY()] < e.getFuryCount()) {
+              // and I don't have fury as long as he does and won't win fury collision
+              if (!Mechanics.wouldWinHeadToHead(hero, e, e.getFuryCount() - 1)) {
+                // mark this point as bad
+                values[p.getX()][p.getY()] += Mechanics.SOMEWHAT_NEGATIVE;
+              }
+            }
+          });
+        }
+      });
+
       return values;
     });
   }
