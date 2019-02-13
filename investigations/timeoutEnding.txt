@@ -1,0 +1,43 @@
+Board: Board:
+☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
+☼☼               ○           ☼
+☼#               ○           ☼
+☼☼                           ☼
+☼☼     ○                    ○☼
+☼☼                           ☼
+☼☼     ☼☼☼☼☼                 ☼
+☼☼     ☼○                    ☼
+☼#     ☼☼☼        ☼☼☼☼#      ☼
+☼☼     ☼          ☼  ○☼      ☼
+☼☼     ☼☼☼☼#      ☼☼☼☼#    ┌┐☼
+☼☼     $        ○ ☼      ☺─┘│☼
+☼☼        ●       ☼         │☼
+☼☼    ●                    ┌┘☼
+☼#                        ×┘ ☼
+☼☼ ●$                        ☼
+☼☼        ☼☼☼                ☼
+☼☼       ☼  ☼●               ☼
+☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼
+☼☼      ☼   ☼     ☼ ☼ ☼ ☼    ☼
+☼#   ● ╓☼   ☼     ☼  ☼  ☼    ☼
+☼☼     ║          ☼ ○   ☼   ○☼
+☼☼     ║          ☼     ☼    ☼
+☼☼ ╔═══╝          ●          ☼
+☼☼ ║╔☻    ○       ●       ©  ☼
+☼☼ ║║                      ○ ☼
+☼# ║║     ●                  ☼
+☼☼ ║║                        ☼
+☼☼ ╚╝   ©                    ☼
+☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
+
+continueGame: round ended by timeout
+TICK 301
+ROUND DRAW
+Heading to: [10 5] (APPLE | value = 9 | distance = 5)
+
+Hero[0] head: [5 5] (dir = RIGHT, length = 19, stones = 4, fury = 0, flight = 0, alive = false, active = true)
+Hero[1] head: [-1 -1] (dir = RIGHT, length = 0, stones = 0, fury = 0, flight = 0, alive = false, active = true)
+Hero[2] head: [-1 -1] (dir = RIGHT, length = 0, stones = 0, fury = 0, flight = 0, alive = false, active = true)
+Hero[3] head: [-1 -1] (dir = RIGHT, length = 0, stones = 0, fury = 0, flight = 0, alive = false, active = true)
+Hero[4] head: [25 18] (dir = LEFT, length = 11, stones = 5, fury = 0, flight = 0, alive = false, active = true)
+Answer: RIGHT
