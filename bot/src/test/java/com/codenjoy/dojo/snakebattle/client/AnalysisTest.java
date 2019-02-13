@@ -137,6 +137,12 @@ public class AnalysisTest {
     TestUtils.assertBoardsEqual(expectedDeadEnds, sb.toString());
   }
 
+  private void assertMove(HeroAction expected) {
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    HeroAction actual = ga.findBestAction();
+    Assert.assertEquals(expected, actual);
+  }
+
   // @formatter:off
 
   @Test
@@ -1053,6 +1059,47 @@ public class AnalysisTest {
     GreedyAnalysis ga = new GreedyAnalysis(game);
     int[][] values = ga.getValues(hero);
     Assert.assertEquals(21, values[1][1]);
+  }
+
+  @Test
+  public void strangeDeadend() {
+    newGame("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+          + "☼☼              ©            ☼"
+          + "☼#○                          ☼"
+          + "☼☼       ●                   ☼"
+          + "☼☼                           ☼"
+          + "☼☼           ●         ┌────┐☼"
+          + "☼☼     ☼☼☼☼☼  ●  ○     │    │☼"
+          + "☼☼     ☼         ●     │    │☼"
+          + "☼#     ☼☼☼        ☼☼☼☼#│   ┌┘☼"
+          + "☼☼     ☼ ○        ☼   ☼│ ● │ ☼"
+          + "☼☼  ○  ☼☼☼☼#      ☼☼☼☼#│   │ ☼"
+          + "☼☼                ☼  ×─┘   └┐☼"
+          + "☼☼              ○ ☼        ┌┘☼"
+          + "☼☼    ●®                  ♦┘ ☼"
+          + "☼#○             ○            ☼"
+          + "☼☼                      ●    ☼"
+          + "☼☼        ☼☼☼                ☼"
+          + "☼☼      ○☼  ☼                ☼"
+          + "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼"
+          + "☼☼      ☼   ☼   ● ☼ ☼ ☼ ☼    ☼"
+          + "☼#      ☼   ☼     ☼  ☼  ☼    ☼"
+          + "☼☼        ●  ○    ☼     ☼    ☼"
+          + "☼☼                ☼○    ☼  ╓ ☼"
+          + "☼☼       ○     ╔═══►╔══╗   ╚╗☼"
+          + "☼☼             ║   ╔╝  ╚════╝☼"
+          + "☼☼  ○          ╚═══╝         ☼"
+          + "☼# ○                         ☼"
+          + "☼☼   ●                       ☼"
+          + "☼☼                          ●☼"
+          + "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼");
+
+    GreedyAnalysis ga = new GreedyAnalysis(game);
+    double[][] accvalues = ga.getAccumulatedDistanceAdjustedValues(hero);
+    Assert.assertEquals(11, accvalues[19][7], 0.1);
+
+
+    assertMove(HeroAction.UP);
   }
 
   // @formatter:on

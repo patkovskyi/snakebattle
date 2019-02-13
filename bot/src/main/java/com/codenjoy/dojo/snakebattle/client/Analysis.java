@@ -255,7 +255,9 @@ public abstract class Analysis {
 
     for (int x = 0; x < game.size(); x++) {
       for (int y = 0; y < game.size(); y++) {
-        result[x][y] = values[x][y] / (double) distances[x][y];
+        if (distances[x][y] != 0) {
+          result[x][y] = values[x][y] / (double) distances[x][y];
+        }
       }
     }
 
