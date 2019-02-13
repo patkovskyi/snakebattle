@@ -270,7 +270,7 @@ public class Analysis {
           } else {
             // mark area around as risky
             getThreatRadius(fpill, Mechanics.FURY_LENGTH)
-                .forEach(p -> values[p.getX()][p.getY()] -= Mechanics.SOMEWHAT_NEGATIVE);
+                .forEach(p -> values[p.getX()][p.getY()] += Mechanics.SOMEWHAT_NEGATIVE);
           }
         }
       });
