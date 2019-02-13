@@ -109,7 +109,7 @@ public abstract class Analysis {
       getAliveActiveEnemies(hero).forEach(enemy -> {
         Point enemyHead = enemy.head();
         int distanceToEnemyHead = staticDistances[enemyHead.getX()][enemyHead.getY()];
-        if (distanceToEnemyHead == 3 || distanceToEnemyHead == 4 && Mechanics
+        if ((distanceToEnemyHead == 3 || distanceToEnemyHead == 4) && Mechanics
             .wouldWinHeadToHead(enemy, hero, 2)) {
           getHeadThreatSpear(enemy, 2).forEach(p -> dynObstacles[p.getX()][p.getY()] = true);
         }
