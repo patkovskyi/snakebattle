@@ -25,17 +25,16 @@ import java.util.stream.Stream;
 public class Analysis {
 
   protected final SnakeBoard game;
-
   private final Map<Hero, boolean[][]> staticObstacles;
   private final Map<Hero, boolean[][]> dynamicObstacles;
   private final Map<Hero, int[][]> staticDistances;
   private final Map<Hero, int[][]> dynamicDistances;
-
   private final Map<Hero, int[][]> values;
   private final Map<Hero, double[][]> distanceAdjustedValues;
   private final Map<Hero, int[][]> accumulatedValues;
   private final Map<Hero, double[][]> accumulatedDistanceAdjustedValues;
   private final Map<Hero, double[][]> closestAdjustedValues;
+  private boolean[][] barriers;
 
   protected Analysis(SnakeBoard game) {
     this.game = game;
@@ -80,12 +79,18 @@ public class Analysis {
     }
   }
 
+  boolean[][] getBarriers() {
+    if (barriers == null) {
+      barriers = new boolean[game.size()][game.size()];
+      getBarrierObjects().forEach(b -> barriers[b.getX()][b.getY()] = true);
+    }
+
+    return barriers;
+  }
+
   boolean[][] getStaticObstacles(Hero hero) {
-    return staticObstacles.computeIfAbsent(hero, h -> {
-      boolean[][] obstacles = new boolean[game.size()][game.size()];
-      getBarriers().forEach(b -> obstacles[b.getX()][b.getY()] = true);
-      return Algorithms.findDirectionalDeadEnds(obstacles, hero.head(), hero.getDirection());
-    });
+    return staticObstacles.computeIfAbsent(hero,
+        h -> Algorithms.findDirectionalDeadEnds(getBarriers(), hero.head(), hero.getDirection()));
   }
 
   boolean[][] getDynamicObstacles(Hero hero) {
@@ -126,6 +131,7 @@ public class Analysis {
                 break;
               case PossibleStone:
                 // assume that enemy drops a stone at his tail
+                // TODO: this is more like a negative value than obstacle
                 if (hero != enemy) {
                   dynObstacles[p.getX()][p.getY()] |= !Mechanics.canPassStone(hero, 1);
                 }
@@ -152,10 +158,8 @@ public class Analysis {
   }
 
   int[][] getStaticDistances(Hero hero) {
-    return staticDistances.computeIfAbsent(hero, h -> {
-      boolean[][] deadEnds = getStaticObstacles(hero);
-      return Algorithms.findStaticDistances(deadEnds, hero.head(), hero.getDirection());
-    });
+    return staticDistances
+        .computeIfAbsent(hero, h -> findStaticDistances(hero, hero.getDirection()));
   }
 
   int[][] getDynamicDistances(Hero hero) {
@@ -184,10 +188,7 @@ public class Analysis {
               Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 10 : 0) + (imLongest ? 0
                   : 10));
 
-      // FURY - very useful, TODO calculation
-      game.getFuryPills().forEach(p -> values[p.getX()][p.getY()] = 30);
-
-      // STONES - complex
+      // STONES - a little more complex
       game.getStones().forEach(s -> {
         boolean heroFury = hero.getFuryCount() > distances[s.getX()][s.getY()];
         boolean heroFly = hero.getFlyingCount() > distances[s.getX()][s.getY()];
@@ -233,7 +234,7 @@ public class Analysis {
           case Body:
             if (Mechanics.wouldWinHeadToBody(hero, enemy, roundsToTarget)) {
               int lengthToEat = Mechanics.getTrueBodyIndex(enemy, p) - roundsToTarget;
-              values[p.getX()][p.getY()] += Mechanics.BLOOD_REWARD_PER_CELL * lengthToEat;
+              values[p.getX()][p.getY()] = Mechanics.BLOOD_REWARD_PER_CELL * lengthToEat;
             } else if (Mechanics.wouldSurviveHeadToBody(hero, enemy, roundsToTarget)) {
               values[p.getX()][p.getY()] = 0;
             } else {
@@ -243,7 +244,7 @@ public class Analysis {
           case Neck:
             if (Mechanics.wouldWinHeadToHead(hero, enemy, roundsToTarget)) {
               int lengthToEat = Mechanics.getTrueLength(enemy);
-              values[p.getX()][p.getY()] +=
+              values[p.getX()][p.getY()] =
                   Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * lengthToEat;
             }
         }
@@ -257,6 +258,22 @@ public class Analysis {
             Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
                 .getTrueLength(enemy);
       }
+
+      // FURY - complex, very useful, TODO calculation
+      game.getFuryPills().forEach(fpill -> {
+        Hero closestHero = getDynamicClosestHero(fpill);
+        if (isDynamicReachable(closestHero, fpill)) {
+          if (hero == closestHero) {
+            int killValue = getFuryPillKillValue(hero, fpill);
+            int stoneValue = getFuryPillStoneValue(hero, fpill);
+            values[fpill.getX()][fpill.getY()] = Math.max(killValue, stoneValue);
+          } else {
+            // mark area around as risky
+            getThreatRadius(fpill, Mechanics.FURY_LENGTH)
+                .forEach(p -> values[p.getX()][p.getY()] -= Mechanics.SOMEWHAT_NEGATIVE);
+          }
+        }
+      });
 
       // FURY HEAD SPEAR - negative values
       getAliveActiveEnemies(hero).filter(e -> e.getFuryCount() > 1).forEach(e -> {
@@ -278,6 +295,88 @@ public class Analysis {
 
       return values;
     });
+  }
+
+  private boolean isDynamicReachable(Hero hero, Point point) {
+    return getDynamicDistanceToPoint(hero, point) < Integer.MAX_VALUE;
+  }
+
+  private int getDynamicDistanceToPoint(Hero hero, Point point) {
+    int[][] dynDistances = getDynamicDistances(hero);
+    return dynDistances[point.getX()][point.getY()];
+  }
+
+  private int[][] findStaticDistances(Point point, Direction direction) {
+    boolean[][] barriers = getBarriers();
+    boolean[][] deadEnds = Algorithms.findDirectionalDeadEnds(barriers, point, direction);
+    return Algorithms.findStaticDistances(deadEnds, point, direction);
+  }
+
+  private int[][] findStaticDistances(Point point) {
+    return findStaticDistances(point, null);
+  }
+
+  // this assumes closeness calculation was done before
+  private int getFuryPillKillValue(Hero hero, Point furyPill) {
+    int[][] heroDistances = getDynamicDistances(hero);
+    int distanceToPill = heroDistances[furyPill.getX()][furyPill.getY()];
+    if (distanceToPill == Integer.MAX_VALUE) {
+      return 0;
+    }
+
+    int[][] distancesFromPill = findStaticDistances(furyPill);
+    int longestTailToEat = getAliveActiveEnemies(hero).flatMap(e -> e.body().stream())
+        .mapToInt(t ->
+            getEnemyTailLengthAt(hero, t, distanceToPill + distancesFromPill[t.getX()][t.getY()]))
+        .max().orElse(0);
+
+    // set 10 as base value if we're the closest
+    return 10 + Mechanics.BLOOD_REWARD_PER_CELL * longestTailToEat;
+  }
+
+  // assumes closeness calculation was done before
+  private int getFuryPillStoneValue(Hero hero, Point furyPill) {
+    // grossly simplified
+    int[][] heroDistances = getDynamicDistances(hero);
+    int distanceToPill = heroDistances[furyPill.getX()][furyPill.getY()];
+    if (distanceToPill == Integer.MAX_VALUE) {
+      return 0;
+    }
+
+    int[][] distanceFromPill = findStaticDistances(furyPill);
+    int shitValue = Math.min(hero.getStonesCount(), Mechanics.FURY_LENGTH - getTrueLength(hero));
+    int surroundStones = (int) game.getStones().stream()
+        .filter(s -> distanceFromPill[s.getX()][s.getY()] <= Mechanics.FURY_LENGTH / 2).count();
+    int surroundValue = Math.min(3, surroundStones);
+
+    // set 10 as base value if we're the closest
+    return 10 + Mechanics.STONE_REWARD * Math.max(shitValue, surroundValue);
+  }
+
+  Direction getDirectionAtDestination(Hero hero, Point dest) {
+    int[][] distances = getDynamicDistances(hero);
+    int[][] acc = getAccumulatedValues(hero);
+
+    Point bestP = null;
+    Direction bestDirection = null;
+    for (Direction d : Direction.onlyDirections()) {
+      Point newP = dest.copy();
+      newP.change(d);
+
+      if (distances[newP.getX()][newP.getY()] == distances[dest.getX()][dest.getY()] - 1) {
+        if (bestP == null || acc[newP.getX()][newP.getY()] > acc[bestP.getX()][bestP.getY()]) {
+          bestP = newP;
+          bestDirection = d.inverted();
+        }
+      }
+    }
+
+    return bestDirection;
+  }
+
+  private int getEnemyTailLengthAt(Hero excludeHero, Point point, int inRounds) {
+    return getAliveActiveEnemies(excludeHero).filter(e -> e.getFlyingCount() <= inRounds)
+        .mapToInt(e -> Mechanics.getTrueBodyIndex(e, point) - inRounds).max().orElse(0);
   }
 
   double[][] getDistanceAdjustedValues(Hero hero) {
@@ -319,7 +418,7 @@ public class Analysis {
       Point meetingPoint = enemy.head().copy();
       int distanceFromEnemy = 0;
 
-      while (!meetingPoint.isOutOf(game.size())) {
+      while (!meetingPoint.isOutOf(game.size()) && distanceFromEnemy < 8) {
         meetingPoint.change(enemyDirection);
         ++distanceFromEnemy;
         int distanceFromHero = heroDistances[meetingPoint.getX()][meetingPoint.getY()];
@@ -342,7 +441,7 @@ public class Analysis {
         Comparator.comparingInt(p -> heroDistances[p.getPoint().getX()][p.getPoint().getY()]));
   }
 
-  protected Stream<Point> getBarriers() {
+  protected Stream<Point> getBarrierObjects() {
     return Stream.concat(game.getWalls().stream(), game.getStarts().stream());
   }
 
@@ -410,8 +509,8 @@ public class Analysis {
 
   private Hero getDynamicClosestHero(Point point) {
     return getAliveActiveHeroes().min((h1, h2) -> {
-      int dist1 = getDynamicDistances(h1)[point.getX()][point.getY()];
-      int dist2 = getDynamicDistances(h1)[point.getX()][point.getY()];
+      int dist1 = getDynamicDistanceToPoint(h1, point);
+      int dist2 = getDynamicDistanceToPoint(h2, point);
       int cmp = Integer.compare(dist1, dist2);
 
       if (cmp == 0) {
@@ -424,6 +523,20 @@ public class Analysis {
 
   private List<Point> getHeadThreatSpear(Hero hero, int radius) {
     int[][] distances = getStaticDistances(hero);
+    List<Point> result = new ArrayList<>();
+    for (int x = 0; x < game.size(); x++) {
+      for (int y = 0; y < game.size(); y++) {
+        if (distances[x][y] <= radius) {
+          result.add(PointImpl.pt(x, y));
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private List<Point> getThreatRadius(Point point, int radius) {
+    int[][] distances = Algorithms.findStaticDistances(getBarriers(), point, null);
     List<Point> result = new ArrayList<>();
     for (int x = 0; x < game.size(); x++) {
       for (int y = 0; y < game.size(); y++) {

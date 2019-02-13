@@ -38,8 +38,8 @@ public class Algorithms {
       Point point = q.remove();
 
       for (Direction nextDirection : Direction.onlyDirections()) {
-        if (distances[point.getX()][point.getY()] == 0
-            && nextDirection == fromDirection.inverted()) {
+        if (distances[point.getX()][point.getY()] == 0 &&
+            fromDirection == nextDirection.inverted()) {
           // can't turn backwards on the first step of a search
           continue;
         }
@@ -47,7 +47,8 @@ public class Algorithms {
         Point nextPoint = point.copy();
         nextPoint.change(nextDirection);
 
-        if (!staticObstacles[nextPoint.getX()][nextPoint.getY()]
+        if (!nextPoint.isOutOf(distances.length)
+            && !staticObstacles[nextPoint.getX()][nextPoint.getY()]
             && distances[point.getX()][point.getY()] + 1
             < distances[nextPoint.getX()][nextPoint.getY()]) {
           q.add(nextPoint);
