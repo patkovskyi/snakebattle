@@ -21,10 +21,11 @@ public class GreedyAnalysis extends Analysis {
 
     String targetType = getTargetPointType(target);
     int value = getValues(getMyHero())[target.getX()][target.getY()];
+    int accValue = getAccumulatedValues(getMyHero())[target.getX()][target.getY()];
     int distance = getDynamicDistances(getMyHero())[target.getX()][target.getY()];
 
-    System.out.printf("Heading to: [%d %d] (%s | value = %d | distance = %d)\n\n",
-        target.getX(), target.getY(), targetType, value, distance);
+    System.out.printf("Heading to: [%d %d] (%s | value = %d | acc.value = %d | distance = %d)\n\n",
+        target.getX(), target.getY(), targetType, value, accValue, distance);
 
     printHeroAnalytics();
 
