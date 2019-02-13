@@ -36,7 +36,7 @@ public class MySolver implements Solver<MyBoard> {
     System.out.printf("TICK %d\n", GameHelper.getTick(game));
     Hero me = game.getHeroes().get(0);
     List<Hero> heroesOnBoard =
-        game.getHeroes().stream().filter(h -> isOnBoard(h, game)).collect(Collectors.toList());
+        game.getHeroes().stream().filter(h -> !h.isOutOf(game.size())).collect(Collectors.toList());
 
     boolean meDead = !me.isAlive();
     boolean allDead = heroesOnBoard.stream().allMatch(h -> !h.isAlive());
@@ -56,10 +56,6 @@ public class MySolver implements Solver<MyBoard> {
         System.out.println("ROUND LOST (I died, someone survived)");
       }
     }
-  }
-
-  private static boolean isOnBoard(Hero hero, SnakeBoard game) {
-    return !hero.isOutOf(game.size());
   }
 
   @Override
