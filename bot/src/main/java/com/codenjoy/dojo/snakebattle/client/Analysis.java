@@ -30,6 +30,7 @@ public abstract class Analysis {
   private final Map<Hero, int[][]> values;
   private final Map<Hero, double[][]> distanceAdjustedValues;
   private final Map<Hero, int[][]> accumulatedValues;
+  private final Map<Hero, double[][]> accumulatedDistanceAdjustedValues;
   private final Map<Hero, double[][]> closestAdjustedValues;
 
   protected Analysis(SnakeBoard game) {
@@ -42,13 +43,10 @@ public abstract class Analysis {
     distanceAdjustedValues = new HashMap<>();
     accumulatedValues = new HashMap<>();
     closestAdjustedValues = new HashMap<>();
+    accumulatedDistanceAdjustedValues = new HashMap<>();
   }
 
   public abstract HeroAction findBestAction();
-
-  public boolean hasRoundStarted() {
-    return getMyHero().isActive();
-  }
 
   boolean[][] getStaticObstacles(Hero hero) {
     return staticObstacles.computeIfAbsent(hero, h -> {
@@ -210,24 +208,31 @@ public abstract class Analysis {
   }
 
   double[][] getDistanceAdjustedValues(Hero hero) {
-    return distanceAdjustedValues.computeIfAbsent(hero, h -> {
-      int[][] values = getValues(hero);
-      int[][] distances = getDynamicDistances(hero);
-      double[][] result = new double[game.size()][game.size()];
-
-      for (int x = 0; x < game.size(); x++) {
-        for (int y = 0; y < game.size(); y++) {
-          result[x][y] = values[x][y] / (double) distances[x][y];
-        }
-      }
-
-      return result;
-    });
+    return distanceAdjustedValues.computeIfAbsent(hero, h ->
+        makeDynamicDistanceAdjustment(hero, getValues(hero)));
   }
 
   int[][] getAccumulatedValues(Hero hero) {
     return accumulatedValues.computeIfAbsent(hero,
         h -> Algorithms.findAccumulatedValues(getDynamicDistances(hero), getValues(hero)));
+  }
+
+  double[][] getAccumulatedDistanceAdjustedValues(Hero hero) {
+    return accumulatedDistanceAdjustedValues.computeIfAbsent(hero,
+        h -> makeDynamicDistanceAdjustment(hero, getAccumulatedValues(hero)));
+  }
+
+  private double[][] makeDynamicDistanceAdjustment(Hero hero, int[][] values) {
+    double[][] result = new double[game.size()][game.size()];
+    int[][] distances = getDynamicDistances(hero);
+
+    for (int x = 0; x < game.size(); x++) {
+      for (int y = 0; y < game.size(); y++) {
+        result[x][y] = values[x][y] / (double) distances[x][y];
+      }
+    }
+
+    return result;
   }
 
   protected Stream<Point> getBarriers() {
@@ -366,9 +371,7 @@ public abstract class Analysis {
 
       int cmp = 0;
 
-      if (o1Fury && o2Fury) {
-        cmp = Integer.compare(o2.getFuryCount(), o1.getFuryCount());
-      } else if (o1Fury && !o2Fury) {
+      if (o1Fury && !o2Fury) {
         cmp = -1;
       } else if (!o1Fury && o2Fury) {
         cmp = 1;
