@@ -900,6 +900,8 @@ public class AnalysisTest {
         + "☼☼☼☼☼☼");
 
     GreedyAnalysis ga = new GreedyAnalysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(values[2][3], 70);
     Assert.assertEquals(HeroAction.DOWN, ga.findBestAction());
   }
 
@@ -914,6 +916,8 @@ public class AnalysisTest {
         + "☼☼☼☼☼☼");
 
     GreedyAnalysis ga = new GreedyAnalysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(values[2][3], 0);
     Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
   }
 
@@ -929,6 +933,8 @@ public class AnalysisTest {
 
     hero.setFuryCount(3);
     GreedyAnalysis ga = new GreedyAnalysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(values[3][4], 70);
     Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
   }
 
