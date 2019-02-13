@@ -27,6 +27,7 @@ public abstract class Analysis {
   private final Map<Hero, boolean[][]> dynamicObstacles;
   private final Map<Hero, int[][]> staticDistances;
   private final Map<Hero, int[][]> dynamicDistances;
+
   private final Map<Hero, int[][]> values;
   private final Map<Hero, double[][]> distanceAdjustedValues;
   private final Map<Hero, int[][]> accumulatedValues;

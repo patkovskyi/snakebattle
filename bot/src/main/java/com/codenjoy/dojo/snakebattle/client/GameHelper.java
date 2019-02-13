@@ -69,18 +69,22 @@ public class GameHelper {
       }
     }
 
-    System.out.printf("TICK %d\n", tick);
-
-    if (game.getHeroes().stream().noneMatch(h -> h.isAlive())) {
-      System.out.println("ROUND DRAW");
-    } else if (!game.getHeroes().get(0).isAlive() &&
-        game.getHeroes().stream().anyMatch(h -> h.isAlive())) {
-      System.out.println("ROUND LOST");
-    } else if (game.getHeroes().stream().filter(h -> h.isAlive()).count() == 1) {
-      System.out.println("ROUND WON");
-    }
+    printRoundStatus(game);
 
     return game;
+  }
+
+  private static void printRoundStatus(SnakeBoard game) {
+    System.out.printf("TICK %d\n", GameHelper.getTick(game));
+
+//    if (game.getHeroes().stream().noneMatch(h -> h.isAlive())) {
+//      System.out.println("ROUND DRAW");
+//    } else if (!game.getHeroes().get(0).isAlive() &&
+//        game.getHeroes().stream().anyMatch(h -> h.isAlive())) {
+//      System.out.println("ROUND LOST");
+//    } else if (game.getHeroes().stream().filter(h -> h.isAlive() && h.isActive()).count() == 1) {
+//      System.out.println("ROUND WON");
+//    }
   }
 
   public static int getManhattanDistance(Point p1, Point p2) {
@@ -137,29 +141,30 @@ public class GameHelper {
       // simply activate heroes and return the same board
       game.getHeroes().forEach(h -> h.setActive(true));
       if (gameAsString(game).equals(expectedBoard.boardAsString())) {
-        System.out.println("SUCCESS activating heroes");
+        System.out.println("continueGame: SUCCESS activating heroes");
       } else {
-        System.out.println("FAIL activating heroes");
+        System.out.println("continueGame: FAIL activating heroes");
       }
 
       copyObjectsFromBoardToGame(game, expectedBoard);
       return game;
     }
 
-    List<Hero> heroes =
+    List<Hero> trackedAliveHeroes =
         game.getHeroes().stream().filter(h -> h.isAlive()).collect(Collectors.toList());
 
-    if (expectedBoard.get(Elements.HEAD_DEAD, Elements.ENEMY_HEAD_DEAD).size() == heroes.size()) {
+    if (expectedBoard.get(Elements.HEAD_DEAD, Elements.ENEMY_HEAD_DEAD).size() == trackedAliveHeroes
+        .size()) {
       // round ended by timeout
-      System.out.println("ROUND ENDED");
-      heroes.forEach(h -> h.setAlive(false));
+      System.out.println("continueGame: round ended by timeout");
+      trackedAliveHeroes.forEach(h -> h.setAlive(false));
       return game;
     }
 
     List<Integer[]> permutations = new ArrayList<>();
-    getPermutations(new Integer[heroes.size()], permutations, 0, 3);
+    getPermutations(new Integer[trackedAliveHeroes.size()], permutations, 0, 3);
     System.out.printf(
-        "Found %d permutations for %d players.", permutations.size(), heroes.size());
+        "Found %d permutations for %d players.", permutations.size(), trackedAliveHeroes.size());
 
     int skipped = 0;
 
@@ -169,9 +174,9 @@ public class GameHelper {
       Integer[] actions = permutations.get(i);
       // check if this might be The One
       boolean theOne = true;
-      for (int j = 0; j < heroes.size(); j++) {
-        Point head = heroes.get(j).head().copy();
-        Direction newDirection = heroes.get(j).getRelativeDirection(actions[j]);
+      for (int j = 0; j < trackedAliveHeroes.size(); j++) {
+        Point head = trackedAliveHeroes.get(j).head().copy();
+        Direction newDirection = trackedAliveHeroes.get(j).getRelativeDirection(actions[j]);
         head.change(newDirection);
         if (head.isOutOf(expectedBoard.size())) {
           theOne = false;

@@ -22,14 +22,10 @@ public class GreedyAnalysis extends Analysis {
     int value = getValues(getMyHero())[target.getX()][target.getY()];
     int distance = getDynamicDistances(getMyHero())[target.getX()][target.getY()];
 
-    System.out.printf("Heading to: [%d %d] (%s | value = %d | distance = %d)\n",
+    System.out.printf("Heading to: [%d %d] (%s | value = %d | distance = %d)\n\n",
         target.getX(), target.getY(), targetType, value, distance);
 
-    System.out
-        .printf("Hero head: [%d %d] (dir = %s, length = %d, alive = %s)\n",
-            getMyHero().head().getX(), getMyHero().head().getY(),
-            getMyHero().getDirection(), Mechanics.getTrueLength(getMyHero()),
-            getMyHero().isAlive());
+    printHeroAnalytics();
 
     if (getMyHero().isAlive()) {
       int addAction = 0;
@@ -37,10 +33,23 @@ public class GreedyAnalysis extends Analysis {
         addAction = 4;
         getMyHero().reduceStoneCount();
       }
-
       return HeroAction.valueOf(addAction + findFirstStepTo(getMyHero(), target).value());
     } else {
       return HeroAction.valueOf(getMyHero().getDirection().value());
+    }
+  }
+
+  private void printHeroAnalytics() {
+    for (int i = 0; i < game.getHeroes().size(); i++) {
+      Hero hero = game.getHeroes().get(i);
+      System.out
+          .printf(
+              "Hero[%d] head: [%d %d] (dir = %s, length = %d, stones = %d, fury = %d, flight = %d, alive = %s, active = %s)\n",
+              i,
+              hero.head().getX(), hero.head().getY(),
+              hero.getDirection(), Mechanics.getTrueLength(hero), hero.getStonesCount(),
+              hero.getFuryCount(), hero.getFlyingCount(),
+              hero.isAlive(), hero.isActive());
     }
   }
 
