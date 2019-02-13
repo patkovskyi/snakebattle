@@ -81,7 +81,7 @@ public class GameHelper {
     List<Hero> heroesOnBoard =
         game.getHeroes().stream().filter(h -> isOnBoard(h, game)).collect(Collectors.toList());
 
-    if (heroesOnBoard.size() == 0 || heroesOnBoard.stream().allMatch(h -> !h.isAlive())) {
+    if (heroesOnBoard.size() == 0) {
       System.out.println("ROUND DRAW");
     } else if (!heroesOnBoard.contains(me)){
       System.out.println("ROUND LOST");
