@@ -77,14 +77,25 @@ public class GameHelper {
   private static void printRoundStatus(SnakeBoard game) {
     System.out.printf("TICK %d\n", GameHelper.getTick(game));
 
-//    if (game.getHeroes().stream().noneMatch(h -> h.isAlive())) {
-//      System.out.println("ROUND DRAW");
-//    } else if (!game.getHeroes().get(0).isAlive() &&
-//        game.getHeroes().stream().anyMatch(h -> h.isAlive())) {
-//      System.out.println("ROUND LOST");
-//    } else if (game.getHeroes().stream().filter(h -> h.isAlive() && h.isActive()).count() == 1) {
-//      System.out.println("ROUND WON");
-//    }
+    Hero me = game.getHeroes().get(0);
+    List<Hero> heroesOnBoard =
+        game.getHeroes().stream().filter(h -> isOnBoard(h, game)).collect(Collectors.toList());
+
+    if (heroesOnBoard.size() == 0 || heroesOnBoard.stream().allMatch(h -> !h.isAlive())) {
+      System.out.println("ROUND DRAW");
+    } else if (!heroesOnBoard.contains(me)){
+      System.out.println("ROUND LOST");
+    } else if (heroesOnBoard.size() == 1 && heroesOnBoard.contains(me)) {
+      System.out.println("ROUND WON");
+    }
+  }
+
+  private static boolean isOnBoard(Hero hero, SnakeBoard game) {
+    return !hero.head().isOutOf(game.size());
+  }
+
+  private static Hero getMyHero(SnakeBoard game) {
+    return game.getHeroes().get(0);
   }
 
   public static int getManhattanDistance(Point p1, Point p2) {
