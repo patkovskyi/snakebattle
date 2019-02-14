@@ -29,7 +29,6 @@ import java.net.URI;
 public class Main {
 
   public static void main(String[] args) throws IOException {
-    // WebSocketRunner.runClient("https://192.168.1.1:8080/codenjoy-contest/board/player/patkovskyi@gmail.com?code=6001978481505125210",
 //    WebSocketRunner.runClient(
 //        "https://game3.epam-bot-challenge.com.ua/codenjoy-contest/board/player/pzpz4ael0yhbfcvoghei?code=7636115390628474462",
 //        new MySolver(),
