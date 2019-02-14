@@ -33,6 +33,8 @@ public class Analysis {
   private final Map<Hero, double[][]> distanceAdjustedValues;
   private final Map<Hero, int[][]> accumulatedValues;
   private final Map<Hero, double[][]> accumulatedDistanceAdjustedValues;
+  private final Map<Hero, Optional<Point>> assumedTarget;
+  // not used
   private final Map<Hero, double[][]> closestAdjustedValues;
   private boolean[][] barriers;
 
@@ -47,6 +49,7 @@ public class Analysis {
     accumulatedValues = new HashMap<>();
     closestAdjustedValues = new HashMap<>();
     accumulatedDistanceAdjustedValues = new HashMap<>();
+    assumedTarget = new HashMap<>();
   }
 
   public HeroAction findBestAction() {
@@ -295,15 +298,43 @@ public class Analysis {
         }
       });
 
+      // set 0 value to targets of other heroes if they are closer to them
+      getAliveActiveEnemies(hero).forEach(enemy -> {
+        Optional<Point> assumedTarget = getAssumedTarget(enemy);
+        if (assumedTarget.isPresent()) {
+          Point p = assumedTarget.get();
+          if (values[p.getX()][p.getY()] > 0) {
+            int distanceFromMe = getDynamicDistanceTo(hero, p);
+            int distanceFromEnemy = getStaticDistanceTo(enemy, p);
+
+            if (distanceFromEnemy < distanceFromMe
+                || distanceFromEnemy == distanceFromMe
+                && !Mechanics.wouldWinHeadToHead(hero, enemy, distanceFromEnemy)
+                || distanceFromEnemy - distanceFromMe == 1
+                && Mechanics.wouldWinHeadToHead(enemy, hero, distanceFromEnemy)) {
+              values[p.getX()][p.getY()] = 0;
+            } else if (Mechanics.wouldWinHeadToHead(hero, enemy, distanceFromEnemy)) {
+              // bump value if we can actually kill an enemy this way or steal his valuable
+              values[p.getX()][p.getY()] *= 2;
+            }
+          }
+        }
+      });
+
       return values;
     });
   }
 
-  private boolean isDynamicReachable(Hero hero, Point point) {
-    return getDynamicDistanceToPoint(hero, point) < Integer.MAX_VALUE;
+  private int getStaticDistanceTo(Hero hero, Point point) {
+    int[][] distance = getStaticDistances(hero);
+    return distance[point.getX()][point.getY()];
   }
 
-  private int getDynamicDistanceToPoint(Hero hero, Point point) {
+  private boolean isDynamicReachable(Hero hero, Point point) {
+    return getDynamicDistanceTo(hero, point) < Integer.MAX_VALUE;
+  }
+
+  private int getDynamicDistanceTo(Hero hero, Point point) {
     int[][] dynDistances = getDynamicDistances(hero);
     return dynDistances[point.getX()][point.getY()];
   }
@@ -389,6 +420,20 @@ public class Analysis {
   int[][] getAccumulatedValues(Hero hero) {
     return accumulatedValues.computeIfAbsent(hero,
         h -> Algorithms.findAccumulatedValues(getDynamicDistances(hero), getValues(hero)));
+  }
+
+  // assumption that enemy is dumb and moves to his closest (by static distance) value target
+  Optional<Point> getAssumedTarget(Hero hero) {
+    return assumedTarget.computeIfAbsent(hero, h -> {
+      Stream<Point> valuables = getValuableObjects(hero);
+      return valuables.min(Comparator.comparingInt(p -> getStaticDistanceTo(hero, p)));
+    });
+  }
+
+  private Stream<Point> getValuableObjects(Hero hero) {
+    // for now only think about apples, gold and fury pills
+    return Stream.concat(game.getGold().stream(),
+        Stream.concat(game.getApples().stream(), game.getFuryPills().stream()));
   }
 
   double[][] getAccumulatedDistanceAdjustedValues(Hero hero) {
@@ -511,8 +556,8 @@ public class Analysis {
 
   private Hero getDynamicClosestHero(Point point) {
     return getAliveActiveHeroes().min((h1, h2) -> {
-      int dist1 = getDynamicDistanceToPoint(h1, point);
-      int dist2 = getDynamicDistanceToPoint(h2, point);
+      int dist1 = getDynamicDistanceTo(h1, point);
+      int dist2 = getDynamicDistanceTo(h2, point);
       int cmp = Integer.compare(dist1, dist2);
 
       if (cmp == 0) {

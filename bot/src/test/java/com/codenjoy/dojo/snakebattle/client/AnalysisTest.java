@@ -1055,8 +1055,8 @@ public class AnalysisTest {
     newGame("☼☼☼☼☼☼☼☼"
         + "☼   ☼  ☼"
         + "☼╘► ☼  ☼"
-        + "☼  ˄   ☼"
-        + "☼  ¤☼  ☼"
+        + "☼    ˄ ☼"
+        + "☼   ☼¤ ☼"
         + "☼   ☼  ☼"
         + "☼○  ☼  ☼"
         + "☼☼☼☼☼☼☼☼");
@@ -1069,18 +1069,139 @@ public class AnalysisTest {
   @Test
   public void appleHighValueWhenLateGame() {
     newGame("☼☼☼☼☼☼☼☼"
-        + "☼   ☼  ☼"
+        + "☼ ○ ☼  ☼"
         + "☼╘► ☼  ☼"
         + "☼  ˄   ☼"
         + "☼  ¤☼  ☼"
         + "☼   ☼  ☼"
-        + "☼○  ☼  ☼"
+        + "☼   ☼  ☼"
         + "☼☼☼☼☼☼☼☼");
 
     GameHelper.setTick(220);
     Analysis ga = new Analysis(game);
     int[][] values = ga.getValues(hero);
-    Assert.assertEquals(21, values[1][1]);
+    Assert.assertEquals(21, values[2][6]);
+  }
+
+  @Test
+  public void doPutValueOnAppleIfWereCloserEvenByOne() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼     ○☼"
+        + "☼╘►    ☼"
+        + "☼  ○   ☼"
+        + "☼   ☼  ☼"
+        + "☼   ☼˄ ☼"
+        + "☼   ☼¤ ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    Analysis ga = new Analysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertTrue(values[3][4] > 0);
+    assertMove(HeroAction.DOWN);
+  }
+
+  @Test
+  public void dontPutValueOnAppleIfItsEnemiesClosest() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼     ○☼"
+        + "☼╘►    ☼"
+        + "☼      ☼"
+        + "☼  ○☼  ☼"
+        + "☼  ˄☼  ☼"
+        + "☼  ¤☼  ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    Analysis ga = new Analysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(0, values[3][3]);
+    assertMove(HeroAction.UP);
+  }
+
+  @Test
+  public void dontPutValueOnGoldIfItsEnemiesClosestAndWeCantBeat1() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼$     ☼"
+        + "☼╘►    ☼"
+        + "☼   $  ☼"
+        + "☼   ☼  ☼"
+        + "☼   ☼˄ ☼"
+        + "☼   ☼¤ ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    Analysis ga = new Analysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(0, values[4][4]);
+    assertMove(HeroAction.UP);
+  }
+
+  @Test
+  public void dontPutValueOnGoldIfItsEnemiesClosestAndWeCantBeat2() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼$     ☼"
+        + "☼╘♥    ☼"
+        + "☼   $  ☼"
+        + "☼   ☼  ☼"
+        + "☼   ☼˄ ☼"
+        + "☼   ☼¤ ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    Analysis ga = new Analysis(game);
+    hero.setFuryCount(3);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(0, values[4][4]);
+    assertMove(HeroAction.UP);
+  }
+
+  @Test
+  public void dontPutValueOnGoldIfWereCloserByOneButEnemyCanKill() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼$     ☼"
+        + "☼╘►    ☼"
+        + "☼  $   ☼"
+        + "☼   ☼˄æ☼"
+        + "☼   ☼└┘☼"
+        + "☼   ☼  ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    Analysis ga = new Analysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(0, values[3][4]);
+    assertMove(HeroAction.UP);
+  }
+
+  @Test
+  public void putDoubleValueIfWeReachThePointSameMomentAndCanBeat() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼$     ☼"
+        + "☼╘♥    ☼"
+        + "☼   $  ☼"
+        + "☼   ☼  ☼"
+        + "☼   ☼˄ ☼"
+        + "☼   ☼¤ ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    Analysis ga = new Analysis(game);
+    hero.setFuryCount(4);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(2 * Mechanics.GOLD_REWARD, values[4][4]);
+    assertMove(HeroAction.RIGHT);
+  }
+
+  @Test
+  public void putDoubleValueIfWeReachThePointSameMomentAndCanBeat2() {
+    newGame("☼☼☼☼☼☼☼☼"
+        + "☼$     ☼"
+        + "☼╔►    ☼"
+        + "☼║  $  ☼"
+        + "☼╙  ☼  ☼"
+        + "☼   ☼˄ ☼"
+        + "☼   ☼¤ ☼"
+        + "☼☼☼☼☼☼☼☼");
+
+    Analysis ga = new Analysis(game);
+    int[][] values = ga.getValues(hero);
+    Assert.assertEquals(2 * Mechanics.GOLD_REWARD, values[4][4]);
+    assertMove(HeroAction.RIGHT);
   }
 
   @Test
