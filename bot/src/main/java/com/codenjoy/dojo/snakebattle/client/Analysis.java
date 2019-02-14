@@ -187,7 +187,8 @@ public class Analysis {
 
       // APPLES - higher value in late game, higher value if I'm smaller
       boolean imLongest = getAliveActiveEnemies(hero).allMatch(enemy ->
-          getTrueLength(enemy) < getTrueLength(hero) - 8);
+          Mechanics.muchLonger(hero, enemy));
+
       game.getApples().forEach(p ->
           values[p.getX()][p.getY()] =
               Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 10 : 0) + (imLongest ? 0

@@ -101,6 +101,6 @@ public class Mechanics {
   }
 
   static boolean muchLonger(Hero hero, Hero enemy) {
-    return getTrueLength(hero) - 6 >= getTrueLength(enemy);
+    return getTrueLength(hero) - 5 >= getTrueLength(enemy);
   }
 }
