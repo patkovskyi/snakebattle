@@ -307,14 +307,14 @@ public class Analysis {
       });
 
       // straight line enemy interception
-//      Optional<MeetingPoint> interceptPoint = findClosestInterceptPoint(hero);
-//      if (interceptPoint.isPresent()) {
-//        Point p = interceptPoint.get().getPoint();
-//        Hero enemy = interceptPoint.get().getEnemy();
-//        values[p.getX()][p.getY()] +=
-//            (Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
-//                .getTrueLength(enemy)) / 2; // divide by 2 because this is less likely then next one
-//      }
+      Optional<MeetingPoint> interceptPoint = findClosestInterceptPoint(hero);
+      if (interceptPoint.isPresent()) {
+        Point p = interceptPoint.get().getPoint();
+        Hero enemy = interceptPoint.get().getEnemy();
+        values[p.getX()][p.getY()] +=
+            (Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
+                .getTrueLength(enemy)) / 4; // divide by 4 because this is less likely then next one
+      }
 
       // FURY HEAD SPEAR - negative values
       getAliveActiveEnemies(hero).filter(e -> e.getFuryCount() > 1).forEach(e -> {
@@ -567,7 +567,7 @@ public class Analysis {
       Point meetingPoint = enemy.head().copy();
       int distanceFromEnemy = 0;
 
-      while (!meetingPoint.isOutOf(game.size()) && distanceFromEnemy < 8) {
+      while (!meetingPoint.isOutOf(game.size()) && distanceFromEnemy < 20) {
         meetingPoint.change(enemyDirection);
         ++distanceFromEnemy;
         int distanceFromHero = heroDistances[meetingPoint.getX()][meetingPoint.getY()];
