@@ -975,10 +975,7 @@ public class AnalysisTest {
         + "☼ ¤  ☼"
         + "☼☼☼☼☼☼");
 
-    Analysis ga = new Analysis(game);
-    int[][] values = ga.getValues(hero);
-    Assert.assertEquals(70, values[2][3]);
-    Assert.assertEquals(HeroAction.DOWN, ga.findBestAction());
+    assertMove(HeroAction.DOWN);
   }
 
   @Test
@@ -1008,10 +1005,7 @@ public class AnalysisTest {
         + "☼☼☼☼☼☼");
 
     hero.setFuryCount(3);
-    Analysis ga = new Analysis(game);
-    int[][] values = ga.getValues(hero);
-    Assert.assertEquals(values[3][4], 70);
-    Assert.assertEquals(HeroAction.RIGHT, ga.findBestAction());
+    assertMove(HeroAction.DOWN);
   }
 
   @Test
@@ -1199,8 +1193,8 @@ public class AnalysisTest {
     Analysis ga = new Analysis(game);
     hero.setFuryCount(4);
     int[][] values = ga.getValues(hero);
-    Assert.assertEquals(2 * Mechanics.GOLD_REWARD, values[4][4]);
-    assertMove(HeroAction.RIGHT);
+    Assert.assertTrue(values[4][4] >= 2 * Mechanics.GOLD_REWARD);
+    assertMove(HeroAction.DOWN);
   }
 
   @Test
@@ -1216,8 +1210,8 @@ public class AnalysisTest {
 
     Analysis ga = new Analysis(game);
     int[][] values = ga.getValues(hero);
-    Assert.assertEquals(2 * Mechanics.GOLD_REWARD, values[4][4]);
-    assertMove(HeroAction.RIGHT);
+    Assert.assertTrue(values[4][4] >= 2 * Mechanics.GOLD_REWARD);
+    assertMove(HeroAction.DOWN);
   }
 
   @Test
@@ -1323,6 +1317,44 @@ public class AnalysisTest {
     hero.setFuryCount(3);
     Analysis ga = new Analysis(game);
     Assert.assertEquals(HeroAction.LEFT, ga.findBestAction());
+  }
+
+  @Test
+  public void smartIntercept() {
+    newGame("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+          + "☼☼                           ☼"
+          + "☼#                           ☼"
+          + "☼☼       ●                   ☼"
+          + "☼☼                           ☼"
+          + "☼☼   ○       ●               ☼"
+          + "☼☼     ☼☼☼☼☼                 ☼"
+          + "☼☼     ☼                     ☼"
+          + "☼#     ☼☼☼        ☼☼☼☼#      ☼"
+          + "☼☼○    ☼          ☼   ☼      ☼"
+          + "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼"
+          + "☼☼                ☼          ☼"
+          + "☼☼                ☼          ☼"
+          + "☼☼    ●                      ☼"
+          + "☼#                           ☼"
+          + "☼☼                           ☼"
+          + "☼☼        ☼☼☼                ☼"
+          + "☼☼       ☼$ ☼                ☼"
+          + "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼"
+          + "☼☼╔╗    ☼   ☼   ● ☼ ☼ ☼ ☼    ☼"
+          + "☼#║╙    ☼   ☼     ☼  ☼  ☼    ☼"
+          + "☼☼║               ☼ ●   ☼    ☼"
+          + "☼☼║    ●   ○      ☼     ☼    ☼"
+          + "☼☼║                          ☼"
+          + "☼☼╚═►                        ☼"
+          + "☼☼ ○              æ          ☼"
+          + "☼#                │●  ©      ☼"
+          + "☼☼            <───┘          ☼"
+          + "☼☼                           ☼"
+          + "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼");
+
+    Analysis a = new Analysis(game);
+    Assert.assertEquals(120, a.getValues(hero)[11][5]);
+    assertMove(HeroAction.RIGHT);
   }
 
   // @formatter:on

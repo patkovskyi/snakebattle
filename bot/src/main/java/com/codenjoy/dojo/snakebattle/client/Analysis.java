@@ -15,11 +15,14 @@ import com.codenjoy.dojo.snakebattle.model.objects.FuryPill;
 import com.codenjoy.dojo.snakebattle.model.objects.Gold;
 import com.codenjoy.dojo.snakebattle.model.objects.Stone;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Stack;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Analysis {
@@ -252,27 +255,6 @@ public class Analysis {
         }
       }));
 
-      // eat my body parts - negative value
-      hero.body().forEach(p -> {
-        int distanceToPart = getDynamicDistanceTo(hero, p);
-        if (distanceToPart > 0 && !Mechanics.canFlyOver(hero, distanceToPart)) {
-          int tailSizeOnCollision = 1 + Mechanics.getTrueBodyIndex(hero, p) - distanceToPart;
-          if (tailSizeOnCollision > 0) {
-            values[p.getX()][p.getY()] -= Mechanics.BLOOD_REWARD_PER_CELL * tailSizeOnCollision;
-          }
-        }
-      });
-
-      // straight line enemy interception
-      Optional<MeetingPoint> interceptPoint = findClosestInterceptPoint(hero);
-      if (interceptPoint.isPresent()) {
-        Point p = interceptPoint.get().getPoint();
-        Hero enemy = interceptPoint.get().getEnemy();
-        values[p.getX()][p.getY()] +=
-            Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
-                .getTrueLength(enemy);
-      }
-
       // FURY - complex, very useful, TODO calculation
       game.getFuryPills().forEach(fpill -> {
         Hero closestHero = getDynamicClosestHero(fpill);
@@ -286,24 +268,6 @@ public class Analysis {
             getThreatRadius(fpill, Mechanics.FURY_LENGTH)
                 .forEach(p -> values[p.getX()][p.getY()] += Mechanics.SOMEWHAT_NEGATIVE);
           }
-        }
-      });
-
-      // FURY HEAD SPEAR - negative values
-      getAliveActiveEnemies(hero).filter(e -> e.getFuryCount() > 1).forEach(e -> {
-        if (!Mechanics.wouldWinHeadToHead(hero, e, e.getFuryCount() - 1)) {
-          List<Point> threatSpear = getHeadThreatSpear(e, e.getFuryCount() - 1);
-          threatSpear.forEach(p ->
-          {
-            // if I can reach this point before his fury runs out
-            if (distances[p.getX()][p.getY()] < e.getFuryCount()) {
-              // and I don't have fury as long as he does and won't win fury collision
-              if (!Mechanics.wouldWinHeadToHead(hero, e, e.getFuryCount() - 1)) {
-                // mark this point as bad
-                values[p.getX()][p.getY()] += Mechanics.SOMEWHAT_NEGATIVE;
-              }
-            }
-          });
         }
       });
 
@@ -329,6 +293,55 @@ public class Analysis {
           }
         }
       });
+
+      // eat my body parts - negative value
+      hero.body().forEach(p -> {
+        int distanceToPart = getDynamicDistanceTo(hero, p);
+        if (distanceToPart > 0 && !Mechanics.canFlyOver(hero, distanceToPart)) {
+          int tailSizeOnCollision = 1 + Mechanics.getTrueBodyIndex(hero, p) - distanceToPart;
+          if (tailSizeOnCollision > 0) {
+            values[p.getX()][p.getY()] -= Mechanics.BLOOD_REWARD_PER_CELL * tailSizeOnCollision;
+          }
+        }
+      });
+
+      // straight line enemy interception
+//      Optional<MeetingPoint> interceptPoint = findClosestInterceptPoint(hero);
+//      if (interceptPoint.isPresent()) {
+//        Point p = interceptPoint.get().getPoint();
+//        Hero enemy = interceptPoint.get().getEnemy();
+//        values[p.getX()][p.getY()] +=
+//            (Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
+//                .getTrueLength(enemy)) / 2; // divide by 2 because this is less likely then next one
+//      }
+
+      // FURY HEAD SPEAR - negative values
+      getAliveActiveEnemies(hero).filter(e -> e.getFuryCount() > 1).forEach(e -> {
+        if (!Mechanics.wouldWinHeadToHead(hero, e, e.getFuryCount() - 1)) {
+          List<Point> threatSpear = getHeadThreatSpear(e, e.getFuryCount() - 1);
+          threatSpear.forEach(p ->
+          {
+            // if I can reach this point before his fury runs out
+            if (distances[p.getX()][p.getY()] < e.getFuryCount()) {
+              // and I don't have fury as long as he does and won't win fury collision
+              if (!Mechanics.wouldWinHeadToHead(hero, e, e.getFuryCount() - 1)) {
+                // mark this point as bad
+                values[p.getX()][p.getY()] += Mechanics.SOMEWHAT_NEGATIVE;
+              }
+            }
+          });
+        }
+      });
+
+      // complex enemy interception
+      Optional<MeetingPoint> smartIntercept = getClosestObjectInterception(hero);
+      if (smartIntercept.isPresent()) {
+        Point p = smartIntercept.get().getPoint();
+        Hero enemy = smartIntercept.get().getEnemy();
+        values[p.getX()][p.getY()] +=
+            Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
+                .getTrueLength(enemy);
+      }
 
       return values;
     });
@@ -356,6 +369,85 @@ public class Analysis {
 
   private int[][] findStaticDistances(Point point) {
     return findStaticDistances(point, null);
+  }
+
+  Optional<MeetingPoint> getClosestObjectInterception(Hero hero) {
+    Optional<MeetingPoint> bestIntercept = Optional.empty();
+
+    for (Hero enemy : getAliveActiveEnemies(hero).collect(Collectors.toList())) {
+      Optional<Point> intercept = interceptOnPathToTarget(hero, enemy);
+
+      if (intercept.isPresent()) {
+        if (bestIntercept.isEmpty() ||
+            bestIntercept.isPresent() &&
+                getDynamicDistanceTo(hero, intercept.get()) <
+                    getDynamicDistanceTo(hero, bestIntercept.get().getPoint())) {
+          bestIntercept = Optional.of(new MeetingPoint(intercept.get(), enemy));
+        }
+      }
+    }
+
+    return bestIntercept;
+  }
+
+  Optional<Point> interceptOnPathToTarget(Hero hero, Hero enemy) {
+    Collection<Point> enemyPath = getChaseOptimisticPathToAssumedTarget(enemy, hero);
+    Optional<Point> intercept = Optional.empty();
+
+    if (!enemyPath.isEmpty()) {
+      int bestInterceptDistance = Integer.MAX_VALUE;
+
+      for (Point p : enemyPath) {
+        int myDistance = getDynamicDistanceTo(hero, p);
+        int enemyDistance = getStaticDistanceTo(enemy, p);
+        int ticksToCollision = Math.max(myDistance, enemyDistance);
+
+        if (myDistance > 0 && myDistance < bestInterceptDistance
+            && enemyDistance > 0 && Math.abs(myDistance - enemyDistance) <= 1
+            && Mechanics.wouldWinHeadToHead(hero, enemy, ticksToCollision)) {
+          bestInterceptDistance = myDistance;
+          intercept = Optional.of(p);
+        }
+      }
+    }
+
+    return intercept;
+  }
+
+  private Collection<Point> getChaseOptimisticPathToAssumedTarget(Hero hero, Hero chaser) {
+    Optional<Point> assumedEnemyTarget = getAssumedTarget(hero);
+    Stack<Point> result = new Stack<>();
+    if (assumedEnemyTarget.isPresent()) {
+      Point target = assumedEnemyTarget.get();
+      int[][] distances = getStaticDistances(hero);
+      int[][] chaserDist = getStaticDistances(chaser);
+
+      Point head = hero.head();
+      Point bestP = target;
+
+      do {
+        result.push(bestP);
+        target = bestP;
+        bestP = null;
+        for (Direction d : Direction.onlyDirections()) {
+          Point newP = target.copy();
+          newP.change(d);
+
+          if (distances[newP.getX()][newP.getY()] == distances[target.getX()][target.getY()] - 1) {
+            if (newP.equals(head)) {
+              return result;
+            }
+
+            if (bestP == null ||
+                chaserDist[newP.getX()][newP.getY()] < chaserDist[bestP.getX()][bestP.getY()]) {
+              bestP = newP;
+            }
+          }
+        }
+      } while (bestP != null);
+    }
+
+    return result;
   }
 
   // this assumes closeness calculation was done before
