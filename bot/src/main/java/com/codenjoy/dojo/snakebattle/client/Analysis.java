@@ -137,8 +137,8 @@ public class Analysis {
               case PossibleStone:
                 // assume that enemy drops a stone at his tail
                 // TODO: this is more like a negative value than obstacle
-                if (hero != enemy) {
-                  dynObstacles[p.getX()][p.getY()] |= !Mechanics.canPassStone(hero, 1);
+                if (hero != enemy && hero.getFuryCount() <= roundsToPoint) {
+                  dynObstacles[p.getX()][p.getY()] |= true;
                 }
                 break;
             }
@@ -301,20 +301,10 @@ public class Analysis {
         if (distanceToPart > 0 && !Mechanics.canFlyOver(hero, distanceToPart)) {
           int tailSizeOnCollision = 1 + Mechanics.getTrueBodyIndex(hero, p) - distanceToPart;
           if (tailSizeOnCollision > 0) {
-            values[p.getX()][p.getY()] -= Mechanics.BLOOD_REWARD_PER_CELL * tailSizeOnCollision;
+            values[p.getX()][p.getY()] -= 10 * Mechanics.BLOOD_REWARD_PER_CELL * tailSizeOnCollision;
           }
         }
       });
-
-      // straight line enemy interception
-      Optional<MeetingPoint> interceptPoint = findClosestInterceptPoint(hero);
-      if (interceptPoint.isPresent()) {
-        Point p = interceptPoint.get().getPoint();
-        Hero enemy = interceptPoint.get().getEnemy();
-        values[p.getX()][p.getY()] +=
-            (Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
-                .getTrueLength(enemy)) / 4; // divide by 4 because this is less likely then next one
-      }
 
       // FURY HEAD SPEAR - negative values
       getAliveActiveEnemies(hero).filter(e -> e.getFuryCount() > 1).forEach(e -> {
@@ -334,6 +324,16 @@ public class Analysis {
         }
       });
 
+      // straight line enemy interception
+      Optional<MeetingPoint> interceptPoint = findClosestInterceptPoint(hero);
+      if (interceptPoint.isPresent()) {
+        Point p = interceptPoint.get().getPoint();
+        Hero enemy = interceptPoint.get().getEnemy();
+        values[p.getX()][p.getY()] +=
+            (Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
+                .getTrueLength(enemy)) / 4; // divide by 4 because this is less likely then next one
+      }
+
       // complex enemy interception
       Optional<MeetingPoint> smartIntercept = getClosestObjectInterception(hero);
       if (smartIntercept.isPresent()) {
@@ -343,6 +343,31 @@ public class Analysis {
             Mechanics.ROUND_REWARD + Mechanics.BLOOD_REWARD_PER_CELL * Mechanics
                 .getTrueLength(enemy);
       }
+
+      boolean lastEnemy = getAliveActiveHeroes().count() == 2;
+      getAliveActiveEnemies(hero).forEach(enemy -> {
+        Optional<Point> target = getAssumedTarget(enemy);
+        if (target.isPresent()) {
+          Point p = target.get();
+          int myDistanceToTarget = getDynamicDistanceTo(hero, p);
+          int hisDistanceToTarget = getStaticDistanceTo(enemy, p);
+
+          if (hisDistanceToTarget < myDistanceToTarget && game.isFuryPill(p)) {
+            return;
+          }
+
+          if (hisDistanceToTarget <= myDistanceToTarget) {
+            if (Mechanics.wouldWinHeadToHead(hero, enemy, myDistanceToTarget) &&
+                Mechanics.muchLonger(hero, enemy)) {
+              values[p.getX()][p.getY()] +=
+                  (Mechanics.ROUND_REWARD +
+                      Mechanics.BLOOD_REWARD_PER_CELL * Mechanics.getTrueLength(enemy)) / 2;
+
+              if (lastEnemy) values[p.getX()][p.getY()] *= 2;
+            }
+          }
+        }
+      });
 
       return values;
     });
@@ -567,7 +592,7 @@ public class Analysis {
       Point meetingPoint = enemy.head().copy();
       int distanceFromEnemy = 0;
 
-      while (!meetingPoint.isOutOf(game.size()) && distanceFromEnemy < 20) {
+      while (!meetingPoint.isOutOf(game.size()) && distanceFromEnemy < 10) {
         meetingPoint.change(enemyDirection);
         ++distanceFromEnemy;
         int distanceFromHero = heroDistances[meetingPoint.getX()][meetingPoint.getY()];

@@ -99,4 +99,8 @@ public class Mechanics {
   static boolean isLateGame(SnakeBoard game) {
     return GameHelper.getTick(game) >= 100;
   }
+
+  static boolean muchLonger(Hero hero, Hero enemy) {
+    return getTrueLength(hero) - 6 >= getTrueLength(enemy);
+  }
 }
