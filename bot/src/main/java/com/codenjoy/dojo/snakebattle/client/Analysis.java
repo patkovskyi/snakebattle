@@ -50,13 +50,14 @@ public class Analysis {
   }
 
   public HeroAction findBestAction() {
-    double[][] distanceAdjustedValues = getAccumulatedDistanceAdjustedValues(getMyHero());
-    Point target = findMaxPoint(distanceAdjustedValues);
+    Hero me = getMyHero();
+
+    Point target = findMaxPoint(me);
     if (target != null) {
       String targetType = getTargetPointType(target);
-      int value = getValues(getMyHero())[target.getX()][target.getY()];
-      int accValue = getAccumulatedValues(getMyHero())[target.getX()][target.getY()];
-      int distance = getDynamicDistances(getMyHero())[target.getX()][target.getY()];
+      int value = getValues(me)[target.getX()][target.getY()];
+      int accValue = getAccumulatedValues(me)[target.getX()][target.getY()];
+      int distance = getDynamicDistances(me)[target.getX()][target.getY()];
 
       System.out
           .printf("Heading to: [%d %d] (%s | value = %d | acc.value = %d | distance = %d)\n\n",
@@ -594,9 +595,10 @@ public class Analysis {
     return hero.getDirection();
   }
 
-  private Point findMaxPoint(double[][] distanceAdjustedValues) {
+  private Point findMaxPoint(Hero hero) {
     Point p = null;
 
+    double[][] distanceAdjustedValues = getAccumulatedDistanceAdjustedValues(hero);
     int[][] distances = getDynamicDistances(getMyHero());
     for (int x = 0; x < distanceAdjustedValues.length; x++) {
       for (int y = 0; y < distanceAdjustedValues.length; y++) {

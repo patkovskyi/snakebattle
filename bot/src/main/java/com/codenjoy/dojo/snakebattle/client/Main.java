@@ -44,7 +44,7 @@ public class Main {
 
     WebSocketRunner.run(
         URI.create(
-            "wss://game3.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=pzpz4ael0yhbfcvoghei&code=7636115390628474462"),
+            "wss://game3.epam-bot-challenge.com.ua/codenjoy-contest/ws?user=ffxxeikyzf6gu7st7oct&code=5899648657321821614"),
             // "wss://snakebattle.tk/codenjoy-contest/ws?user=patkovskyi@unreal.com&code=16412357891426752377"),
         new MySolver(),
         new MyBoard(),
