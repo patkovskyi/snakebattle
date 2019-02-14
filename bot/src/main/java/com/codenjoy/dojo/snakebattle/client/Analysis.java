@@ -187,7 +187,7 @@ public class Analysis {
 
       // APPLES - higher value in late game, higher value if I'm smaller
       boolean imLongest = getAliveActiveEnemies(hero).allMatch(enemy ->
-          Mechanics.enemyShorterByMinSnakeLength(hero, enemy));
+          getTrueLength(enemy) < getTrueLength(hero) - 8);
       game.getApples().forEach(p ->
           values[p.getX()][p.getY()] =
               Mechanics.APPLE_REWARD + (Mechanics.isLateGame(game) ? 10 : 0) + (imLongest ? 0
@@ -207,10 +207,11 @@ public class Analysis {
         } else if (heroLong) {
           if (!Mechanics.isLateGame(game)) {
             // TODO: think when eating a stone with length is actually good
-            if (hero.getStonesCount() < 3 && imLongest) {
-              values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
+            if (hero.getStonesCount() < 5 && imLongest) {
+              // values[s.getX()][s.getY()] = Mechanics.STONE_REWARD;
+              values[s.getX()][s.getY()] = Mechanics.SOMEWHAT_NEGATIVE;
             } else {
-              // HACK: for now consider eating stones bad after 3 stones
+              // for now consider eating stones with length bad
               values[s.getX()][s.getY()] = Mechanics.SOMEWHAT_NEGATIVE;
             }
           } else {
