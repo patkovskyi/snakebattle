@@ -69,18 +69,18 @@ public class Analysis {
       printHeroAnalytics();
 
       int addAction = 0;
-      if (target.equals(getMyHero().getTailPoint())) {
+      if (target.equals(me.getTailPoint())) {
         addAction = 4;
 
         // HACK: this is necessary to count stone eaten when we move onto our own tail since we never see it from server
-        game.addToPoint(new Stone(getMyHero().getTailPoint()));
+        game.addToPoint(new Stone(me.getTailPoint()));
 
-        getMyHero().reduceStoneCount();
+        me.reduceStoneCount();
       }
-      return HeroAction.valueOf(addAction + findFirstStepTo(getMyHero(), target).value());
+      return HeroAction.valueOf(addAction + findFirstStepTo(me, target).value());
     } else {
       System.out.println("FAIL: target == null, we're in dead end");
-      return HeroAction.valueOf(getMyHero().getDirection().value());
+      return HeroAction.valueOf(me.getDirection().value());
     }
   }
 
@@ -125,10 +125,7 @@ public class Analysis {
                     roundsToPoint);
                 break;
               case Body:
-                if (hero == enemy) {
-                  // crossing yourself is only safe if you can fly over
-                  dynObstacles[p.getX()][p.getY()] |= !Mechanics.canFlyOver(hero, roundsToPoint);
-                } else {
+                if (hero != enemy) {
                   dynObstacles[p.getX()][p.getY()] |= !Mechanics.wouldSurviveHeadToBody(hero, enemy,
                       roundsToPoint);
                 }
@@ -230,7 +227,7 @@ public class Analysis {
       }
 
       // GUARANTEED KILLS - very useful
-      getAliveActiveEnemies(getMyHero()).forEach(enemy -> enemy.body().forEach(p -> {
+      getAliveActiveEnemies(hero).forEach(enemy -> enemy.body().forEach(p -> {
         int roundsToTarget = distances[p.getX()][p.getY()];
 
         switch (Mechanics.whatWillBeOnThisPoint(enemy, p, roundsToTarget)) {
@@ -255,6 +252,18 @@ public class Analysis {
         }
       }));
 
+      // eat my body parts - negative value
+      hero.body().forEach(p -> {
+        int distanceToPart = getDynamicDistanceTo(hero, p);
+        if (distanceToPart > 0 && !Mechanics.canFlyOver(hero, distanceToPart)) {
+          int tailSizeOnCollision = 1 + Mechanics.getTrueBodyIndex(hero, p) - distanceToPart;
+          if (tailSizeOnCollision > 0) {
+            values[p.getX()][p.getY()] -= Mechanics.BLOOD_REWARD_PER_CELL * tailSizeOnCollision;
+          }
+        }
+      });
+
+      // straight line enemy interception
       Optional<MeetingPoint> interceptPoint = findClosestInterceptPoint(hero);
       if (interceptPoint.isPresent()) {
         Point p = interceptPoint.get().getPoint();
@@ -271,7 +280,7 @@ public class Analysis {
           if (hero == closestHero) {
             int killValue = getFuryPillKillValue(hero, fpill);
             int stoneValue = getFuryPillStoneValue(hero, fpill);
-            values[fpill.getX()][fpill.getY()] = Math.max(killValue, stoneValue);
+            values[fpill.getX()][fpill.getY()] += Math.max(killValue, stoneValue);
           } else {
             // mark area around as risky
             getThreatRadius(fpill, Mechanics.FURY_LENGTH)
@@ -644,7 +653,7 @@ public class Analysis {
     Point p = null;
 
     double[][] distanceAdjustedValues = getAccumulatedDistanceAdjustedValues(hero);
-    int[][] distances = getDynamicDistances(getMyHero());
+    int[][] distances = getDynamicDistances(hero);
     for (int x = 0; x < distanceAdjustedValues.length; x++) {
       for (int y = 0; y < distanceAdjustedValues.length; y++) {
         if (distances[x][y] != 0 && distances[x][y] < Integer.MAX_VALUE) {

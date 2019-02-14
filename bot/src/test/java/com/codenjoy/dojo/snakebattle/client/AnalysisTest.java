@@ -51,6 +51,16 @@ public class AnalysisTest {
     hero = game.getHeroes().get(0);
   }
 
+  private void print(int[][] arr) {
+    for (int y = arr.length; y --> 0; ) {
+      for (int x = 0; x < arr.length; x++) {
+        System.out.printf("%d ", arr[x][y]);
+      }
+
+      System.out.println();
+    }
+  }
+
   private void assertBoard(String expected, Player player) {
     assertEquals(com.codenjoy.dojo.utils.TestUtils.injectN(expected),
         new PrinterFactoryImpl().getPrinter(game.reader(), player).print());
@@ -370,8 +380,8 @@ public class AnalysisTest {
 
     assertDynamicDistances("☼☼☼☼☼☼"
         + "☼2123☼"
-        + "☼☼012☼"
-        + "☼☼123☼"
+        + "☼3012☼"
+        + "☼2123☼"
         + "☼3234☼"
         + "☼☼☼☼☼☼");
   }
@@ -807,7 +817,7 @@ public class AnalysisTest {
         + "☼☼☼☼☼☼");
 
     Analysis ga = new Analysis(game);
-    Assert.assertEquals(HeroAction.LEFT, ga.findBestAction());
+    Assert.assertNotEquals(HeroAction.UP, ga.findBestAction());
   }
 
   @Test
@@ -1130,7 +1140,13 @@ public class AnalysisTest {
 
     Analysis ga = new Analysis(game);
     int[][] values = ga.getValues(hero);
+    int[][] accValues = ga.getAccumulatedValues(hero);
+    int[][] distances = ga.getDynamicDistances(hero);
     Assert.assertEquals(0, values[4][4]);
+
+    print(values);
+    print(accValues);
+    print(distances);
     assertMove(HeroAction.UP);
   }
 
@@ -1256,6 +1272,57 @@ public class AnalysisTest {
 
     game.getHeroes().get(1).setFuryCount(4);
     assertMove(HeroAction.UP);
+  }
+
+  @Test
+  public void sometimesBetterEatYourself() {
+    newGame("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+          + "☼☼                           ☼"
+          + "☼#      ©                    ☼"
+          + "☼☼                  ○        ☼"
+          + "☼☼                           ☼"
+          + "☼☼        ○  ╓╔═╗            ☼"
+          + "☼☼     ☼☼☼☼☼ ║║ ║            ☼"
+          + "☼☼     ☼○ ▲╔╗║║ ║            ☼"
+          + "☼#     ☼☼☼║║║╚╝ ║ ☼☼☼☼#      ☼"
+          + "☼☼   æ ☼  ╚╝╚═══╝ ☼  ®☼  ●   ☼"
+          + "☼☼   │ ☼☼☼☼#     ©☼☼☼☼#    ○ ☼"
+          + "☼☼   │            ☼         ○☼"
+          + "☼☼   │            ☼          ☼"
+          + "☼☼   │      ○                ☼"
+          + "☼#   │●                  ●   ☼"
+          + "☼☼   │●                      ☼"
+          + "☼☼   │    ☼☼☼                ☼"
+          + "☼☼   │   ☼  ☼                ☼"
+          + "☼☼   │  ☼☼☼☼#     ☼☼ ○ ☼#    ☼"
+          + "☼☼   │  ☼   ☼     ☼ ☼○☼ ☼    ☼"
+          + "☼#   │  ☼   ☼     ☼  ☼  ☼    ☼"
+          + "☼☼   │     ●      ☼     ☼    ☼"
+          + "☼☼   │     ●      ☼     ☼    ☼"
+          + "☼☼   │                 ○     ☼"
+          + "☼☼   │                   ○   ☼"
+          + "☼☼   └─┐                     ☼"
+          + "☼#    <┘                     ☼"
+          + "☼☼   ○     $                 ☼"
+          + "☼☼              $      ○     ☼"
+          + "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼");
+
+    assertMove(HeroAction.RIGHT);
+  }
+
+  @Ignore
+  @Test
+  public void smartAvoidance() {
+    newGame("☼☼☼☼☼☼"
+        + "☼  ● ☼"
+        + "  ╘═╗☼"
+        + "☼  ♥╝☼"
+        + "☼    ☼"
+        + "☼☼☼☼☼☼");
+
+    hero.setFuryCount(3);
+    Analysis ga = new Analysis(game);
+    Assert.assertEquals(HeroAction.LEFT, ga.findBestAction());
   }
 
   // @formatter:on
